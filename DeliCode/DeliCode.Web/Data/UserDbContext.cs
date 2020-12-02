@@ -6,9 +6,9 @@ using System.Text;
 
 namespace DeliCode.Web.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class UserDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public UserDbContext(DbContextOptions<UserDbContext> options)
             : base(options)
         {
         }
