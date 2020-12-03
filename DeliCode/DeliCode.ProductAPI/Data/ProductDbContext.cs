@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DeliCode.Library.Models;
 
 namespace DeliCode.ProductAPI.Data
 {
@@ -13,6 +14,6 @@ namespace DeliCode.ProductAPI.Data
         {
         }
 
-        //public DbSet<Product> Products { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }
