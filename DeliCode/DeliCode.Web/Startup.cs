@@ -1,4 +1,5 @@
 using DeliCode.Web.Data;
+using DeliCode.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,18 +28,32 @@ namespace DeliCode.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("DefaultConnection")));
-
             //Get Connectionstring from Built-in user secrets in .NET
             var connectionString = Configuration["SqlConnection:UserDB"];
+
+            //Add context
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //add Identity framework
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+            })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<UserDbContext>();
+
+            services.Configure<SecurityStampValidatorOptions>(options =>
+            {
+                //validate logged in user every 5 min
+                options.ValidationInterval = TimeSpan.FromMinutes(5);
+            });
+
             services.AddControllersWithViews();
         }
 
