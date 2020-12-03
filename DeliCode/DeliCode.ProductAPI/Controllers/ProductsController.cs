@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DeliCode.Library.Models;
 using DeliCode.ProductAPI.Data;
+using DeliCode.ProductAPI.Repository;
 
 namespace DeliCode.ProductAPI.Controllers
 {
@@ -15,7 +16,8 @@ namespace DeliCode.ProductAPI.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ProductDbContext _context;
-
+        ProductRepository repos = new ProductRepository();
+      
         public ProductsController(ProductDbContext context)
         {
             _context = context;
@@ -23,23 +25,18 @@ namespace DeliCode.ProductAPI.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public IActionResult GetAllProducts()
         {
-            return await _context.Products.ToListAsync();
+            List<Product> productList = repos.GetAllProducts();
+            return Ok(productList);
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(Guid id)
+        public IActionResult GetProduct(Guid id)
         {
-            var product = await _context.Products.FindAsync(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return product;
+            Product product = repos.GetProduct(id);
+            return Ok(product);
         }
 
         // PUT: api/Products/5
