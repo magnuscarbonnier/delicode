@@ -11,7 +11,7 @@ namespace DeliCode.ProductAPI.Repository
 {
     public class ProductRepository
     {
-        internal List<Product> Products = new List<Product>()
+        internal List<Product> products = new List<Product>()
         {
             new Product() {Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"), Name = "´Kanelbulle", Description = "", Price = 10, ImageUrl = "#"},
             new Product() {Id = Guid.NewGuid(), Name = "Kladdkarta", Description = "", Price = 70, ImageUrl = "#"},
@@ -22,13 +22,27 @@ namespace DeliCode.ProductAPI.Repository
 
         public List<Product> GetAllProducts()
         {
-            List<Product> productList = Products;
+            List<Product> productList = products;
             return productList;
         }
         public Product GetProduct(Guid Id)
         {
-            Product product = Products.Where(e => e.Id == Id).SingleOrDefault();
+            Product product = products.Where(e => e.Id == Id).SingleOrDefault();
             return product;
+        }
+        public List<Product> AddProduct(Product product)
+        {
+            products.Add(product);
+            return products;
+        }
+        public List<Product> DeleteProduct(Guid Id)
+        {
+            var deleteProduct = products
+                .Where(e => e.Id == Id)
+                .SingleOrDefault();
+
+            products.Remove(deleteProduct);
+            return products;
         }
     }
 }
