@@ -1,0 +1,17 @@
+﻿@model List<string>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        @foreach (var item in Model)
+        {
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4 mt-2 mb-2">
+                @await Html.PartialAsync("_ProductPartial", item)
+            </div>
+        }
+    </div>
+</div>
