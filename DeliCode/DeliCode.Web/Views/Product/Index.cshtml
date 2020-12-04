@@ -1,0 +1,28 @@
+﻿@model List<string>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="container">
+    @foreach (var item in Model)
+    {
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                <div class="card deck">
+                    <img class="card-img" src="https://picsum.photos/286/180" alt="@item">
+                    <div class="card-body">
+                        <div class="card-title">
+                            @item
+                        </div>
+                        <div class="buy d-flex justify-content-between align-items-center">
+                            <div class="price text-success"><h5 class="mt-4">SEK 1000</h5></div>
+                            <button class="btn btn-primary">Lägg till</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
