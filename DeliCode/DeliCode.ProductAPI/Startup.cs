@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DeliCode.Library.Models;
 
 namespace DeliCode.ProductAPI
 {
@@ -48,7 +49,7 @@ namespace DeliCode.ProductAPI
                         RequireSignedTokens=true,
                         RequireExpirationTime=true,
                         ValidateIssuer = true,
-                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidIssuer = MicroserviceType.ProductApi.ToString(),
                         ValidateAudience = true,
                         ValidAudience = Configuration["Jwt:Audience"],
                         ValidateIssuerSigningKey = true,
