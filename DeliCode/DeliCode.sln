@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliCode.OrderAPI", "DeliCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliCode.Library", "DeliCode.Library\DeliCode.Library.csproj", "{9FFB2175-2807-403A-86D9-B62CCF7E2723}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliCode.ProductAPI.Tests", "DeliCode.ProductAPI.Tests\DeliCode.ProductAPI.Tests.csproj", "{9D6E09BD-EED9-4ECD-9D4B-CCD262EA9A2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliCode.ProductAPI.Tests", "DeliCode.ProductAPI.Tests\DeliCode.ProductAPI.Tests.csproj", "{9D6E09BD-EED9-4ECD-9D4B-CCD262EA9A2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliCode.OrderAPI.Tests", "DeliCode.OrderAPI.Tests\DeliCode.OrderAPI.Tests.csproj", "{95E86382-DE42-426A-971E-86C82F919AE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliCode.OrderAPI.Tests", "DeliCode.OrderAPI.Tests\DeliCode.OrderAPI.Tests.csproj", "{95E86382-DE42-426A-971E-86C82F919AE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliCode.Web.Tests", "DeliCode.Web.Tests\DeliCode.Web.Tests.csproj", "{5903E854-857D-4057-BD91-B6116B4C9237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{95E86382-DE42-426A-971E-86C82F919AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95E86382-DE42-426A-971E-86C82F919AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95E86382-DE42-426A-971E-86C82F919AE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5903E854-857D-4057-BD91-B6116B4C9237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5903E854-857D-4057-BD91-B6116B4C9237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5903E854-857D-4057-BD91-B6116B4C9237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5903E854-857D-4057-BD91-B6116B4C9237}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

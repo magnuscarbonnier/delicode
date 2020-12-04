@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
+    <UserSecretsId>0c530537-0b11-42bd-94c4-4488d6bc21ca</UserSecretsId>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DeliCode.Library\DeliCode.Library.csproj" />
-    <ProjectReference Include="..\DeliCode.OrderAPI\DeliCode.OrderAPI.csproj" />
+    <ProjectReference Include="..\DeliCode.Web\DeliCode.Web.csproj" />
   </ItemGroup>
 
 </Project>
