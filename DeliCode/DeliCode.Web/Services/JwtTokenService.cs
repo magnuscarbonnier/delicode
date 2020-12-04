@@ -28,9 +28,11 @@ namespace DeliCode.Web.Services
 
         public async Task<string> GenerateJwtToken(MicroserviceType microserviceType)
         {
+            string issuer = microserviceType.ToString();
+           
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _configuration["Jwt:Issuer"],
+                Issuer = issuer,
                 Audience = _configuration["Jwt:Audience"],
                 Subject = new ClaimsIdentity(
                     new Claim[] {
