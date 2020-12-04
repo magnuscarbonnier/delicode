@@ -1,5 +1,6 @@
 using DeliCode.Web.Data;
 using DeliCode.Web.Models;
+using DeliCode.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -53,6 +54,8 @@ namespace DeliCode.Web
                 //validate logged in user every 5 min
                 options.ValidationInterval = TimeSpan.FromMinutes(5);
             });
+
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
 
             services.AddControllersWithViews();
         }
