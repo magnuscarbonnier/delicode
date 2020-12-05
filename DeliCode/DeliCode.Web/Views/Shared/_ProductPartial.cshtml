@@ -8,7 +8,10 @@
         </div>
         <div class="buy d-flex justify-content-between align-items-center">
             <div class="price text-success"><h5 class="mt-4">SEK 1000</h5></div>
-            <button class="btn btn-primary">Lägg till</button>
+            <form asp-action="AddToCart" asp-controller="Product">
+                <button type="submit" class="btn btn-primary">Lägg till</button>
+            </form>
+            <a href="@Url.Action("Details", "Product",new { productId = Guid.NewGuid() })", class="btn btn-info">Visa</a>
         </div>
     </div>
 </div>

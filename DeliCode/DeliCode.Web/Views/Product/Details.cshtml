@@ -1,0 +1,26 @@
+﻿@model DeliCode.Library.Models.Product
+
+@{
+    ViewData["Title"] = "Detaljer";
+}
+<a href="##" class="text-dark" onClick="history.go(-1); return false;"><i class="fas fa-chevron-left"></i> tillbaka</a>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-7">
+        <div class="card deck">
+            <img class="card-img" src="@Model.ImageUrl" alt="@Model.Name">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Name</h5>
+                <p class="card-text">@Model.Description</p>
+                <div class="buy d-flex justify-content-between align-items-center">
+                    <div class="price text-success"><h5 class="mt-4">SEK @Model.Price</h5></div>
+                    <form asp-action="AddToCart">
+                        @Html.HiddenFor(x => x.Id)
+                        <button type="submit" class="btn btn-primary">Lägg till</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card-footer text-info">@Model.AmountInStorage i lager</div>
+        </div>
+    </div>
+</div>
