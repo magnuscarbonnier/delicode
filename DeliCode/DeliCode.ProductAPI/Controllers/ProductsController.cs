@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DeliCode.Library.Models;
 using DeliCode.ProductAPI.Data;
 using DeliCode.ProductAPI.Repository;
+using System.Transactions;
 
 namespace DeliCode.ProductAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace DeliCode.ProductAPI.Controllers
     {
         private readonly ProductDbContext _context;
         ProductRepository repos = new ProductRepository();
-      
+
         public ProductsController(ProductDbContext context)
         {
             _context = context;
@@ -37,6 +38,18 @@ namespace DeliCode.ProductAPI.Controllers
         {
             Product product = repos.GetProduct(id);
             return Ok(product);
+        }
+
+        // POST: api/Products
+        [HttpPost]
+        public IActionResult PostProduct([FromBody] Product product)
+        {
+            using (var scope = new TransactionScope())
+            {
+                repos.AddProduct(product);
+                scope.Complete();
+                return CreatedAtAction("PostProduct", new { Id = product.Id }, product);
+            }
         }
 
         // PUT: api/Products/5
@@ -69,30 +82,12 @@ namespace DeliCode.ProductAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Products
-        [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
-        {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
-        }
-
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
+        public IActionResult DeleteProduct(Guid id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            var productList = repos.DeleteProduct(id);
+            return Ok(productList);
         }
 
         private bool ProductExists(Guid id)
