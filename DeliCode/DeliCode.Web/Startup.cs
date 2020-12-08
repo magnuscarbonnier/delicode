@@ -3,6 +3,7 @@ using DeliCode.Web.Models;
 using DeliCode.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -54,9 +55,7 @@ namespace DeliCode.Web
                 //validate logged in user every 5 min
                 options.ValidationInterval = TimeSpan.FromMinutes(5);
             });
-
-            services.AddTransient<IJwtTokenService, JwtTokenService>();
-
+            services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
@@ -64,6 +63,9 @@ namespace DeliCode.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+   
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddSingleton<ICartService, CartService>();
 
             services.AddControllersWithViews();
         }
