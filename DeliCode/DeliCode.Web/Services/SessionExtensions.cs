@@ -3,6 +3,7 @@ using System.Text.Json;
 
 namespace DeliCode.Web.Services
 {
+    //extension methods to save objects to session, (original from Microsoft documentation)
     public static class SessionExtensions
     {
         public static void Set<T>(this ISession session, string key, T value)
