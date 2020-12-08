@@ -15,19 +15,22 @@ namespace DeliCode.ProductAPI.Tests
 {
     class TestClientProvider : IDisposable
     {
+
+
         public TestServer Server { get; private set; }
         public HttpClient Client { get; private set; }
         public TestClientProvider()
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
+                .AddUserSecrets("0c530537-0b11-42bd-94c4-4488d6bc21ca")
                 .AddJsonFile("appsettings.json")
                 .Build();
 
             WebHostBuilder webHostBuilder = new WebHostBuilder();
             webHostBuilder.UseStartup<Startup>();
             webHostBuilder.UseConfiguration(configuration);
-            webHostBuilder.ConfigureServices(s => s.AddDbContext<ProductDbContext>(options => options.UseSqlServer(configuration["SqlConnection:ProductDB"])));
+            webHostBuilder.ConfigureTestServices(s => s.AddDbContext<ProductDbContext>(options => options.UseSqlServer(configuration["SqlConnection:ProductDB"])));
 
             //Make sure startup is referring to correct dependency
             Server = new TestServer(webHostBuilder);
