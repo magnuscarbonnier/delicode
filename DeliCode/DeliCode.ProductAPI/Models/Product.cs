@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeliCode.Library.Models
+namespace DeliCode.ProductAPI.Models
 {
     public class Product
     {

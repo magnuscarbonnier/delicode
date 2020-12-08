@@ -1,4 +1,4 @@
-using DeliCode.Library.Models;
+using DeliCode.ProductAPI.Models;
 using DeliCode.ProductAPI.Repository;
 using System;
 using System.Collections.Generic;
