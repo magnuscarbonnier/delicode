@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DeliCode.Library.Models;
 using DeliCode.ProductAPI.Data;
 using DeliCode.ProductAPI.Repository;
 using System.Transactions;
+using DeliCode.ProductAPI.Models;
 
 namespace DeliCode.ProductAPI.Controllers
 {
