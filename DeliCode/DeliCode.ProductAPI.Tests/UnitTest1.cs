@@ -1,8 +1,10 @@
 using DeliCode.ProductAPI.Models;
 using DeliCode.ProductAPI.Repository;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 
@@ -12,12 +14,18 @@ namespace DeliCode.ProductAPI.Tests
     public class UnitTest1
     {
         [Fact]
-        public void GetAllProductsShouldReturnListOfProducts()
+        public async Task GetAllProductsShouldReturnListOfProducts()
         {
-            ProductRepository repos = new ProductRepository();
-            var expected = repos.products;
-            List<Product> actual = repos.GetAllProducts();
-            Assert.Equal(expected, actual);
+            using (var client = new TestClientProvider().Client)
+            {
+                var response = await client.GetStringAsync("api/products");
+                var actual = JsonConvert.DeserializeObject<List<Product>>(response);
+                Assert.IsType<List<Product>>(actual);
+            }
+            //ProductRepository repos = new ProductRepository();
+            //var expected = repos.products;
+            //List<Product> actual = repos.GetAllProducts();
+            //Assert.Equal(expected, actual);
         }
         [Fact]
         public void GetProductShouldReturnSingleProduct()

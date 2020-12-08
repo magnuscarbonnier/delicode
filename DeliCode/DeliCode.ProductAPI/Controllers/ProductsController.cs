@@ -28,8 +28,11 @@ namespace DeliCode.ProductAPI.Controllers
         [HttpGet]
         public IActionResult GetAllProducts()
         {
-            List<Product> productList = repos.GetAllProducts();
-            return Ok(productList);
+            var list = _context.Products.ToList();
+             // List<Product> productList = repos.GetAllProducts();
+             if  (list  ==  null)
+                return NoContent();
+            return Ok(list);
         }
 
         // GET: api/Products/5
