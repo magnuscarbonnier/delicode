@@ -1,4 +1,4 @@
-﻿using DeliCode.Library.Models;
+﻿using DeliCode.Web.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -26,12 +26,22 @@ namespace DeliCode.Web.Services
             return JsonConvert.DeserializeObject<List<Product>>(productResponse);
         }
 
-        public async Task<Product> GetById(Guid id)
+        public async Task<Product> Get(Guid id)
         {
-            var response = await _httpClient.GetAsync($"product/{id}");
+            var response = await _httpClient.GetAsync($"/api/product/{id}");
             var productResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<Product>(productResponse);
+        }
+
+        public Task<Product> Remove(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Product> Add(Product product)
+        {
+            throw new NotImplementedException();
         }
     }
 }
