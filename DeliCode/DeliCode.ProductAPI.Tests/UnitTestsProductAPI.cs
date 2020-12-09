@@ -28,6 +28,7 @@ namespace DeliCode.ProductAPI.Tests
                 var response = await client.GetAsync("api/products");
                 var responseString = await response.Content.ReadAsStringAsync();
                 var actual = JsonConvert.DeserializeObject<List<Product>>(responseString);
+
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.IsType<List<Product>>(actual);
             }
@@ -41,6 +42,7 @@ namespace DeliCode.ProductAPI.Tests
                 string responseString = await response.Content.ReadAsStringAsync();
                 var product = JsonConvert.DeserializeObject<Product>(responseString);
                 var actual = product.Name;
+
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.Equal("Korvar", actual);
             }
@@ -112,6 +114,7 @@ namespace DeliCode.ProductAPI.Tests
 
                 var putResponse = await client.PutAsync($"api/products/{getProduct.Id}", updatedContent);
                 await client.DeleteAsync($"api/products/{putProduct.Id}");
+
                 Assert.Equal(HttpStatusCode.NoContent, putResponse.StatusCode);
             }
         }
