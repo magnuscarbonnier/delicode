@@ -28,8 +28,8 @@ namespace DeliCode.ProductAPI.Tests
                 var response = await client.GetAsync("api/products");
                 var responseString = await response.Content.ReadAsStringAsync();
                 var actual = JsonConvert.DeserializeObject<List<Product>>(responseString);
-                Assert.IsType<List<Product>>(actual);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                Assert.IsType<List<Product>>(actual);
             }
         }
         [Fact]
@@ -46,7 +46,7 @@ namespace DeliCode.ProductAPI.Tests
             }
         }
         [Fact]
-        public async Task AddNewProduct_ShouldReturnCreatedProduct()
+        public async Task PostProduct_ShouldReturnCreatedProduct()
         {
             Product product = new Product { Name = "TestProduct", Description = "#", Price = 150, ImageUrl = "#" };
             using (var client = new TestClientProvider().Client)
@@ -67,8 +67,8 @@ namespace DeliCode.ProductAPI.Tests
                 await client.DeleteAsync($"api/products/{getProduct.Id}");
 
                 //Assert
-                Assert.Equal(countBefore + 1, actual);
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+                Assert.Equal(countBefore + 1, actual);
             }
         }
         [Fact]
@@ -92,12 +92,28 @@ namespace DeliCode.ProductAPI.Tests
                 Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
             }
         }
+        [Fact]
+        public async Task PutProductShouldUpdateProduct()
+        {
+            Product product = new Product { Name = "TestProduct", Description = "#", Price = 150, ImageUrl = "#" };
+            Product putProduct = new Product { Name = "UpdatedProduct", Description = "Updated", Price = 150, ImageUrl = "Updated" };
 
-        //Tests:
+            using (var client = new TestClientProvider().Client)
+            {
+                string json = JsonConvert.SerializeObject(product);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        // PUT: api/Products/5
-        // PutProduct(Guid id, Product product)
+                var postResponse = await client.PostAsync("api/products", content);
+                string postString = await postResponse.Content.ReadAsStringAsync();
+                var getProduct = JsonConvert.DeserializeObject<Product>(postString);
+                putProduct.Id = getProduct.Id;
+                string upJson = JsonConvert.SerializeObject(putProduct);
+                var updatedContent = new StringContent(upJson, Encoding.UTF8, "application/json");
 
-        // ProductExists(Guid id)
+                var putResponse = await client.PutAsync($"api/products/{getProduct.Id}", updatedContent);
+                await client.DeleteAsync($"api/products/{putProduct.Id}");
+                Assert.Equal(HttpStatusCode.NoContent, putResponse.StatusCode);
+            }
+        }
     }
 }
