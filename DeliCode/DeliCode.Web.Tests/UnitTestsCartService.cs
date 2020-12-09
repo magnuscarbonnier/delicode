@@ -52,10 +52,7 @@ namespace DeliCode.Web.Tests
         void AddProductReturnsCartWithProduct()
         {
             //Act
-            var products = new List<Product>()
-            {
-                product
-            };
+            var cart = new Cart() { Items = new List<CartItem>() { new CartItem() { Product = product } } };
             _cartService.Setup(cartservice => cartservice.AddProductToCart(product)).Returns(cart);
             var actual = _cartService.Object.AddProductToCart(product);
 
