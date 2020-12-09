@@ -13,7 +13,6 @@ namespace DeliCode.ProductAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly ProductDbContext _context;

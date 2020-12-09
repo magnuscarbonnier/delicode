@@ -15,8 +15,6 @@ namespace DeliCode.ProductAPI.Tests
 {
     class TestClientProvider : IDisposable
     {
-
-
         public TestServer Server { get; private set; }
         public HttpClient Client { get; private set; }
         public TestClientProvider()

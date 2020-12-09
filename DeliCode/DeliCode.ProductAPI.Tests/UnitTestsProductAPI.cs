@@ -10,8 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-
-
 namespace DeliCode.ProductAPI.Tests
 {
     public class UnitTestsProductAPI
@@ -21,7 +19,7 @@ namespace DeliCode.ProductAPI.Tests
         {
             repos = new MockProductRepository();
         }
-        
+
         [Fact]
         public async Task GetAllProductsShouldReturnListOfProducts()
         {
@@ -35,53 +33,64 @@ namespace DeliCode.ProductAPI.Tests
             }
         }
         [Fact]
+        public async Task GetProductShouldReturnSingleProduct()
+        {
+            using (var client = new TestClientProvider().Client)
+            {
+                var response = await client.GetAsync($"api/products/{ new Guid("F7675644-F5C3-4604-838E-09F4E2A64F10")}");
+                string responseString = await response.Content.ReadAsStringAsync();
+                var product = JsonConvert.DeserializeObject<Product>(responseString);
+                var actual = product.Name;
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                Assert.Equal("Korvar", actual);
+            }
+        }
+        [Fact]
         public async Task AddNewProduct_ShouldReturnCreatedProduct()
         {
             Product product = new Product { Name = "TestProduct", Description = "#", Price = 150, ImageUrl = "#" };
             using (var client = new TestClientProvider().Client)
             {
                 //Arrange
-                string json =  JsonConvert.SerializeObject(product);
+                var beforeResponse = await client.GetStringAsync("api/products");
+                int countBefore = JsonConvert.DeserializeObject<List<Product>>(beforeResponse).Count;
+                string json = JsonConvert.SerializeObject(product);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                Guid productId;
+                var response = await client.PostAsync("api/products", content);
 
                 //Act
-                var response = await client.PostAsync("api/products",content);
+                var afterResponse = await client.GetStringAsync("api/products");
+                int actual = JsonConvert.DeserializeObject<List<Product>>(afterResponse).Count;
+
                 var responseString = await response.Content.ReadAsStringAsync();
-                var actual = JsonConvert.DeserializeObject<Product>(responseString);
-                productId = actual.Id;
+                var getProduct = JsonConvert.DeserializeObject<Product>(responseString);
+                await client.DeleteAsync($"api/products/{getProduct.Id}");
 
                 //Assert
-                Assert.IsType<Product>(actual);
+                Assert.Equal(countBefore + 1, actual);
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             }
         }
+        [Fact]
+        public async Task DeleteProductShouldDeleteProductFromList()
+        {
+            Product product = new Product { Name = "TestProduct", Description = "#", Price = 150, ImageUrl = "#" };
 
-        [Fact]
-        public void GetProductShouldReturnSingleProduct()
-        {
-            var expected = repos.products
-                .Where(e => e.Id == new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"))
-                .SingleOrDefault();
-            Product product = repos.GetProduct(new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"));
-            Assert.Equal(expected, product);
-        }
-        [Fact]
-        public void AddProductShouldAddNewProduct()
-        {
-            
-            Product product = new Product { Id = Guid.NewGuid(), Name = "NyProduct", Description = "", Price = 150, ImageUrl = "#" };
-            int expected = repos.products.Count() + 1;
-            int actual = repos.AddProduct(product).Count();
-            Assert.Equal(expected, actual);
-        }
-        [Fact]
-        public void DeleteProductShouldDeleteProductFromList()
-        {
-            
-            int expected = repos.products.Count() - 1;
-            int actual = repos.DeleteProduct(new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00")).Count();
-            Assert.Equal(expected, actual);
+            using (var client = new TestClientProvider().Client)
+            {
+                //First create
+                var json = JsonConvert.SerializeObject(product);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var created = await client.PostAsync("api/products", content);
+
+                string responseString = await created.Content.ReadAsStringAsync();
+                var getProduct = JsonConvert.DeserializeObject<Product>(responseString);
+
+                //Then delete
+                var delete = await client.DeleteAsync($"api/products/{getProduct.Id}");
+
+                Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
+            }
         }
 
         //Tests:
