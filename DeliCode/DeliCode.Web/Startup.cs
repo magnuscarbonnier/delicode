@@ -3,6 +3,7 @@ using DeliCode.Web.Models;
 using DeliCode.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -58,6 +59,18 @@ namespace DeliCode.Web
             services.AddHttpClient<IProductService, ProductService>(client =>
                 client.BaseAddress = new Uri(Configuration["ProductAPIUrl"])
             );
+            services.AddHttpContextAccessor();
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+   
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddSingleton<ICartService, CartService>();
+
             services.AddControllersWithViews();
         }
 
@@ -82,6 +95,8 @@ namespace DeliCode.Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

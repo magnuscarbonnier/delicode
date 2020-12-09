@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DeliCode.ProductAPI.Repository
 {
-    public class ProductRepository
+    public class MockProductRepository : IProductRepository
     {
         internal List<Product> products = new List<Product>()
         {
