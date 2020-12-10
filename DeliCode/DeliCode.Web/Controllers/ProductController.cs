@@ -1,4 +1,5 @@
-﻿using DeliCode.Web.Models;
+using DeliCode.Web.Services;
+using DeliCode.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,14 +10,16 @@ namespace DeliCode.Web.Controllers
 {
     public class ProductController : Controller
     {
-        public IActionResult Index()
+        private readonly IProductService _productService;
+
+        public ProductController(IProductService productService)
         {
-            List<string> test = new List<string>();
-            test.Add("Hej");
-            test.Add("Funkar");
-            test.Add("Detta");
-            test.Add("Verkligen");
-            return View(test);
+            _productService = productService;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var products = await _productService.GetAll();
+            return View(products);
         }
         public IActionResult Details(Guid productId)
         {

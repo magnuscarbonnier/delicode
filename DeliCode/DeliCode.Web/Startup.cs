@@ -55,6 +55,10 @@ namespace DeliCode.Web
                 //validate logged in user every 5 min
                 options.ValidationInterval = TimeSpan.FromMinutes(5);
             });
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddHttpClient<IProductService, ProductService>(client =>
+                client.BaseAddress = new Uri(Configuration["ProductAPIUrl"])
+            );
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
