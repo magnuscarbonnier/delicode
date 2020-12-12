@@ -16,7 +16,7 @@
         @foreach (var item in Model)
         {
             <div class="carousel-item @(first ? Html.Raw("active") : Html.Raw(""))" , style="height: 35rem;">
-                <a asp-controller="Product" asp-action="Details" asp-route-ID="@item.Id">
+                <a href="@Url.Action("Details", "Product",new { productId=item.Id })">
                     <img class="card-img" src="@item.ImageUrl" alt="@item.Name">
                 </a>
             </div>
