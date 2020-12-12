@@ -1,0 +1,16 @@
+﻿@using DeliCode.Web.Services
+@inject ICartService _cartService
+<li class="nav-item">
+    @if (@_cartService.GetCart().Items.Count == 0)
+    {
+        <div class="nav-link text-danger">Kundvagnen tom!</div>
+    }
+    @if (@_cartService.GetCart().Items.Count == 1)
+    {
+        <div class="nav-link text-success">Kundvagn: @_cartService.GetCart().Items.Count vara Totalt: @_cartService.GetCart().Total kr</div>
+    }
+    @if (@_cartService.GetCart().Items.Count > 1)
+    {
+        <div class="nav-link text-success">Kundvagn: @_cartService.GetCart().Items.Count varor Totalt: @_cartService.GetCart().Total kr</div>
+    }
+</li>
