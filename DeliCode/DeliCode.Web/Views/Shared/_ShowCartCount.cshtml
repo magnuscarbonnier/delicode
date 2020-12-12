@@ -7,10 +7,10 @@
     }
     @if (@_cartService.GetCart().Items.Count == 1)
     {
-        <div class="nav-link text-success">Kundvagn: @_cartService.GetCart().Items.Count vara Totalt: @_cartService.GetCart().Total kr</div>
+        <div class="nav-link text-success">Kundvagn: @_cartService.GetCart().Items.Count vara SEK: @_cartService.GetCart().Total</div>
     }
     @if (@_cartService.GetCart().Items.Count > 1)
     {
-        <div class="nav-link text-success">Kundvagn: @_cartService.GetCart().Items.Count varor Totalt: @_cartService.GetCart().Total kr</div>
+        <div class="nav-link text-success">Kundvagn: @_cartService.GetCart().Items.Count varor SEK: @_cartService.GetCart().Total</div>
     }
 </li>
