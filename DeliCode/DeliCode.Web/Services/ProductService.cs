@@ -28,7 +28,7 @@ namespace DeliCode.Web.Services
 
         public async Task<Product> Get(Guid id)
         {
-            var response = await _httpClient.GetAsync($"/api/product/{id}");
+            var response = await _httpClient.GetAsync($"/api/products/{id}");
             var productResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<Product>(productResponse);

@@ -68,7 +68,6 @@ namespace DeliCode.Web
                 options.Cookie.IsEssential = true;
             });
    
-            services.AddTransient<IJwtTokenService, JwtTokenService>();
             services.AddSingleton<ICartService, CartService>();
 
             services.AddControllersWithViews();

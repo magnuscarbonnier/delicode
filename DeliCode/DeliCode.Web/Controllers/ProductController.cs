@@ -11,36 +11,44 @@ namespace DeliCode.Web.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
+        private readonly ICartService _cartService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, ICartService cartService)
         {
             _productService = productService;
+            _cartService = cartService;
         }
         public async Task<IActionResult> Index()
         {
             var products = await _productService.GetAll();
             return View(products);
         }
-        public IActionResult Details(Guid productId)
+        public async Task<IActionResult> DetailsAsync(Guid productId)
         {
-            //var product = _productService.Get(productId);
-            //return View(product);
-            Product product = new Product
+            var product =await _productService.Get(productId);
+            if(product==null)
             {
-                AmountInStorage = 2,
-                Description = "Fina fisken",
-                Id = Guid.NewGuid(),
-                ImageUrl = "https://picsum.photos/286/180",
-                Name = "Fisk",
-                Price = 22.9M
-            };
+                return RedirectToAction("Index", "Product");
+            }
             return View(product);
+
         }
         [HttpPost]
-        public IActionResult AddToCart([FromForm] Guid Id)
+        public async Task<IActionResult> AddToCartAsync([FromForm] Guid Id)
         {
-            //TODO: AddToCart, not just return guid to okresult
-            return Ok(Id);
+            var product = await _productService.Get(Id);
+            if(product==null)
+            {
+                return BadRequest("produkten fanns inte");
+            }
+
+            var cart=_cartService.AddProductToCart(product);
+            if(cart==null)
+            {
+                return BadRequest("produkten kunde inte läggas till");
+            }
+
+            return RedirectToAction("Index", "Product");
         }
     }
 }
