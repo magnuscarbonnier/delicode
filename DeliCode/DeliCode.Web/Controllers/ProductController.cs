@@ -1,4 +1,6 @@
-ï»¿using Microsoft.AspNetCore.Mvc;
+using DeliCode.Web.Services;
+using DeliCode.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +10,45 @@ namespace DeliCode.Web.Controllers
 {
     public class ProductController : Controller
     {
-        public IActionResult Index()
+        private readonly IProductService _productService;
+        private readonly ICartService _cartService;
+
+        public ProductController(IProductService productService, ICartService cartService)
         {
-            List<string> test = new List<string>();
-            test.Add("Hej");
-            test.Add("Funkar");
-            test.Add("Detta");
-            test.Add("Verkligen");
-            return View(test);
+            _productService = productService;
+            _cartService = cartService;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var products = await _productService.GetAll();
+            return View(products);
+        }
+        public async Task<IActionResult> DetailsAsync(Guid productId)
+        {
+            var product =await _productService.Get(productId);
+            if(product==null)
+            {
+                return RedirectToAction("Index", "Product");
+            }
+            return View(product);
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddToCartAsync([FromForm] Guid Id)
+        {
+            var product = await _productService.Get(Id);
+            if(product==null)
+            {
+                return BadRequest("produkten fanns inte");
+            }
+
+            var cart=_cartService.AddProductToCart(product);
+            if(cart==null)
+            {
+                return BadRequest("produkten kunde inte läggas till");
+            }
+
+            return RedirectToAction("Index", "Product");
         }
     }
 }

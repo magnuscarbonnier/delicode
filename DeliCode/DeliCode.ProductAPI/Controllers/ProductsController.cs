@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DeliCode.Library.Models;
 using DeliCode.ProductAPI.Data;
-using DeliCode.ProductAPI.Repository;
-using System.Transactions;
+using DeliCode.ProductAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DeliCode.ProductAPI.Controllers
 {
@@ -17,7 +16,6 @@ namespace DeliCode.ProductAPI.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ProductDbContext _context;
-        ProductRepository repos = new ProductRepository();
 
         public ProductsController(ProductDbContext context)
         {
@@ -26,30 +24,23 @@ namespace DeliCode.ProductAPI.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public IActionResult GetAllProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            List<Product> productList = repos.GetAllProducts();
-            return Ok(productList);
+            return await _context.Products.ToListAsync();
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
-        public IActionResult GetProduct(Guid id)
+        public async Task<ActionResult<Product>> GetProduct(Guid id)
         {
-            Product product = repos.GetProduct(id);
-            return Ok(product);
-        }
+            var product = await _context.Products.FindAsync(id);
 
-        // POST: api/Products
-        [HttpPost]
-        public IActionResult PostProduct([FromBody] Product product)
-        {
-            using (var scope = new TransactionScope())
+            if (product == null)
             {
-                repos.AddProduct(product);
-                scope.Complete();
-                return CreatedAtAction("PostProduct", new { Id = product.Id }, product);
+                return NotFound();
             }
+
+            return product;
         }
 
         // PUT: api/Products/5
@@ -82,12 +73,30 @@ namespace DeliCode.ProductAPI.Controllers
             return NoContent();
         }
 
+        // POST: api/Products
+        [HttpPost]
+        public async Task<ActionResult<Product>> PostProduct(Product product)
+        {
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+        }
+
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(Guid id)
+        public async Task<IActionResult> DeleteProduct(Guid id)
         {
-            var productList = repos.DeleteProduct(id);
-            return Ok(productList);
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         private bool ProductExists(Guid id)
