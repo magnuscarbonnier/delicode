@@ -38,13 +38,17 @@ namespace DeliCode.ProductAPI.Tests
         {
             using (var client = new TestClientProvider().Client)
             {
-                var response = await client.GetAsync($"api/products/{ new Guid("F7675644-F5C3-4604-838E-09F4E2A64F10")}");
-                string responseString = await response.Content.ReadAsStringAsync();
-                var product = JsonConvert.DeserializeObject<Product>(responseString);
-                var actual = product.Name;
+                //Arrange
+                var getProducts = await client.GetStringAsync("api/products");
+                var product = JsonConvert.DeserializeObject<List<Product>>(getProducts).FirstOrDefault();
 
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("Korvar", actual);
+                //Act
+                var response = await client.GetAsync($"api/products/{product.Id}");
+                string responseString = await response.Content.ReadAsStringAsync();
+                var actual = JsonConvert.DeserializeObject<Product>(responseString);
+
+                //Assert
+                Assert.IsType<Product>(actual);
             }
         }
         [Fact]
@@ -53,14 +57,12 @@ namespace DeliCode.ProductAPI.Tests
             Product product = new Product { Name = "TestProduct", Description = "#", Price = 150, ImageUrl = "#" };
             using (var client = new TestClientProvider().Client)
             {
-                //Arrange
                 var beforeResponse = await client.GetStringAsync("api/products");
                 int countBefore = JsonConvert.DeserializeObject<List<Product>>(beforeResponse).Count;
                 string json = JsonConvert.SerializeObject(product);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync("api/products", content);
 
-                //Act
                 var afterResponse = await client.GetStringAsync("api/products");
                 int actual = JsonConvert.DeserializeObject<List<Product>>(afterResponse).Count;
 
@@ -68,7 +70,6 @@ namespace DeliCode.ProductAPI.Tests
                 var getProduct = JsonConvert.DeserializeObject<Product>(responseString);
                 await client.DeleteAsync($"api/products/{getProduct.Id}");
 
-                //Assert
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
                 Assert.Equal(countBefore + 1, actual);
             }
