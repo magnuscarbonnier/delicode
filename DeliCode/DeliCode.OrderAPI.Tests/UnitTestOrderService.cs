@@ -13,8 +13,8 @@ namespace DeliCode.OrderAPI.Tests
     public class UnitTestOrderService
     {
         private readonly Order _order;
-        private readonly Mock<IOrderService> _orderServiceMock;
-        private readonly OrderService _service;
+        private readonly Mock<IOrderRepository> _orderServiceMock;
+        private readonly MockOrderRepository _service;
         private List<Order> _orders;
 
         public UnitTestOrderService()
@@ -54,41 +54,18 @@ namespace DeliCode.OrderAPI.Tests
                      }
                 }
             };
-            _orderServiceMock = new Mock<IOrderService>();
-            _service = new OrderService(
-            _orderServiceMock.Object);
+            _orderServiceMock = new Mock<IOrderRepository>();
+            _service = new MockOrderRepository();
             _orders = new List<Order> { _order };
         }
 
         [Fact]
         public void AddOrder_ShouldAddOrderToList()
         {
-            Order placedOrder = null;
-            _orderServiceMock.Setup(o => o.AddOrder(It.IsAny<Order>()))
-                .Callback<Order>(orderObject =>
-                {
-                    placedOrder = orderObject;
-                });
+            var actual = _service.AddOrder(_order);
+            Assert.IsType<List<Order>>(actual);
+            Assert.Equal(_orders[0].Id, actual[0].Id);
 
-            _service.AddOrder(_order);
-
-            _orderServiceMock.Verify(x => x.AddOrder(It.IsAny<Order>()), Times.Once);
-
-            Assert.NotNull(placedOrder);
-            Assert.Equal(_order.Id, placedOrder.Id);
-            Assert.Equal(_order.FirstName, placedOrder.FirstName);
-            Assert.Equal(_order.LastName, placedOrder.LastName);
-            Assert.Equal(_order.Phone, placedOrder.Phone);
-            Assert.Equal(_order.Address, placedOrder.Address);
-            Assert.Equal(_order.City, placedOrder.City);
-            Assert.Equal(_order.Country, placedOrder.Country);
-            Assert.Equal(_order.ZipCode, placedOrder.ZipCode);
-            Assert.Equal(_order.Email, placedOrder.Email);
-            Assert.Equal(_order.ShippingNotes, placedOrder.ShippingNotes);
-            Assert.Equal(_order.Status, placedOrder.Status);
-            Assert.Equal(_order.OrderDate, placedOrder.OrderDate);
-            Assert.Equal(_order.UserId, placedOrder.UserId);
-            Assert.Equal(_order.OrderProducts, placedOrder.OrderProducts);
         }
 
         [Fact]

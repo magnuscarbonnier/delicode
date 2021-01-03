@@ -7,17 +7,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("DeliCode.OrderAPI.Tests")]
-namespace DeliCode.OrderAPI.Repository
+namespace DeliCode.OrderAPI.Repository 
 {
-    public class OrderService : IOrderService
+    public class MockOrderRepository : IOrderRepository
     {
-        private IOrderService _orderService;
-
-        public OrderService(IOrderService orderService)
-        {
-            _orderService = orderService;
-        }
-
         internal List<Order> orders = new List<Order>()
         {
             new Order()
@@ -43,7 +36,7 @@ namespace DeliCode.OrderAPI.Repository
                         Name = "Kladdkaka",
                         Quantity = 11,
                         Price = 11.99M,
-                        OrderId = new Guid("47ffb3b4-4e4e-40a9-88c7-09c995f1ec0b")
+                        OrderId = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28")
                     },
                      new OrderProduct()
                     {
@@ -51,7 +44,7 @@ namespace DeliCode.OrderAPI.Repository
                         Name = "Cheesecake",
                         Quantity = 2,
                         Price = 29M,
-                        OrderId = new Guid("5cea861a-dfe8-4a5e-9f1b-6d90ae655401")
+                        OrderId = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28")
                      }
                 }
             }
@@ -65,13 +58,15 @@ namespace DeliCode.OrderAPI.Repository
 
         public List<Order> AddOrder(Order order)
         {
+
             if (order == null)
             {
                 throw new ArgumentNullException(nameof(order));
             }
-
-            _orderService.AddOrder(CreateOrder(order));
-            return new List<Order>();
+            var orderReturn = CreateOrder(order);
+            var returnList = new List<Order>();
+            returnList.Add(orderReturn);
+            return returnList;
         }
         private static Order CreateOrder(Order order)
         {
