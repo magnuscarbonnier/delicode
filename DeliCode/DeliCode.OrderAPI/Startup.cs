@@ -34,8 +34,12 @@ namespace DeliCode.OrderAPI
             var connectionString = Configuration["SqlConnection:OrderDB"];
             services.AddDbContext<OrderDbContext>(options =>
                 options.UseSqlServer(connectionString));
-            services.AddSingleton<IOrderService, OrderService>();
+            //services.AddSingleton<IOrderService, OrderService>();
             services.AddControllers();
+            services.AddControllersWithViews()
+                     .AddNewtonsoftJson(options =>
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DeliCode.OrderAPI", Version = "v1" });
