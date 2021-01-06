@@ -13,7 +13,7 @@ namespace DeliCode.ProductAPI.Repository
     {
         internal List<Product> products = new List<Product>()
         {
-            new Product() {Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"), Name = "´Kanelbulle", Description = "", Price = 10, ImageUrl = "#"},
+            new Product() {Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"), Name = "Kanelbulle", Description = "", Price = 10, ImageUrl = "#"},
             new Product() {Id = Guid.NewGuid(), Name = "Kladdkarta", Description = "", Price = 70, ImageUrl = "#"},
             new Product() {Id = Guid.NewGuid(), Name = "Tårta", Description = "", Price = 89, ImageUrl = "#"},
             new Product() {Id = Guid.NewGuid(), Name = "Cheesecake", Description = "", Price = 29, ImageUrl = "#"},
