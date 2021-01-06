@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,12 +26,9 @@ namespace DeliCode.ProductAPI.Tests
         {
             using (var client = new TestClientProvider().Client)
             {
-                var response = await client.GetAsync("api/products");
-                var responseString = await response.Content.ReadAsStringAsync();
-                var actual = JsonConvert.DeserializeObject<List<Product>>(responseString);
+                var response = await client.GetFromJsonAsync<List<Product>>("api/products/");
 
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.IsType<List<Product>>(actual);
+                Assert.IsType<List<Product>>(response);
             }
         }
         [Fact]
@@ -38,16 +36,11 @@ namespace DeliCode.ProductAPI.Tests
         {
             using (var client = new TestClientProvider().Client)
             {
-                //Arrange
-                var getProducts = await client.GetStringAsync("api/products");
-                var product = JsonConvert.DeserializeObject<List<Product>>(getProducts).FirstOrDefault();
+                var products = await client.GetFromJsonAsync<List<Product>>("api/products/");
+                var product = products.FirstOrDefault();
 
-                //Act
-                var response = await client.GetAsync($"api/products/{product.Id}");
-                string responseString = await response.Content.ReadAsStringAsync();
-                var actual = JsonConvert.DeserializeObject<Product>(responseString);
+                var actual = await client.GetFromJsonAsync<Product>($"api/products/{product.Id}");
 
-                //Assert
                 Assert.IsType<Product>(actual);
             }
         }
