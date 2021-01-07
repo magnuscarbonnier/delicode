@@ -10,5 +10,6 @@ namespace DeliCode.OrderAPI.Models
         public decimal Price { get; set; }
         public Guid OrderId { get; set; }
         public Order Order { get; set; }
+        public Guid ProductId { get; set; }
     }
 }

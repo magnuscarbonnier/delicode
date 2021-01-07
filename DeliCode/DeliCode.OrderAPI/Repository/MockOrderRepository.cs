@@ -1,10 +1,12 @@
 ﻿using DeliCode.Library.Models;
 using DeliCode.OrderAPI.Models;
 using DeliCode.OrderAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("DeliCode.OrderAPI.Tests")]
 namespace DeliCode.OrderAPI.Repository 
@@ -50,44 +52,21 @@ namespace DeliCode.OrderAPI.Repository
             }
         };
 
-        public Order GetOrderById(Guid id)
+        public Task<Order> GetOrderById(Guid id)
         {
             Order order = orders.Where(x => x.Id == id).SingleOrDefault();
-            return order;
+            return Task.FromResult(order);
         }
 
-        public List<Order> AddOrder(Order order)
+        public async Task<Order> AddOrder(Order order)
         {
-
-            if (order == null)
+            if (order.OrderProducts == null)
             {
-                throw new ArgumentNullException(nameof(order));
+                return null;
             }
-            var orderReturn = CreateOrder(order);
-            var returnList = new List<Order>();
-            returnList.Add(orderReturn);
-            return returnList;
-        }
-        private static Order CreateOrder(Order order)
-        {
-            return new Order
-            {
-                Id = order.Id,
-                FirstName = order.FirstName,
-                LastName = order.LastName,
-                Email = order.Email,
-                Address = order.Address,
-                ZipCode = order.ZipCode,
-                City = order.City,
-                Country = order.Country,
-                OrderDate = order.OrderDate,
-                Phone = order.Phone,
-                ShippingNotes = order.ShippingNotes,
-                Status = order.Status,
-                UserId = order.UserId,
-                OrderProducts = order.OrderProducts
-            };
-        }
+            order.Id = Guid.NewGuid();
+            return order;        }
+       
         public List<Order> GetAllOrdersByUserId(string userId)
         {
             List<Order> ordersList = orders.Where(x => x.UserId == userId).OrderBy(d => d.OrderDate).ToList();
@@ -98,6 +77,16 @@ namespace DeliCode.OrderAPI.Repository
             var orderToDelete = orders.Where(x => x.Id == id).SingleOrDefault();
             orders.Remove(orderToDelete);
             return orders;
+        }
+
+        public Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateOrder(Order order)
+        {
+            throw new NotImplementedException();
         }
     }
 }

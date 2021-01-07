@@ -3,6 +3,7 @@ using DeliCode.OrderAPI.Data;
 using DeliCode.OrderAPI.Models;
 using DeliCode.OrderAPI.Repository;
 using DeliCode.OrderAPI.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,12 +17,12 @@ namespace DeliCode.OrderAPI.Controllers
     [ApiController]
     public class OrderController : Controller
     {
-        private readonly OrderDbContext _context;
+        private IOrderRepository _repository;
 
-        public OrderController(OrderDbContext context)
+
+        public OrderController(IOrderRepository repository)
         {
-            _context = context;
-
+            _repository = repository;
         }
 
         // GET api/Order
@@ -29,46 +30,42 @@ namespace DeliCode.OrderAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
         {
-            return await _context.Orders.ToListAsync();
+            return await _repository.GetAllOrders();
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetAllOrdersByUserId(string id)
         {
-            var orders = await _context.Orders.Include(x => x.OrderProducts).Where(o => o.UserId == id).ToListAsync();
+            var orders =  _repository.GetAllOrdersByUserId(id);
             return Ok(orders);
         }
 
         [HttpGet]
         public async Task<ActionResult<Order>> GetSingleOrderByOrderId(Guid id)
         {
-            var order = await _context.Orders.FindAsync(id);
-
-            if(order == null)
-            {
-                return NotFound();
-            }
-            return Ok(order);
+            var order = await _repository.GetOrderById(id);
+            return order;
         }
 
         [HttpPost]
         public async Task<ActionResult<Order>> AddOrder([FromBody]Order order)
         {
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("AddOrder", new { Id = order.Id }, order);
+            var orderResult =  await _repository.AddOrder(order);
+            if(orderResult == null)
+            {
+                return BadRequest();
+            }
+            return orderResult; 
         }
 
         [HttpDelete]
         public async Task<ActionResult<Order>> DeleteSingleOrder(Guid id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order =  _repository.DeleteOrderByOrderId(id);
             if(order == null)
             {
                 return NotFound();
             }
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
             return NoContent();
         }
 
@@ -80,34 +77,9 @@ namespace DeliCode.OrderAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(order).State = EntityState.Modified;
+            _repository.UpdateOrder(order);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch(DbUpdateConcurrencyException)
-            {
-                if(!OrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
             return NoContent();
-        }
-
-        private bool OrderExists(Guid id)
-        {
-            return _context.Orders.Any(e => e.Id == id);
-        }
-
-        public IActionResult Index()
-        {
-            return View();
         }
     }
 }
