@@ -1,11 +1,15 @@
 using DeliCode.Library.Models;
+using DeliCode.OrderAPI.Controllers;
 using DeliCode.OrderAPI.Models;
 using DeliCode.OrderAPI.Repository;
 using DeliCode.OrderAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliCode.OrderAPI.Tests
@@ -15,13 +19,15 @@ namespace DeliCode.OrderAPI.Tests
         private readonly Order _order;
         private readonly Mock<IOrderRepository> _orderServiceMock;
         private readonly MockOrderRepository _service;
+        private readonly OrderController orderController;
+        
         private List<Order> _orders;
 
         public UnitTestOrderService()
         {
             _order = new Order()
             {
-                Id = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28"),
+               
                 OrderDate = new DateTime(2020, 11, 20),
                 Status = OrderStatus.Delivered,
                 UserId = "11223344-5566-7788-99AA-BBCCDDEEFF00",
@@ -38,42 +44,64 @@ namespace DeliCode.OrderAPI.Tests
                 {
                     new OrderProduct()
                     {
-                        Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
+                        ProductId = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
                         Name = "Kladdkaka",
                         Quantity = 11,
                         Price = 11.99M,
-                        OrderId = new Guid("47ffb3b4-4e4e-40a9-88c7-09c995f1ec0b")
                     },
                      new OrderProduct()
                     {
-                        Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF11"),
+                        ProductId = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF11"),
                         Name = "Cheesecake",
                         Quantity = 2,
                         Price = 29M,
-                        OrderId = new Guid("5cea861a-dfe8-4a5e-9f1b-6d90ae655401")
                      }
                 }
             };
             _orderServiceMock = new Mock<IOrderRepository>();
             _service = new MockOrderRepository();
             _orders = new List<Order> { _order };
+            orderController = new OrderController(_service);
         }
 
         [Fact]
-        public void AddOrder_ShouldAddOrderToList()
+        public async Task AddOrder_ShouldReturnNewOrderId()
         {
-            var actual = _service.AddOrder(_order);
-            Assert.IsType<List<Order>>(actual);
-            Assert.Equal(_orders[0].Id, actual[0].Id);
+            var result = await orderController.AddOrder(_order);
+
+            Assert.NotEqual(Guid.Empty, result.Value.Id);
+        }
+        [Fact]
+        public async Task AddIncompleteOrder_ShouldReturnNull()
+        {
+            _order.OrderProducts = null;
+            var result = await orderController.AddOrder(_order);
+
+            Assert.Null(result.Value);
+        }
+
+
+        [Fact]
+        public async Task GetOrderById_ShouldReturnSingleOrderAsync()
+        {
+            Guid id = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28");
+
+            var result = await orderController.GetSingleOrderByOrderId(id);
+
+            Assert.IsType<ActionResult<Order>>(result);
+            Assert.IsType<Order>(result.Value);
+            Assert.Equal(id, result.Value.Id);
 
         }
 
         [Fact]
-        public void GetOrderById_ShouldReturnSingleOrder()
+        public async Task GetOrderByInvalidId_ShouldReturnNull()
         {
-            var expected = _service.GetOrderById(new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28"));
-            var actual = _service.orders[0];
-            Assert.Equal(expected, actual);
+            Guid id = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe29");
+
+            var result = await orderController.GetSingleOrderByOrderId(id);
+
+            Assert.Null(result.Value);
         }
 
         [Fact]

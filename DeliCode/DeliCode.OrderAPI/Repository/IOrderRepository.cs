@@ -1,5 +1,6 @@
 ﻿using DeliCode.Library.Models;
 using DeliCode.OrderAPI.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,11 @@ namespace DeliCode.OrderAPI.Services
 {
     public interface IOrderRepository
     {
-        List<Order> AddOrder(Order order);
-        Order GetOrderById(Guid id);
+        Task<Order> AddOrder(Order order);
+        Task<Order> GetOrderById(Guid id);
         List<Order> GetAllOrdersByUserId(string userId);
         List<Order> DeleteOrderByOrderId(Guid id);
+        Task<ActionResult<IEnumerable<Order>>> GetAllOrders();
+        void UpdateOrder(Order order);
     }
 }   
