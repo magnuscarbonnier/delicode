@@ -5,6 +5,7 @@ using DeliCode.OrderAPI.Repository;
 using DeliCode.OrderAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,17 +68,19 @@ namespace DeliCode.OrderAPI.Tests
         [Fact]
         public async Task AddOrder_ShouldReturnNewOrderId()
         {
-            var result = await orderController.AddOrder(_order);
+            var result = await orderController.AddOrder(_order) as CreatedAtActionResult;
+            var order = result.Value as Order;
 
-            Assert.NotEqual(Guid.Empty, result.Value.Id);
+            Assert.NotEqual(Guid.Empty,order.Id);
         }
         [Fact]
-        public async Task AddIncompleteOrder_ShouldReturnNull()
+        public async Task AddIncompleteOrder_ShouldReturnBadRequest()
         {
             _order.OrderProducts = null;
+
             var result = await orderController.AddOrder(_order);
 
-            Assert.Null(result.Value);
+            Assert.IsType<BadRequestResult>(result);
         }
 
 

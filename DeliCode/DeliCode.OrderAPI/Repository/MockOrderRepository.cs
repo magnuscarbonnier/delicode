@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("DeliCode.OrderAPI.Tests")]
-namespace DeliCode.OrderAPI.Repository 
+namespace DeliCode.OrderAPI.Repository
 {
     public class MockOrderRepository : IOrderRepository
     {
@@ -52,21 +52,26 @@ namespace DeliCode.OrderAPI.Repository
             }
         };
 
-        public Task<Order> GetOrderById(Guid id)
+        public async Task<Order> GetOrderById(Guid id)
         {
-            Order order = orders.Where(x => x.Id == id).SingleOrDefault();
+            Order order = await Task.Run(() => orders.Where(x => x.Id == id).SingleOrDefault());
+            return order;
+        }
+
+        public Task<Order> AddOrder(Order order)
+        {
+            if (order.OrderProducts != null)
+            {
+                order.Id = Guid.NewGuid();
+            }
+            else
+            {
+                order = null;
+            }
+            
             return Task.FromResult(order);
         }
 
-        public async Task<Order> AddOrder(Order order)
-        {
-            if (order.OrderProducts == null)
-            {
-                return null;
-            }
-            order.Id = Guid.NewGuid();
-            return order;        }
-       
         public List<Order> GetAllOrdersByUserId(string userId)
         {
             List<Order> ordersList = orders.Where(x => x.UserId == userId).OrderBy(d => d.OrderDate).ToList();

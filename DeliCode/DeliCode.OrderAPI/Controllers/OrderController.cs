@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace DeliCode.OrderAPI.Controllers
@@ -48,14 +49,14 @@ namespace DeliCode.OrderAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Order>> AddOrder([FromBody]Order order)
+        public async Task<ActionResult> AddOrder([FromBody]Order order)
         {
             var orderResult =  await _repository.AddOrder(order);
-            if(orderResult == null)
+            if (orderResult == null)
             {
                 return BadRequest();
             }
-            return orderResult; 
+            return CreatedAtAction("AddOrder", orderResult);
         }
 
         [HttpDelete]
