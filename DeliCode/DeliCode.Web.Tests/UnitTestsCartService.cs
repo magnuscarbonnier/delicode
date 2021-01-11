@@ -94,7 +94,6 @@ namespace DeliCode.Web.Tests
             var firstcart = await _cartService.GetCart();
             var secondCart= await _cartService.GetCart();
             
-        
             Assert.Equal(firstcart.Total, secondCart.Total);
             Assert.Equal(firstcart.Items.Count, secondCart.Items.Count);
             Assert.Equal(firstcart.SessionId, secondCart.SessionId);
