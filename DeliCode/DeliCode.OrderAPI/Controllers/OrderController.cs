@@ -29,58 +29,64 @@ namespace DeliCode.OrderAPI.Controllers
         // GET api/Order
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+        public async Task<ActionResult<List<Order>>> GetOrders()
         {
-            return await _repository.GetAllOrders();
+            var orders = await _repository.GetAllOrders();
+            if (orders != null && orders.Any())
+            {
+                return Ok(orders);
+            }
+            return NoContent();
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrdersByUserId(string id)
+        public async Task<ActionResult<List<Order>>> GetOrdersByUserId(string id)
         {
-            var orders =  _repository.GetAllOrdersByUserId(id);
-            return Ok(orders);
+            var orders = await _repository.GetAllOrdersByUserId(id);
+            if (orders != null && orders.Any())
+            {
+                return Ok(orders);
+            }
+            return NotFound();
         }
 
         [HttpGet]
-        public async Task<ActionResult<Order>> GetSingleOrderByOrderId(Guid id)
+        public async Task<ActionResult<Order>> GetOrderByOrderId(Guid id)
         {
             var order = await _repository.GetOrderById(id);
             return order;
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddOrder([FromBody]Order order)
+        public async Task<ActionResult> AddOrder([FromBody] Order order)
         {
-            var orderResult =  await _repository.AddOrder(order);
-            if (orderResult == null)
+            if (order.OrderProducts == null)
             {
-                return BadRequest();
+                return BadRequest("order not added");
             }
-            return CreatedAtAction("AddOrder", orderResult);
+            var orderResult = await _repository.AddOrder(order);
+            if (orderResult != null)
+            {
+                return CreatedAtAction("AddOrder", orderResult);
+            }
+
+            return BadRequest("order not added");
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<Order>> DeleteSingleOrder(Guid id)
-        {
-            var order =  _repository.DeleteOrderByOrderId(id);
-            if(order == null)
-            {
-                return NotFound();
-            }
-            return NoContent();
-        }
 
         [HttpPut]
-        public async Task<ActionResult<Order>> UpdateSingleOrder(Guid id, Order order)
+        public async Task<ActionResult<Order>> UpdateOrder(Guid id, Order order)
         {
             if (id != order.Id)
             {
                 return BadRequest();
             }
-
-            _repository.UpdateOrder(order);
-
-            return NoContent();
+            order = await _repository.UpdateOrder(order);
+            if(order !=null)
+            { 
+                return Ok(order);
+            }
+            return BadRequest();
         }
     }
 }
