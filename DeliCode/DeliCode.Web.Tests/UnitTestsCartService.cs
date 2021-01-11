@@ -10,55 +10,95 @@ using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using DeliCode.Library.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace DeliCode.Web.Tests
 {
     public class UnitTestsCartService
     {
-        private readonly Mock<ICartService> _cartService;
-        private readonly Product product;
-        private readonly Cart cart;
+        private readonly Product _product;
+        private readonly MockCartRepository _repository;
+        private readonly ICartService _cartService;
 
         public UnitTestsCartService()
         {
-            _cartService = new Mock<ICartService>();
-            product = new Product()
+            _repository = new MockCartRepository();
+            _cartService = new CartService(_repository);
+            _product = new Product()
             {
                 Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
                 Name = "Chokladtårta",
                 Price = 12.50m,
                 Description = "En jättegod tårta"
             };
+        }
+        [Fact]
+        private async Task GetCart_ReturnsCart()
+        {
+            var cart= await _cartService.GetCart();
+
+            Assert.IsType<Cart>(cart);
+            Assert.NotEqual(Guid.Empty, cart.SessionId);
+        }
+        [Fact]
+        private async Task GetCart_ReturnsSessionId()
+        {
+            var result = await _cartService.GetCart();
+            var sessionId = result.SessionId;
+
+            Assert.IsType<Guid>(sessionId);
+            Assert.NotEqual(Guid.Empty, sessionId);
+        }
+        [Fact]
+        private async Task GetCart_ReturnsListOfCartItems()
+        {
+            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity=2 } };
             
+            var result = await _cartService.GetCart();
+            var cartItemsResult = result.Items;
+
+            Assert.IsType<List<CartItem>>(cartItemsResult);
+            Assert.Equal(cartitems.FirstOrDefault().Product.Id, cartItemsResult.FirstOrDefault().Product.Id );
+            Assert.Equal(cartitems.FirstOrDefault().Total, cartItemsResult.FirstOrDefault().Total);
         }
-
         [Fact]
-        void GetCartShouldReturnCart()
+        private async Task AddProductToCart_ProductAlreadyInCart_ReturnsCart()
         {
-            //Act
-            var products = new List<Product>()
-            {
-                product
-            };
-            var emptycart = new Cart();
-            _cartService.Setup(cartservice => cartservice.GetCart()).Returns(emptycart);
-            var actual =  _cartService.Object.GetCart();
+            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 3 } };
 
-            //Assert
-            Assert.IsType<Cart>(actual);
+            var result = await _cartService.AddProductToCart(_product);
+            var cartResult = result.Items;
+
+            Assert.IsType<Cart>(result);
+            Assert.Equal(_product.Id, cartResult.FirstOrDefault().Product.Id);
+            Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault().Quantity);
+
         }
-
         [Fact]
-        void AddProductReturnsCartWithProduct()
+        private async Task AddProductToCart_ProductNotInCart_ReturnsCart()
         {
-            //Act
-            var cart = new Cart() { Items = new List<CartItem>() { new CartItem() { Product = product } } };
-            _cartService.Setup(cartservice => cartservice.AddProductToCart(product)).Returns(cart);
-            var actual = _cartService.Object.AddProductToCart(product);
+            _product.Id = Guid.NewGuid();
+            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 1 } };
 
-            //Assert
-            Assert.Equal(product.Id, actual.Items.FirstOrDefault(c => c.Product.Id == product.Id).Product.Id);
-        } 
+            var result = await _cartService.AddProductToCart(_product);
+            var cartResult = result.Items;
+            var cartresultproduct = cartResult.FirstOrDefault(x => x.Product.Id == _product.Id).Product;
+
+            Assert.IsType<Cart>(result);
+            Assert.Equal(_product.Id, cartresultproduct.Id);
+            Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault(x=>x.Product.Id==_product.Id).Quantity);
+        }
+        [Fact]
+        private async Task GetCart_Twice_ReturnsSameCart()
+        {
+            var firstcart = await _cartService.GetCart();
+            var secondCart= await _cartService.GetCart();
+            
+        
+            Assert.Equal(firstcart.Total, secondCart.Total);
+            Assert.Equal(firstcart.Items.Count, secondCart.Items.Count);
+            Assert.Equal(firstcart.SessionId, secondCart.SessionId);
+        }
     }
 }
 

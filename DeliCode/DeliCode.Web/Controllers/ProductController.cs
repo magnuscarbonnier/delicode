@@ -42,7 +42,7 @@ namespace DeliCode.Web.Controllers
                 return BadRequest("produkten fanns inte");
             }
 
-            Cart cart = _cartService.AddProductToCart(product);
+            Cart cart = await _cartService.AddProductToCart(product);
             OrderSummary.Cart = cart;
 
             if (cart == null)
