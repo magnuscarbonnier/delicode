@@ -83,7 +83,7 @@ namespace DeliCode.Web.Services
 
         public Cart AddProductToCart(Product product)
         {
-            var cart = GetCart();
+            Cart cart = GetCart();
 
             //check if product already is in cart
             if (cart.Items != null && ProductIdExistsInCart(cart, product.Id))
