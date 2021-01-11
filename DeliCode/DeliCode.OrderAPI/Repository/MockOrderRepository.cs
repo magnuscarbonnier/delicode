@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("DeliCode.OrderAPI.Tests")]
-namespace DeliCode.OrderAPI.Repository 
+namespace DeliCode.OrderAPI.Repository
 {
     public class MockOrderRepository : IOrderRepository
     {
@@ -49,6 +49,10 @@ namespace DeliCode.OrderAPI.Repository
                         OrderId = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28")
                      }
                 }
+            },
+            new Order{
+                Id=new Guid("ed9ef515-8735-4116-b444-8a42b187bbfa") ,
+                UserId="d514be83-bebb-4fe7-b905-e8db158a9ffd"
             }
         };
 
@@ -58,19 +62,17 @@ namespace DeliCode.OrderAPI.Repository
             return Task.FromResult(order);
         }
 
-        public async Task<Order> AddOrder(Order order)
+        public Task<Order> AddOrder(Order order)
         {
-            if (order.OrderProducts == null)
-            {
-                return null;
-            }
             order.Id = Guid.NewGuid();
-            return order;        }
-       
-        public List<Order> GetAllOrdersByUserId(string userId)
+
+            return Task.FromResult(order);
+        }
+
+        public Task<List<Order>> GetAllOrdersByUserId(string userId)
         {
             List<Order> ordersList = orders.Where(x => x.UserId == userId).OrderBy(d => d.OrderDate).ToList();
-            return ordersList;
+            return Task.FromResult(ordersList);
         }
         public List<Order> DeleteOrderByOrderId(Guid id)
         {
@@ -79,14 +81,19 @@ namespace DeliCode.OrderAPI.Repository
             return orders;
         }
 
-        public Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+        public Task<List<Order>> GetAllOrders()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(orders);
         }
-
-        public void UpdateOrder(Order order)
+        public Task<Order> UpdateOrder(Order order)
         {
-            throw new NotImplementedException();
+            var orderToUpdate = orders.Where(x => x.Id == order.Id).SingleOrDefault();
+            if (orderToUpdate != null)
+            {
+                orderToUpdate = order;
+            }
+
+            return Task.FromResult(orderToUpdate);
         }
     }
 }

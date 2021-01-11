@@ -10,11 +10,15 @@ namespace DeliCode.OrderAPI.Services
 {
     public interface IOrderRepository
     {
+        //klar
         Task<Order> AddOrder(Order order);
+        //klar
         Task<Order> GetOrderById(Guid id);
-        List<Order> GetAllOrdersByUserId(string userId);
-        List<Order> DeleteOrderByOrderId(Guid id);
-        Task<ActionResult<IEnumerable<Order>>> GetAllOrders();
-        void UpdateOrder(Order order);
+        //klar
+        Task<List<Order>> GetAllOrdersByUserId(string userId);
+        //klar
+        Task<List<Order>> GetAllOrders();
+
+        Task<Order> UpdateOrder(Order order);
     }
 }   
