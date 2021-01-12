@@ -1,6 +1,8 @@
 ﻿using DeliCode.Web.Models;
 using DeliCode.Web.Repository;
 using DeliCode.Web.Services;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeliCode.Web.Tests
@@ -17,6 +19,27 @@ namespace DeliCode.Web.Tests
         {
             var order = await _repository.GetOrderById(id);
             return order;
+        }
+
+        public async Task<List<Order>> GetOrders()
+        {
+            var orders = await _repository.GetAll();
+            if(orders == null || !orders.Any())
+            {
+                return null;
+            }
+            return orders;
+
+        }
+
+        public async Task<List<Order>> GetOrdersByUserId(string userId)
+        {
+            List<Order> orders = await _repository.GetOrdersByUsersId(userId);
+            if (orders == null || !orders.Any())
+            {
+                return null;
+            }
+            return orders;
         }
 
         public async Task<Order> PlaceOrder(Order order)

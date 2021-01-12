@@ -14,7 +14,7 @@ namespace DeliCode.Web.Tests
     public class UnitTestsOrderService
     {
         private readonly IOrderService _orderService;
-        private readonly IOrderRepository _repository;
+        private readonly MockOrderRepository _repository;
         private Order _order;
         public UnitTestsOrderService()
         {
@@ -74,6 +74,39 @@ namespace DeliCode.Web.Tests
             var result = await _orderService.UpdateOrder(wrongOrderId, order);
 
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetAllOrders_ReturnsAllOrders()
+        {
+            var orders = await _orderService.GetOrders();
+
+            Assert.IsType<List<Order>>(orders);
+        }
+        [Fact]
+        public async Task GetAllOrders_ReturnsNull()
+        {
+            _repository.orders.Clear();
+            var orders = await _orderService.GetOrders();
+
+            Assert.Null(orders);
+        }
+
+        [Fact]
+        public async Task GetOrdersByUserId_ReturnsOrders()
+        {
+            var userId = _repository.orders[0].UserId;
+            List<Order> orders = await _orderService.GetOrdersByUserId(userId);
+
+            Assert.Collection(orders, order => Assert.Contains(userId, order.UserId));
+        }
+        [Fact]
+        public async Task GetOrdersByInvalidUserId_ReturnsNull()
+        {
+            string userId = string.Empty;
+            var orders = await _orderService.GetOrdersByUserId(userId);
+
+            Assert.Null(orders);
         }
     }
 }
