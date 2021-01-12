@@ -1,4 +1,5 @@
 ﻿using DeliCode.Web.Models;
+using DeliCode.Web.Repository;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -7,112 +8,74 @@ using System.Threading.Tasks;
 
 namespace DeliCode.Web.Services
 {
-    public interface ICartService
-    {
-        Cart GetCart();
-        Cart AddProductToCart(Product product);
-    }
     public class CartService : ICartService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private string cartId;
-        public CartService(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            cartId = GetCartCookie();
-        }
-        private string GetCartCookie()
-        {
-            //get cookie from httpcontext
-            var cookie = _httpContextAccessor.HttpContext.Request.Cookies["DeliCode.Web.Cart"];
+        private readonly ICartRepository _repository;
+        private static string _cookieName = "Delicode.CartCookie";
+        private readonly CookieOptions _cookieOptions; 
 
-            //try to check if cookie is of type guid (cartId)
-            var result = Guid.TryParse(cookie, out Guid cartId);
-
-            if (!result)
-            {
-                //if cookie not exists, set new cookie
-                return SetCartCookie();
-            }
-            else
-            {
-                //return id from cookie
-                return cartId.ToString();
-            }
-        }
-        private string SetCartCookie()
+        public CartService(ICartRepository repository)
         {
-            //generate new guid for cart
-            var cartId = Guid.NewGuid().ToString();
-
-            //set cookieoptions to secure cookie
-            var cookieOptions = new CookieOptions
+            _repository = repository;
+            _cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                IsEssential=true,
+                IsEssential = true,
                 SameSite = SameSiteMode.Strict,
                 Secure = true
             };
-            
-            //save cookie to context
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("DeliCode.Web.Cart", cartId, cookieOptions);
-           
-            return cartId;
         }
-        
-        public Cart GetCart()
+        public async Task<Cart> AddProductToCart(Product product)
         {
-            //get cart with actual cartid(found in method getcartcookie()) from session
-            var cart = _httpContextAccessor.HttpContext.Session.Get<Cart>(cartId);
-
-            //cart not exists, save new cart to session
-            if (cart == null)
+            var cart = await GetCart();
+            var isProductInCart = await ProductIdExistsInCart(cart, product.Id);
+            if(isProductInCart)
             {
-                cart = new Cart { SessionId = cartId, Items = new List<CartItem>() };
-                SaveCartToSession(cart);
-            }
-
-            return cart;
-        }
-
-        private void SaveCartToSession(Cart cart)
-        {
-            //save to session
-            _httpContextAccessor.HttpContext.Session.Set<Cart>(cartId, cart);
-        }
-
-        public Cart AddProductToCart(Product product)
-        {
-            Cart cart = GetCart();
-
-            //check if product already is in cart
-            if (cart.Items != null && ProductIdExistsInCart(cart, product.Id))
-            {
-                //add one extra product of same type
-                cart.Items.FirstOrDefault(c => c.Product.Id == product.Id).Quantity++;
+                cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity++;
             }
             else
             {
-                //add one new product to cart
-                cart.Items.Add(new CartItem { Product = product, Quantity = 1 });
+                cart.Items.Add(new CartItem { Product = product, Quantity=1 });
             }
+            cart=await SaveCart(cart);
+            return cart;
+        }
 
-            //save changes
-            SaveCartToSession(cart);
+        public async Task<Cart> GetCart()
+        {
+            var sessionId = await GetCartSession();
+
+            var cart = await _repository.GetCart(sessionId);
 
             return cart;
         }
 
-        private bool ProductIdExistsInCart(Cart cart, Guid productId)
+        private async Task<Guid> GetCartSession()
         {
-            var exists = false;
-            var product = cart.Items.FirstOrDefault(c => c.Product.Id == productId);
-            if (product != null)
+            var session = await _repository.GetCartCookie(_cookieName);
+            if (session == Guid.Empty)
             {
-                exists = true;
+                session = await SetNewCartCookie();
             }
-            return exists;
+            return session;
         }
-        
+
+        private Task<bool> ProductIdExistsInCart(Cart cart, Guid productId)
+        {
+            var exists = cart.Items.Exists(x => x.Product.Id == productId);
+            return Task.FromResult(exists);
+        }
+
+        private async Task<Cart> SaveCart(Cart cart)
+        {
+            cart = await _repository.SaveCart(cart);
+            return cart;
+        }
+
+        private async Task<Guid> SetNewCartCookie()
+        {
+            var session = await _repository.SetCartCookie(Guid.NewGuid(), _cookieOptions, _cookieName);
+            return session;
+        }
     }
 }

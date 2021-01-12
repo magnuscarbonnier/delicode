@@ -1,5 +1,6 @@
 using DeliCode.Web.Data;
 using DeliCode.Web.Models;
+using DeliCode.Web.Repository;
 using DeliCode.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -67,8 +68,8 @@ namespace DeliCode.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-   
-            services.AddSingleton<ICartService, CartService>();
+            services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<ICartService, CartService>();
 
             services.AddControllersWithViews();
         }

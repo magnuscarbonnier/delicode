@@ -8,7 +8,7 @@ namespace DeliCode.Web.Models
 {
     public class Cart
     {
-        public string SessionId { get; set; }
+        public Guid SessionId { get; set; }
         public List<CartItem> Items { get; set; } = new List<CartItem>();
 
         public Decimal Total
