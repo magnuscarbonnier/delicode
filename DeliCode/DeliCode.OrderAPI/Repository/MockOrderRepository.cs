@@ -17,7 +17,7 @@ namespace DeliCode.OrderAPI.Repository
         {
             new Order()
            {
-                Id = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28"),
+                Id = 2000,
                 OrderDate = new DateTime(2020, 11, 20),
                 Status = OrderStatus.Delivered,
                 UserId = "11223344-5566-7788-99AA-BBCCDDEEFF00",
@@ -38,7 +38,7 @@ namespace DeliCode.OrderAPI.Repository
                         Name = "Kladdkaka",
                         Quantity = 11,
                         Price = 11.99M,
-                        OrderId = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28")
+                        OrderId = 2000
                     },
                      new OrderProduct()
                     {
@@ -46,17 +46,17 @@ namespace DeliCode.OrderAPI.Repository
                         Name = "Cheesecake",
                         Quantity = 2,
                         Price = 29M,
-                        OrderId = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28")
+                        OrderId = 2000
                      }
                 }
             },
             new Order{
-                Id=new Guid("ed9ef515-8735-4116-b444-8a42b187bbfa") ,
+                Id=2001 ,
                 UserId="d514be83-bebb-4fe7-b905-e8db158a9ffd"
             }
         };
 
-        public Task<Order> GetOrderById(Guid id)
+        public Task<Order> GetOrderById(int id)
         {
             Order order = orders.Where(x => x.Id == id).SingleOrDefault();
             return Task.FromResult(order);
@@ -64,7 +64,7 @@ namespace DeliCode.OrderAPI.Repository
 
         public Task<Order> AddOrder(Order order)
         {
-            order.Id = Guid.NewGuid();
+            order.Id = 2021;
 
             return Task.FromResult(order);
         }
@@ -74,7 +74,7 @@ namespace DeliCode.OrderAPI.Repository
             List<Order> ordersList = orders.Where(x => x.UserId == userId).OrderBy(d => d.OrderDate).ToList();
             return Task.FromResult(ordersList);
         }
-        public List<Order> DeleteOrderByOrderId(Guid id)
+        public List<Order> DeleteOrderByOrderId(int id)
         {
             var orderToDelete = orders.Where(x => x.Id == id).SingleOrDefault();
             orders.Remove(orderToDelete);
