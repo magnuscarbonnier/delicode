@@ -43,6 +43,7 @@ namespace DeliCode.OrderAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DeliCode.OrderAPI", Version = "v1" });
             });
+            services.AddTransient<IOrderRepository, OrderRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

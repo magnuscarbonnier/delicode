@@ -9,9 +9,10 @@ namespace DeliCode.OrderAPI.Models
 {
     public class Order
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
+        public DateTime? BookedDeliveryDate { get; set; }
         public string UserId { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
@@ -22,6 +23,7 @@ namespace DeliCode.OrderAPI.Models
         public string Country { get; set; }
         public string Phone { get; set; }
         public string ShippingNotes { get; set; }
+        public bool IsTestOrder { get; set; }
         public decimal TotalPrice()
         {
             return OrderProducts.Sum(x => x.Price * x.Quantity);
