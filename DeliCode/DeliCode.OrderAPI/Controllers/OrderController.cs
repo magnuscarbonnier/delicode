@@ -30,7 +30,7 @@ namespace DeliCode.OrderAPI.Controllers
         public async Task<ActionResult<List<Order>>> GetOrders()
         {
             var orders = await _repository.GetAllOrders();
-            //TODO: 
+
             if (orders != null && orders.Any())
             {
                 return Ok(orders);
