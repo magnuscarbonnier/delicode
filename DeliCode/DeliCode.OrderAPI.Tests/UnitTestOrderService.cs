@@ -32,7 +32,7 @@ namespace DeliCode.OrderAPI.Tests
                 Email = "marie.dahlmalm@iths.se",
                 FirstName = "Marie",
                 LastName = "Dahlmalm",
-                Address = "Årstaängsvägen 9",
+                Address = "ï¿½rstaï¿½ngsvï¿½gen 9",
                 ZipCode = "12345",
                 City = "Stockholm",
                 Country = "Sweden",
@@ -68,7 +68,7 @@ namespace DeliCode.OrderAPI.Tests
             var result = await orderController.AddOrder(_order) as CreatedAtActionResult;
             var order = result.Value as Order;
 
-            Assert.NotEqual(Guid.Empty, order.Id);
+            Assert.NotEqual(0, order.Id);
         }
         [Fact]
         public async Task AddIncompleteOrder_ShouldReturnBadRequest()
@@ -85,24 +85,26 @@ namespace DeliCode.OrderAPI.Tests
         public async Task GetOrderById_ShouldReturnSingleOrder()
         {
             Order order;
-            Guid id = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28");
+            int id = 2000;
 
             var result = await orderController.GetOrderByOrderId(id);
-            order = result.Value;
+            var okobjresult = result.Result as OkObjectResult;
+            order = okobjresult.Value as Order;
 
-            Assert.IsType<ActionResult<Order>>(result);
+            Assert.IsType<OkObjectResult>(okobjresult);
             Assert.IsType<Order>(order);
             Assert.Equal(id, order.Id);
         }
 
         [Fact]
-        public async Task GetOrderByInvalidId_ShouldReturnNull()
+        public async Task GetOrderByInvalidId_ShouldReturnNotFound()
         {
-            Guid id = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe29");
+            int id = 3;
 
             var result = await orderController.GetOrderByOrderId(id);
+            var notfoundresult = result.Result as NotFoundResult;
 
-            Assert.Null(result.Value);
+            Assert.IsType<NotFoundResult>(notfoundresult);
         }
 
         [Fact]
@@ -133,7 +135,7 @@ namespace DeliCode.OrderAPI.Tests
         {
             var order = new Order
             {
-                Id = new Guid("ed9ef515-8735-4116-b444-8a42b187bbfa"),
+                Id = 2000,
                 UserId = "d514be83-bebb-4fe7-b905-e8db158a9ffd"
             };
             _orderList.Add(order);
@@ -166,7 +168,7 @@ namespace DeliCode.OrderAPI.Tests
             var updatedOrder = okobjresult.Value as Order;
 
             Assert.IsType<OkObjectResult>(okobjresult);
-            Assert.Equal(_order.Status, updatedOrder.Status);
+            Assert.Equal(OrderStatus.Refunded, updatedOrder.Status);
         }
 
         [Fact]
@@ -175,7 +177,7 @@ namespace DeliCode.OrderAPI.Tests
             _order.Status = OrderStatus.Refunded;
             _order.Id = _service.orders[0].Id;
 
-            var result = await orderController.UpdateOrder(Guid.NewGuid(), _order);
+            var result = await orderController.UpdateOrder(6, _order);
             var badrequestresult = result.Result as BadRequestResult;
 
             Assert.IsType<BadRequestResult>(badrequestresult);
@@ -184,12 +186,36 @@ namespace DeliCode.OrderAPI.Tests
         public async Task UpdateOrder_OrderNotFound_ReturnsBadRequest()
         {
             _order.Status = OrderStatus.Refunded;
-            _service.orders[0].Id = Guid.NewGuid();
+            _service.orders[0].Id = 6;
 
             var result = await orderController.UpdateOrder(_order.Id, _order);
             var badrequestresult = result.Result as BadRequestResult;
 
             Assert.IsType<BadRequestResult>(badrequestresult);
+        }
+
+        [Fact]
+        public async Task DeleteOrderReturnsDeletedOrder()
+        {
+            var orderId = _service.orders.FirstOrDefault().Id;
+
+            var result = await orderController.DeleteOrder(orderId);
+            var okObjectResult = result.Result as OkObjectResult;
+            var actual = okObjectResult.Value as Order;
+
+            Assert.IsType<OkObjectResult>(okObjectResult);
+            Assert.Equal(orderId, actual.Id);
+        }
+
+        [Fact]
+        public async Task DeleteOrdeThatDOesntExistReturnsReturnsBadRequest()
+        {
+            var orderId = 668;
+
+            var result = await orderController.DeleteOrder(orderId);
+            var actual = result.Result as BadRequestResult;
+
+            Assert.IsType<BadRequestResult>(actual);
         }
     }
 }

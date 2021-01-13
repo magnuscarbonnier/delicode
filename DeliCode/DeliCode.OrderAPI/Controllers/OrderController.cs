@@ -26,12 +26,11 @@ namespace DeliCode.OrderAPI.Controllers
             _repository = repository;
         }
 
-        // GET api/Order
-
         [HttpGet]
         public async Task<ActionResult<List<Order>>> GetOrders()
         {
             var orders = await _repository.GetAllOrders();
+
             if (orders != null && orders.Any())
             {
                 return Ok(orders);
@@ -51,10 +50,14 @@ namespace DeliCode.OrderAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Order>> GetOrderByOrderId(Guid id)
+        public async Task<ActionResult<Order>> GetOrderByOrderId(int id)
         {
             var order = await _repository.GetOrderById(id);
-            return order;
+            if (order != null)
+            {
+                return Ok(order);
+            }
+            return NotFound();
         }
 
         [HttpPost]
@@ -75,18 +78,29 @@ namespace DeliCode.OrderAPI.Controllers
 
 
         [HttpPut]
-        public async Task<ActionResult<Order>> UpdateOrder(Guid id, Order order)
+        public async Task<ActionResult<Order>> UpdateOrder(int id, Order order)
         {
             if (id != order.Id)
             {
                 return BadRequest();
             }
             order = await _repository.UpdateOrder(order);
-            if(order !=null)
-            { 
-                return Ok(order);
+            if (order == null)
+            {
+                return BadRequest();
             }
-            return BadRequest();
+            return Ok(order);
+        }
+
+        public async Task<ActionResult<Order>> DeleteOrder(int orderId)
+        {
+            Order order = await _repository.DeleteOrder(orderId);
+
+            if (order == null)
+            {
+                return BadRequest();
+            }
+            return Ok(order);
         }
     }
 }
