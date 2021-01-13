@@ -1,6 +1,10 @@
 using DeliCode.Web.Data;
+using DeliCode.Web.Models;
+using DeliCode.Web.Repository;
+using DeliCode.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -27,18 +31,46 @@ namespace DeliCode.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("DefaultConnection")));
-
             //Get Connectionstring from Built-in user secrets in .NET
             var connectionString = Configuration["SqlConnection:UserDB"];
+
+            //Add context
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //add Identity framework
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+            })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<UserDbContext>();
+
+            services.Configure<SecurityStampValidatorOptions>(options =>
+            {
+                //validate logged in user every 5 min
+                options.ValidationInterval = TimeSpan.FromMinutes(5);
+            });
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddHttpClient<IProductService, ProductService>(client =>
+                client.BaseAddress = new Uri(Configuration["ProductAPIUrl"])
+            );
+            services.AddHttpContextAccessor();
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+            services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<ICartService, CartService>();
+
             services.AddControllersWithViews();
         }
 
@@ -63,6 +95,8 @@ namespace DeliCode.Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
