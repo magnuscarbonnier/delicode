@@ -9,17 +9,11 @@
         <div class="nav-link disabled">Kundvagnen tom!</div>
     }
     
-    @if (cart.Items.Count == 1)
+    @if (cart.Items.Count > 0)
     {
         <a asp-controller="Order" asp-action="Index" class="nav-link">
-            🛒 Kundvagn: @cart.Items.Count vara SEK: <span class="font-weight-bold">@cart.Total</span>
+            🛒(@cart.Items.Sum(x=>x.Quantity)) SEK: <span class="font-weight-bold">@cart.Total</span>
         </a>
     }
 
-    @if (cart.Items.Count > 1)
-    {
-        <a asp-controller="Order" asp-action="Index" class="nav-link">
-            🛒 Kundvagn: @cart.Items.Count varor SEK: <span class="font-weight-bold">@cart.Total</span>
-        </a>
-    }
 </li>
