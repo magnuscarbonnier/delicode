@@ -14,7 +14,7 @@ namespace DeliCode.Web.Tests
     public class UnitTestsOrderService
     {
         private readonly IOrderService _orderService;
-        private readonly IOrderRepository _repository;
+        private readonly MockOrderRepository _repository;
         private Order _order;
         public UnitTestsOrderService()
         {
@@ -74,6 +74,62 @@ namespace DeliCode.Web.Tests
             var result = await _orderService.UpdateOrder(wrongOrderId, order);
 
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetAllOrders_ReturnsAllOrders()
+        {
+            var orders = await _orderService.GetOrders();
+
+            Assert.IsType<List<Order>>(orders);
+        }
+        [Fact]
+        public async Task GetAllOrders_ReturnsNullIfEmpty()
+        {
+            _repository.orders.Clear();
+            var orders = await _orderService.GetOrders();
+
+            Assert.Null(orders);
+        }
+
+        [Fact]
+        public async Task GetOrdersByUserId_ReturnsOrders()
+        {
+            var userId = _repository.orders.FirstOrDefault().UserId;
+            List<Order> orders = await _orderService.GetOrdersByUserId(userId);
+
+            Assert.Collection(orders, order => Assert.Contains(userId, order.UserId));
+        }
+        [Fact]
+        public async Task GetOrdersByInvalidUserId_ReturnsNull()
+        {
+            string userId = string.Empty;
+            var orders = await _orderService.GetOrdersByUserId(userId);
+
+            Assert.Null(orders);
+        }
+
+        [Fact]
+        public async Task DeleteOrderReturnsDeletedOrder()
+        {
+            var orderId = _repository.orders.FirstOrDefault().Id;
+            
+            var expected = _repository.GetOrderById(orderId);
+            Order actual = await _orderService.DeleteOrder(orderId);
+
+            Assert.Equal(expected.Id, actual.Id);
+            var deletedOrder = await _orderService.GetOrderById(orderId);
+            Assert.Null(deletedOrder);
+        }
+
+        [Fact]
+        public async Task DeleteOrderThatDoesntExistReturnsNull()
+        {
+            var orderID = 355;
+
+            var actual = await _orderService.DeleteOrder(orderID);
+
+            Assert.Null(actual);
         }
     }
 }

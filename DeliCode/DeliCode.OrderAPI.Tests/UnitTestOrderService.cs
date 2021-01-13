@@ -32,7 +32,7 @@ namespace DeliCode.OrderAPI.Tests
                 Email = "marie.dahlmalm@iths.se",
                 FirstName = "Marie",
                 LastName = "Dahlmalm",
-                Address = "Årstaängsvägen 9",
+                Address = "ï¿½rstaï¿½ngsvï¿½gen 9",
                 ZipCode = "12345",
                 City = "Stockholm",
                 Country = "Sweden",
@@ -168,7 +168,7 @@ namespace DeliCode.OrderAPI.Tests
             var updatedOrder = okobjresult.Value as Order;
 
             Assert.IsType<OkObjectResult>(okobjresult);
-            Assert.Equal(_order.Status, updatedOrder.Status);
+            Assert.Equal(OrderStatus.Refunded, updatedOrder.Status);
         }
 
         [Fact]
@@ -192,6 +192,30 @@ namespace DeliCode.OrderAPI.Tests
             var badrequestresult = result.Result as BadRequestResult;
 
             Assert.IsType<BadRequestResult>(badrequestresult);
+        }
+
+        [Fact]
+        public async Task DeleteOrderReturnsDeletedOrder()
+        {
+            var orderId = _service.orders.FirstOrDefault().Id;
+
+            var result = await orderController.DeleteOrder(orderId);
+            var okObjectResult = result.Result as OkObjectResult;
+            var actual = okObjectResult.Value as Order;
+
+            Assert.IsType<OkObjectResult>(okObjectResult);
+            Assert.Equal(orderId, actual.Id);
+        }
+
+        [Fact]
+        public async Task DeleteOrdeThatDOesntExistReturnsReturnsBadRequest()
+        {
+            var orderId = 668;
+
+            var result = await orderController.DeleteOrder(orderId);
+            var actual = result.Result as BadRequestResult;
+
+            Assert.IsType<BadRequestResult>(actual);
         }
     }
 }

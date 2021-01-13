@@ -32,6 +32,23 @@ namespace DeliCode.OrderAPI.Repository
             return order;
         }
 
+        public async Task<Order> DeleteOrder(int orderId)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            _context.Orders.Remove(order);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                order = null;
+            }
+
+            return order;
+        }
+
         public async Task<List<Order>> GetAllOrders()
         {
             return await _context.Orders.Include(o => o.OrderProducts).ToListAsync();
