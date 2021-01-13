@@ -25,8 +25,8 @@ namespace DeliCode.Web.Controllers
         }
         public async Task<IActionResult> DetailsAsync(Guid productId)
         {
-            var product =await _productService.Get(productId);
-            if(product==null)
+            var product = await _productService.Get(productId);
+            if (product == null)
             {
                 return RedirectToAction("Index", "Product");
             }
@@ -37,13 +37,15 @@ namespace DeliCode.Web.Controllers
         public async Task<IActionResult> AddToCartAsync([FromForm] Guid Id)
         {
             var product = await _productService.Get(Id);
-            if(product==null)
+            if (product == null)
             {
                 return BadRequest("produkten fanns inte");
             }
 
-            var cart=_cartService.AddProductToCart(product);
-            if(cart==null)
+            Cart cart = await _cartService.AddProductToCart(product);
+            OrderSummary.Cart = cart;
+
+            if (cart == null)
             {
                 return BadRequest("produkten kunde inte läggas till");
             }

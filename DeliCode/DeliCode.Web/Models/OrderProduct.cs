@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DeliCode.OrderAPI.Models
+namespace DeliCode.Web.Models
 {
     public class OrderProduct
     {

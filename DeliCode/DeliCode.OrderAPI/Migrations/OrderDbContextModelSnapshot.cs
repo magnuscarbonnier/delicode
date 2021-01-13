@@ -19,14 +19,18 @@ namespace DeliCode.OrderAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("DeliCode.Library.Models.Order", b =>
+            modelBuilder.Entity("DeliCode.OrderAPI.Models.Order", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("BookedDeliveryDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
@@ -39,6 +43,9 @@ namespace DeliCode.OrderAPI.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsTestOrder")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -66,7 +73,7 @@ namespace DeliCode.OrderAPI.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("DeliCode.Library.Models.OrderProduct", b =>
+            modelBuilder.Entity("DeliCode.OrderAPI.Models.OrderProduct", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,11 +82,14 @@ namespace DeliCode.OrderAPI.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -91,9 +101,9 @@ namespace DeliCode.OrderAPI.Migrations
                     b.ToTable("OrderProducts");
                 });
 
-            modelBuilder.Entity("DeliCode.Library.Models.OrderProduct", b =>
+            modelBuilder.Entity("DeliCode.OrderAPI.Models.OrderProduct", b =>
                 {
-                    b.HasOne("DeliCode.Library.Models.Order", "Order")
+                    b.HasOne("DeliCode.OrderAPI.Models.Order", "Order")
                         .WithMany("OrderProducts")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -102,7 +112,7 @@ namespace DeliCode.OrderAPI.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("DeliCode.Library.Models.Order", b =>
+            modelBuilder.Entity("DeliCode.OrderAPI.Models.Order", b =>
                 {
                     b.Navigation("OrderProducts");
                 });

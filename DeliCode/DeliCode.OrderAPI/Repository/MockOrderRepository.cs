@@ -1,13 +1,15 @@
 ﻿using DeliCode.Library.Models;
 using DeliCode.OrderAPI.Models;
 using DeliCode.OrderAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("DeliCode.OrderAPI.Tests")]
-namespace DeliCode.OrderAPI.Repository 
+namespace DeliCode.OrderAPI.Repository
 {
     public class MockOrderRepository : IOrderRepository
     {
@@ -15,7 +17,7 @@ namespace DeliCode.OrderAPI.Repository
         {
             new Order()
            {
-                Id = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28"),
+                Id = 2000,
                 OrderDate = new DateTime(2020, 11, 20),
                 Status = OrderStatus.Delivered,
                 UserId = "11223344-5566-7788-99AA-BBCCDDEEFF00",
@@ -36,7 +38,7 @@ namespace DeliCode.OrderAPI.Repository
                         Name = "Kladdkaka",
                         Quantity = 11,
                         Price = 11.99M,
-                        OrderId = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28")
+                        OrderId = 2000
                     },
                      new OrderProduct()
                     {
@@ -44,60 +46,62 @@ namespace DeliCode.OrderAPI.Repository
                         Name = "Cheesecake",
                         Quantity = 2,
                         Price = 29M,
-                        OrderId = new Guid("fb6f6dd2-f6c5-4893-ab35-03167f6ebe28")
+                        OrderId = 2000
                      }
                 }
+            },
+            new Order{
+                Id=2001 ,
+                UserId="d514be83-bebb-4fe7-b905-e8db158a9ffd"
             }
         };
 
-        public Order GetOrderById(Guid id)
+        public Task<Order> GetOrderById(int id)
         {
             Order order = orders.Where(x => x.Id == id).SingleOrDefault();
-            return order;
+            return Task.FromResult(order);
         }
 
-        public List<Order> AddOrder(Order order)
+        public Task<Order> AddOrder(Order order)
         {
+            order.Id = 2021;
 
-            if (order == null)
-            {
-                throw new ArgumentNullException(nameof(order));
-            }
-            var orderReturn = CreateOrder(order);
-            var returnList = new List<Order>();
-            returnList.Add(orderReturn);
-            return returnList;
+            return Task.FromResult(order);
         }
-        private static Order CreateOrder(Order order)
-        {
-            return new Order
-            {
-                Id = order.Id,
-                FirstName = order.FirstName,
-                LastName = order.LastName,
-                Email = order.Email,
-                Address = order.Address,
-                ZipCode = order.ZipCode,
-                City = order.City,
-                Country = order.Country,
-                OrderDate = order.OrderDate,
-                Phone = order.Phone,
-                ShippingNotes = order.ShippingNotes,
-                Status = order.Status,
-                UserId = order.UserId,
-                OrderProducts = order.OrderProducts
-            };
-        }
-        public List<Order> GetAllOrdersByUserId(string userId)
+
+        public Task<List<Order>> GetAllOrdersByUserId(string userId)
         {
             List<Order> ordersList = orders.Where(x => x.UserId == userId).OrderBy(d => d.OrderDate).ToList();
-            return ordersList;
+            return Task.FromResult(ordersList);
         }
-        public List<Order> DeleteOrderByOrderId(Guid id)
+        public List<Order> DeleteOrderByOrderId(int id)
         {
             var orderToDelete = orders.Where(x => x.Id == id).SingleOrDefault();
             orders.Remove(orderToDelete);
             return orders;
+        }
+
+        public Task<List<Order>> GetAllOrders()
+        {
+            return Task.FromResult(orders);
+        }
+        public Task<Order> UpdateOrder(Order order)
+        {
+            var orderToUpdate = orders.SingleOrDefault(x => x.Id == order.Id);
+            if (orderToUpdate != null)
+            {
+                orderToUpdate = order;
+            }
+            return Task.FromResult(orderToUpdate);
+        }
+
+        public Task<Order> DeleteOrder(int orderId)
+        {
+            var order = orders.FirstOrDefault(o => o.Id == orderId);
+
+            orders.Remove(order);
+
+            return Task.FromResult(order);
         }
     }
 }

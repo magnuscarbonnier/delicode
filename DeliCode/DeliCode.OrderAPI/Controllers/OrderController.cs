@@ -3,11 +3,13 @@ using DeliCode.OrderAPI.Data;
 using DeliCode.OrderAPI.Models;
 using DeliCode.OrderAPI.Repository;
 using DeliCode.OrderAPI.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace DeliCode.OrderAPI.Controllers
@@ -16,98 +18,89 @@ namespace DeliCode.OrderAPI.Controllers
     [ApiController]
     public class OrderController : Controller
     {
-        private readonly OrderDbContext _context;
+        private IOrderRepository _repository;
 
-        public OrderController(OrderDbContext context)
+
+        public OrderController(IOrderRepository repository)
         {
-            _context = context;
-
-        }
-
-        // GET api/Order
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
-        {
-            return await _context.Orders.ToListAsync();
+            _repository = repository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrdersByUserId(string id)
+        public async Task<ActionResult<List<Order>>> GetOrders()
         {
-            var orders = await _context.Orders.Include(x => x.OrderProducts).Where(o => o.UserId == id).ToListAsync();
-            return Ok(orders);
-        }
+            var orders = await _repository.GetAllOrders();
 
-        [HttpGet]
-        public async Task<ActionResult<Order>> GetSingleOrderByOrderId(Guid id)
-        {
-            var order = await _context.Orders.FindAsync(id);
-
-            if(order == null)
+            if (orders != null && orders.Any())
             {
-                return NotFound();
+                return Ok(orders);
             }
-            return Ok(order);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<Order>> AddOrder([FromBody]Order order)
-        {
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("AddOrder", new { Id = order.Id }, order);
-        }
-
-        [HttpDelete]
-        public async Task<ActionResult<Order>> DeleteSingleOrder(Guid id)
-        {
-            var order = await _context.Orders.FindAsync(id);
-            if(order == null)
-            {
-                return NotFound();
-            }
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
             return NoContent();
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<Order>>> GetOrdersByUserId(string id)
+        {
+            var orders = await _repository.GetAllOrdersByUserId(id);
+            if (orders != null && orders.Any())
+            {
+                return Ok(orders);
+            }
+            return NotFound();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<Order>> GetOrderByOrderId(int id)
+        {
+            var order = await _repository.GetOrderById(id);
+            if (order != null)
+            {
+                return Ok(order);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddOrder([FromBody] Order order)
+        {
+            if (order.OrderProducts == null)
+            {
+                return BadRequest("order not added");
+            }
+            var orderResult = await _repository.AddOrder(order);
+            if (orderResult != null)
+            {
+                return CreatedAtAction("AddOrder", orderResult);
+            }
+
+            return BadRequest("order not added");
+        }
+
+
         [HttpPut]
-        public async Task<ActionResult<Order>> UpdateSingleOrder(Guid id, Order order)
+        public async Task<ActionResult<Order>> UpdateOrder(int id, Order order)
         {
             if (id != order.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(order).State = EntityState.Modified;
-
-            try
+            order = await _repository.UpdateOrder(order);
+            if (order == null)
             {
-                await _context.SaveChangesAsync();
+                return BadRequest();
             }
-            catch(DbUpdateConcurrencyException)
-            {
-                if(!OrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return NoContent();
+            return Ok(order);
         }
 
-        private bool OrderExists(Guid id)
+        public async Task<ActionResult<Order>> DeleteOrder(int orderId)
         {
-            return _context.Orders.Any(e => e.Id == id);
-        }
+            Order order = await _repository.DeleteOrder(orderId);
 
-        public IActionResult Index()
-        {
-            return View();
+            if (order == null)
+            {
+                return BadRequest();
+            }
+            return Ok(order);
         }
     }
 }
