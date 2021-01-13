@@ -3,5 +3,19 @@
 }
 
 <center>
-    <h2>Ange din Adress</h2>
+    <form class="form-group" asp-controller="Order" asp-action="ShipmentAddress" method="post">
+        <h2>Ange din Adress</h2>
+        <br />
+        <label><b>Adress</b></label>
+        <input class="form-control" style="width:30rem" name="address" />
+
+        <label><b>Postnummer</b></label>
+        <input class="form-control" style="width:30rem" name="zipCode" />
+
+        <label><b>Telefonnummer</b></label>
+        <input class="form-control" style="width:30rem" name="phoneNumber" />
+
+        <br />
+        <button class="btn btn-outline-success" type="submit">Slutför</button>
+    </form>
 </center>
