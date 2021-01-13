@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DeliCode.Web.Tests
+namespace DeliCode.Web.Services
 {
     public class OrderService : IOrderService
     {
@@ -30,7 +30,7 @@ namespace DeliCode.Web.Tests
         public async Task<List<Order>> GetOrders()
         {
             var orders = await _repository.GetAll();
-            if(!orders.Any())
+            if(orders==null || !orders.Any())
             {
                 return null;
             }

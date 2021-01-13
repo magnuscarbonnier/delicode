@@ -60,6 +60,10 @@ namespace DeliCode.Web
             services.AddHttpClient<IProductService, ProductService>(client =>
                 client.BaseAddress = new Uri(Configuration["ProductAPIUrl"])
             );
+            services.AddTransient<IOrderService, OrderService>();
+            services.AddHttpClient<IOrderRepository, OrderRepository>(client =>
+                client.BaseAddress = new Uri(Configuration["OrderAPIUrl"])
+            );
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
@@ -72,6 +76,7 @@ namespace DeliCode.Web
             services.AddTransient<ICartService, CartService>();
 
             services.AddControllersWithViews();
+          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
