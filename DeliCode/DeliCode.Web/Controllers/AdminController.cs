@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DeliCode.Web.Models;
+using DeliCode.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +10,11 @@ namespace DeliCode.Web.Controllers
 {
     public class AdminController : Controller
     {
-        public List<ExampleOrderViewModel> orders = new List<ExampleOrderViewModel>();
-        public AdminController()
+        private readonly IOrderService _orderService;
+        
+        public AdminController(IOrderService orderService)
         {
-            var order = new ExampleOrderViewModel
+            var order = new Order
             {
                 OrderDate = DateTime.Now,
                 FirstName = "Mikael",
@@ -24,9 +27,10 @@ namespace DeliCode.Web.Controllers
                 Country = "Sweden",
                 Phone = "073 111 22 33",
                 ShippingNotes = "Endast glutenfri tack annars blir jag arg",
-                OrderProducts = new List<ExampleOrderProduct>()
+                OrderProducts = new List<OrderProduct>()
             };
-            var order2 = new ExampleOrderViewModel
+
+            var order2 = new Order
             {
                 OrderDate = DateTime.Now,
                 FirstName = "Mangemakerz",
@@ -39,9 +43,10 @@ namespace DeliCode.Web.Controllers
                 Country = "Sweden",
                 Phone = "073 222 33 44",
                 ShippingNotes = "Föredrar om ni fraktar den på en boeing 747",
-                OrderProducts = new List<ExampleOrderProduct>()
+                OrderProducts = new List<OrderProduct>()
             };
-            var orderProduct = new ExampleOrderProduct
+
+            var orderProduct = new OrderProduct
             {
                 Name = "En macka",
                 Order = order,
@@ -49,7 +54,8 @@ namespace DeliCode.Web.Controllers
                 Price = 40,
                 Quantity = 2
             };
-            var orderProduct2 = new ExampleOrderProduct
+
+            var orderProduct2 = new OrderProduct
             {
                 Name = "En tårta",
                 Order = order,
@@ -57,54 +63,30 @@ namespace DeliCode.Web.Controllers
                 Price = 200,
                 Quantity = 1
             };
+
             order.OrderProducts.Add(orderProduct);
             order2.OrderProducts.Add(orderProduct2);
-            order.Id = Guid.NewGuid();
-            order2.Id = Guid.NewGuid();
-            orders.Add(order);
-            orders.Add(order2);
+            order.Id = 1;
+            order2.Id = 2;
+           
+
+
+            _orderService = orderService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var orders =await _orderService.GetOrders();
+            if(orders ==null)
+            {
+                orders = new List<Order>();
+            }
             return View(orders);
         }
 
         [HttpGet]
-        public IActionResult EditOrder(ExampleOrderViewModel order)
+        public IActionResult EditOrder(Order order)
         {
             return View(order);
         }
-    }
-    public class ExampleOrderViewModel
-    {
-        public Guid Id { get; set; }
-        public DateTime OrderDate { get; set; }
-        public OrderStatus Status { get; set; }
-        public string UserId { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Address { get; set; }
-        public string ZipCode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
-        public string Phone { get; set; }
-        public string ShippingNotes { get; set; }
-        public decimal TotalPrice()
-        {
-            return OrderProducts.Sum(x => x.Price * x.Quantity);
-        }
-        public List<ExampleOrderProduct> OrderProducts { get; set; }
-        public enum OrderStatus { Recieved, Delivered, Refunded }
-
-    }
-    public class ExampleOrderProduct
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public int Quantity { get; set; }
-        public decimal Price { get; set; }
-        public Guid OrderId { get; set; }
-        public ExampleOrderViewModel Order { get; set; }
     }
 }

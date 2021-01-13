@@ -39,7 +39,7 @@ namespace DeliCode.Web.Tests
         {
             var order = await _orderService.PlaceOrder(_order);
 
-            Assert.NotNull(order.Id);
+            Assert.NotEqual(0,order.Id);
         }
 
         [Fact]

@@ -1,7 +1,7 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model DeliCode.Web.Controllers.ExampleOrderViewModel
+@model DeliCode.Web.Models.Order
 
 
 <div class="container">
@@ -20,7 +20,7 @@
                             <form>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList<DeliCode.Web.Controllers.ExampleOrderViewModel.OrderStatus>(), new { @class = "form-control" })
+                                        @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList<DeliCode.Library.Models.OrderStatus>(), new { @class = "form-control" })
                                     </div>
                                 </div>
                                 <div class="form-row">
