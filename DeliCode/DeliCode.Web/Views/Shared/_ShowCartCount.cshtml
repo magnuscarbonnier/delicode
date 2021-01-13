@@ -3,23 +3,23 @@
 @{ 
     var cart = await _cartService.GetCart();
 }
-<li class="nav-item">
-    @if (cart.Items.Count==0)
+<li class="nav-item" style="list-style-type: none">
+    @if (cart.Items.Count == 0)
     {
-        <div class="nav-link text-danger">Kundvagnen tom!</div>
+        <div class="nav-link disabled">Kundvagnen tom!</div>
     }
-
+    
     @if (cart.Items.Count == 1)
     {
-        <a class="btn btn-outline-primary" asp-controller="Order" asp-action="Index">
-            🛒 <div class="nav-link text-success">Kundvagn: @cart.Items.Count vara SEK: @cart.Total</div>
+        <a asp-controller="Order" asp-action="Index" class="nav-link">
+            🛒 Kundvagn: @cart.Items.Count vara SEK: <span class="font-weight-bold">@cart.Total</span>
         </a>
     }
 
     @if (cart.Items.Count > 1)
     {
-        <a class="btn btn-outline-primary" asp-controller="Order" asp-action="Index">
-            🛒 <div class="nav-link text-success">Kundvagn: @cart.Items.Count varor SEK: @cart.Total</div>
+        <a asp-controller="Order" asp-action="Index" class="nav-link">
+            🛒 Kundvagn: @cart.Items.Count varor SEK: <span class="font-weight-bold">@cart.Total</span>
         </a>
     }
 </li>
