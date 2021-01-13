@@ -15,6 +15,12 @@ namespace DeliCode.Web.Tests
             _repository = repository;
         }
 
+        public async Task<Order> DeleteOrder(int? orderId)
+        {
+            Order order =  await _repository.DeleteOrder(orderId);
+            return order;
+        }
+
         public async Task<Order> GetOrderById(int? id)
         {
             var order = await _repository.GetOrderById(id);
@@ -24,7 +30,7 @@ namespace DeliCode.Web.Tests
         public async Task<List<Order>> GetOrders()
         {
             var orders = await _repository.GetAll();
-            if(orders == null || !orders.Any())
+            if(!orders.Any())
             {
                 return null;
             }
@@ -35,7 +41,7 @@ namespace DeliCode.Web.Tests
         public async Task<List<Order>> GetOrdersByUserId(string userId)
         {
             List<Order> orders = await _repository.GetOrdersByUsersId(userId);
-            if (orders == null || !orders.Any())
+            if (!orders.Any())
             {
                 return null;
             }
@@ -50,7 +56,7 @@ namespace DeliCode.Web.Tests
 
         public async Task<Order> UpdateOrder(int orderId, Order order)
         {
-            if(orderId!=order.Id)
+            if(orderId != order.Id)
             {
                 return null;
             }

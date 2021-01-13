@@ -41,6 +41,15 @@ namespace DeliCode.Web.Tests
 
         }
 
+        public Task<Order> DeleteOrder(int? orderId)
+        {
+            var order = orders.FirstOrDefault(o => o.Id == orderId);
+
+            orders.Remove(order);
+
+            return Task.FromResult(order);
+        }
+
         public Task<List<Order>> GetAll()
         {
             return Task.FromResult(orders);

@@ -30,7 +30,7 @@ namespace DeliCode.OrderAPI.Controllers
         public async Task<ActionResult<List<Order>>> GetOrders()
         {
             var orders = await _repository.GetAllOrders();
-      
+
             if (orders != null && orders.Any())
             {
                 return Ok(orders);
@@ -85,11 +85,22 @@ namespace DeliCode.OrderAPI.Controllers
                 return BadRequest();
             }
             order = await _repository.UpdateOrder(order);
-            if(order !=null)
-            { 
-                return Ok(order);
+            if (order == null)
+            {
+                return BadRequest();
             }
-            return BadRequest();
+            return Ok(order);
+        }
+
+        public async Task<ActionResult<Order>> DeleteOrder(int orderId)
+        {
+            Order order = await _repository.DeleteOrder(orderId);
+
+            if (order == null)
+            {
+                return BadRequest();
+            }
+            return Ok(order);
         }
     }
 }

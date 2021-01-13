@@ -84,7 +84,7 @@ namespace DeliCode.Web.Tests
             Assert.IsType<List<Order>>(orders);
         }
         [Fact]
-        public async Task GetAllOrders_ReturnsNull()
+        public async Task GetAllOrders_ReturnsNullIfEmpty()
         {
             _repository.orders.Clear();
             var orders = await _orderService.GetOrders();
@@ -95,7 +95,7 @@ namespace DeliCode.Web.Tests
         [Fact]
         public async Task GetOrdersByUserId_ReturnsOrders()
         {
-            var userId = _repository.orders[0].UserId;
+            var userId = _repository.orders.FirstOrDefault().UserId;
             List<Order> orders = await _orderService.GetOrdersByUserId(userId);
 
             Assert.Collection(orders, order => Assert.Contains(userId, order.UserId));
@@ -107,6 +107,29 @@ namespace DeliCode.Web.Tests
             var orders = await _orderService.GetOrdersByUserId(userId);
 
             Assert.Null(orders);
+        }
+
+        [Fact]
+        public async Task DeleteOrderReturnsDeletedOrder()
+        {
+            var orderId = _repository.orders.FirstOrDefault().Id;
+            
+            var expected = _repository.GetOrderById(orderId);
+            Order actual = await _orderService.DeleteOrder(orderId);
+
+            Assert.Equal(expected.Id, actual.Id);
+            var deletedOrder = await _orderService.GetOrderById(orderId);
+            Assert.Null(deletedOrder);
+        }
+
+        [Fact]
+        public async Task DeleteOrderThatDoesntExistReturnsNull()
+        {
+            var orderID = 355;
+
+            var actual = await _orderService.DeleteOrder(orderID);
+
+            Assert.Null(actual);
         }
     }
 }

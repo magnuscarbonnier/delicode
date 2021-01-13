@@ -87,13 +87,21 @@ namespace DeliCode.OrderAPI.Repository
         }
         public Task<Order> UpdateOrder(Order order)
         {
-            var orderToUpdate = orders.Where(x => x.Id == order.Id).SingleOrDefault();
+            var orderToUpdate = orders.SingleOrDefault(x => x.Id == order.Id);
             if (orderToUpdate != null)
             {
                 orderToUpdate = order;
             }
-
             return Task.FromResult(orderToUpdate);
+        }
+
+        public Task<Order> DeleteOrder(int orderId)
+        {
+            var order = orders.FirstOrDefault(o => o.Id == orderId);
+
+            orders.Remove(order);
+
+            return Task.FromResult(order);
         }
     }
 }

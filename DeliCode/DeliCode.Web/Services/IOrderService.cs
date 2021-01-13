@@ -13,5 +13,6 @@ namespace DeliCode.Web.Services
         Task<Order> UpdateOrder(int orderId, Order order);
         Task<List<Order>> GetOrders();
         Task<List<Order>> GetOrdersByUserId(string userId);
+        Task<Order> DeleteOrder(int? orderId);
     }
 }
