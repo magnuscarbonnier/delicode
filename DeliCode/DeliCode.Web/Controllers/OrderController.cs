@@ -22,9 +22,16 @@ namespace DeliCode.Web.Controllers
             }
             return View(OrderSummary.Cart);
         }
+        [HttpGet]
         public IActionResult ShipmentAddress()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult ShipmentAddress(string address, string zipCode, string phoneNumber)
+        {
+            return RedirectToAction("ConfirmOrder", "Order");
         }
     }
 }

@@ -1,0 +1,87 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model DeliCode.Web.Controllers.ExampleOrderViewModel
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <h3 style="color: #5e676f">Ordernummer: <span class="font-weight-bold">@Model.Id</span></h3>
+
+                        <div class="page-content page-container" id="page-content">
+                            <div>
+                                <h3 style="color: #5e676f">Order status: <span class="font-weight-bold">@Model.Status</span></h3>
+                            </div>
+
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList<DeliCode.Web.Controllers.ExampleOrderViewModel.OrderStatus>(), new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputFirstName">Förnamn</label>
+                                        <input type="text" class="form-control" id="inputFirstName" placeholder="@Model.FirstName">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputLastName">Efternamn</label>
+                                        <input type="text" class="form-control" id="inputLastName" placeholder="@Model.LastName">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="inputEmail">Email</label>
+                                        <input type="email" class="form-control" id="inputEmail" placeholder="@Model.Email">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputAddress">Adress</label>
+                                        <input type="text" class="form-control" id="inputAddress" placeholder="@Model.Address">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputZipCode">Postnummer</label>
+                                        <input type="text" class="form-control" id="inputZipCode" placeholder="@Model.ZipCode">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputCity">Stad</label>
+                                        <input type="text" class="form-control" id="inputCity" placeholder="@Model.City">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputCountry">Land</label>
+                                        <input type="text" class="form-control" id="inputCountry" placeholder="@Model.Country">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="inputPhone">Telefonnummer</label>
+                                        <input type="text" class="form-control" id="inputPhone" placeholder="@Model.Phone">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="inputNotes">Extra information</label>
+                                        <textarea class="form-control" id="inputNotes" placeholder="@Model.ShippingNotes"></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Spara ändringar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@{
+
+}
