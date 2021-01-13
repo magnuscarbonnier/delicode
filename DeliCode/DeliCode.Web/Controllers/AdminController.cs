@@ -11,10 +11,10 @@ namespace DeliCode.Web.Controllers
     public class AdminController : Controller
     {
         private readonly IOrderService _orderService;
-        
+        private List<Order> orders=new List<Order>();
         public AdminController(IOrderService orderService)
         {
-            var order = new Order
+             var order = new Order
             {
                 OrderDate = DateTime.Now,
                 FirstName = "Mikael",
@@ -66,15 +66,16 @@ namespace DeliCode.Web.Controllers
 
             order.OrderProducts.Add(orderProduct);
             order2.OrderProducts.Add(orderProduct2);
-            order.Id = 1;
-            order2.Id = 2;
-           
+   
+            orders.Add(order);
+            orders.Add(order);
 
 
             _orderService = orderService;
         }
         public async Task<IActionResult> Index()
         {
+  
             var orders =await _orderService.GetOrders();
             if(orders ==null)
             {
@@ -84,9 +85,24 @@ namespace DeliCode.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditOrder(Order order)
+        public async Task<IActionResult> EditOrder(int orderId)
         {
+            //TODO: implement GetOrderById()
+            var ordersresult = await _orderService.GetOrders();
+            var order = ordersresult.FirstOrDefault(c => c.Id == orderId);
             return View(order);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> EditOrder(Order order)
+        {
+            var orderresult=await _orderService.UpdateOrder(order.Id, order);
+            if(orderresult==null)
+            {
+                return BadRequest();
+            }
+            TempData["Success"] = $"Order med id: {order.Id} uppdaterades.";
+            return RedirectToAction("Index","Admin");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DeliCode.Web.Controllers;
+﻿using DeliCode.Library.Models;
+using DeliCode.Web.Controllers;
 using DeliCode.Web.Models;
 using DeliCode.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +44,31 @@ namespace DeliCode.Web.Tests
             var orders = viewresult.Model as List<Order>;
 
             Assert.NotEmpty(orders);
+        }
+
+        [Fact]
+        public async Task AdminEditOrder_ReturnsEditedOrder()
+        {
+            var expected=_repository.orders.FirstOrDefault();
+            expected.Status = OrderStatus.Delivered;
+
+            var result = await _controller.EditOrder(expected.Id);
+            var viewresult = result as ViewResult;
+            var actual = viewresult.Model as Order;
+
+            Assert.Equal(OrderStatus.Delivered, actual.Status);
+        }
+
+        [Fact]
+        public async Task AdminEditOrder_OrderNotExists_ReturnsEmptyOrder()
+        {
+            var order = new Order { Id = 4, Status = OrderStatus.Refunded };
+           
+            var result = await _controller.EditOrder(order.Id);
+            var viewresult = result as ViewResult;
+            var actual = viewresult.Model as Order;
+
+            Assert.Null(actual);
         }
     }
 }

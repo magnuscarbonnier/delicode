@@ -17,7 +17,23 @@
                                 <h3 style="color: #5e676f">Order status: <span class="font-weight-bold">@Model.Status</span></h3>
                             </div>
 
-                            <form>
+                            <form asp-action="EditOrder" asp-controller="Admin">
+                                @Html.HiddenFor(x => x.Id)
+                                @Html.HiddenFor(x => x.OrderDate)
+                                @for (int i=0;i<Model.OrderProducts.Count;i++)
+                                {
+                                    @Html.HiddenFor(v => Model.OrderProducts[i].Id)
+                                    @Html.HiddenFor(v => Model.OrderProducts[i].Name)
+                                    @Html.HiddenFor(v => Model.OrderProducts[i].OrderId)
+                                    @Html.HiddenFor(v => Model.OrderProducts[i].Price)
+                                    @Html.HiddenFor(v => Model.OrderProducts[i].ProductId)
+                                    @Html.HiddenFor(v => Model.OrderProducts[i].Quantity)
+                                }
+
+                                @Html.HiddenFor(x => x.UserId)
+                                @Html.HiddenFor(x => x.BookedDeliveryDate)
+
+
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList<DeliCode.Library.Models.OrderStatus>(), new { @class = "form-control" })
@@ -26,49 +42,49 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="inputFirstName">Förnamn</label>
-                                        <input type="text" class="form-control" id="inputFirstName" placeholder="@Model.FirstName">
+                                        <input type="text" class="form-control" asp-for="@Model.FirstName" id="inputFirstName" placeholder="@Model.FirstName">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="inputLastName">Efternamn</label>
-                                        <input type="text" class="form-control" id="inputLastName" placeholder="@Model.LastName">
+                                        <input type="text" class="form-control" asp-for="@Model.LastName" id="inputLastName" placeholder="@Model.LastName">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col">
                                         <label for="inputEmail">Email</label>
-                                        <input type="email" class="form-control" id="inputEmail" placeholder="@Model.Email">
+                                        <input type="email" class="form-control" asp-for="@Model.Email" id="inputEmail" placeholder="@Model.Email">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="inputAddress">Adress</label>
-                                        <input type="text" class="form-control" id="inputAddress" placeholder="@Model.Address">
+                                        <input type="text" class="form-control" asp-for="@Model.Address" id="inputAddress" placeholder="@Model.Address">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="inputZipCode">Postnummer</label>
-                                        <input type="text" class="form-control" id="inputZipCode" placeholder="@Model.ZipCode">
+                                        <input type="text" class="form-control" asp-for="@Model.ZipCode" id="inputZipCode" placeholder="@Model.ZipCode">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="inputCity">Stad</label>
-                                        <input type="text" class="form-control" id="inputCity" placeholder="@Model.City">
+                                        <input type="text" class="form-control" asp-for="@Model.City" id="inputCity" placeholder="@Model.City">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="inputCountry">Land</label>
-                                        <input type="text" class="form-control" id="inputCountry" placeholder="@Model.Country">
+                                        <input type="text" class="form-control" asp-for="@Model.Country" id="inputCountry" placeholder="@Model.Country">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col">
                                         <label for="inputPhone">Telefonnummer</label>
-                                        <input type="text" class="form-control" id="inputPhone" placeholder="@Model.Phone">
+                                        <input type="text" class="form-control" asp-for="@Model.Phone" id="inputPhone" placeholder="@Model.Phone">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col">
                                         <label for="inputNotes">Extra information</label>
-                                        <textarea class="form-control" id="inputNotes" placeholder="@Model.ShippingNotes"></textarea>
+                                        <textarea class="form-control" asp-for="@Model.ShippingNotes" id="inputNotes" placeholder="@Model.ShippingNotes"></textarea>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Spara ändringar</button>

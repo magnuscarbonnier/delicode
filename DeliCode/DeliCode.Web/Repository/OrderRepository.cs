@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DeliCode.Web.Repository
@@ -39,14 +41,26 @@ namespace DeliCode.Web.Repository
             throw new NotImplementedException();
         }
 
-        public Task<Order> PlaceOrder(Order order)
+        public async Task<Order> PlaceOrder(Order order)
         {
-            throw new NotImplementedException();
+            JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            var response = await _httpClient.PostAsJsonAsync<Order>("api/order/addorder", order,options);
+            var orderResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Order>(orderResponse);
+
         }
 
-        public Task<Order> UpdateOrder(Order order)
+        public async Task<Order> UpdateOrder(Order order)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.PutAsJsonAsync<Order>($"api/order/updateorder?id={order.Id}",order);
+            var orderResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Order>(orderResponse);
         }
     }
 }
