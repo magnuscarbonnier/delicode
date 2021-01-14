@@ -3,11 +3,11 @@
 
 // Write your JavaScript code.
 
-const AddToCartUrl = 'https://localhost:44385/AddToCart?Id='
+const AddToCartUrl = 'https://localhost:44385/Product/AddToCart?Id='
 
 function AddToCart(Id) {
     fetch(AddToCartUrl + Id)
         .then(function (res) {
-            location.reload()
+            
         })
 };
