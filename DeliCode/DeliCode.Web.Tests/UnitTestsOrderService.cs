@@ -110,6 +110,26 @@ namespace DeliCode.Web.Tests
         }
 
         [Fact]
+        public async Task GetOrderById_EmptyDb_ReturnsNull()
+        {
+            _repository.orders.Clear();
+
+            var orders = await _orderService.GetOrderById(1);
+
+            Assert.Null(orders);
+        }
+
+        [Fact]
+        public async Task GetOrderById_ReturnsOrders()
+        {
+            var orderid = 1;
+
+            var order = await _orderService.GetOrderById(orderid);
+
+            Assert.Equal(orderid, order.Id);
+        }
+
+        [Fact]
         public async Task DeleteOrderReturnsDeletedOrder()
         {
             var orderId = _repository.orders.FirstOrDefault().Id;

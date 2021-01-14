@@ -26,7 +26,6 @@ namespace DeliCode.Web.Tests
         {
             OrderSummary.Cart = new Cart();
             var action = orderController.Index();
-
             ViewResult result = action as ViewResult;
             var actual = result.Model as Cart;
 

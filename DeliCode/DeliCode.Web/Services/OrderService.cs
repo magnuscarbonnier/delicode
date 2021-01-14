@@ -15,13 +15,13 @@ namespace DeliCode.Web.Services
             _repository = repository;
         }
 
-        public async Task<Order> DeleteOrder(int? orderId)
+        public async Task<Order> DeleteOrder(int orderId)
         {
             Order order =  await _repository.DeleteOrder(orderId);
             return order;
         }
 
-        public async Task<Order> GetOrderById(int? id)
+        public async Task<Order> GetOrderById(int id)
         {
             var order = await _repository.GetOrderById(id);
             return order;
