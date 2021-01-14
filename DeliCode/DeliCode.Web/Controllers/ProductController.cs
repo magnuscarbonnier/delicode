@@ -33,8 +33,8 @@ namespace DeliCode.Web.Controllers
             return View(product);
 
         }
-        [HttpPost]
-        public async Task<IActionResult> AddToCartAsync([FromForm] Guid Id)
+        [HttpGet]
+        public async Task<IActionResult> AddToCartAsync(Guid Id)
         {
             var product = await _productService.Get(Id);
             if (product == null)

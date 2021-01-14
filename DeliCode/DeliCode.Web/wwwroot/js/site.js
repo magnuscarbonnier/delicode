@@ -2,3 +2,12 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+const AddToCartUrl = 'https://localhost:44385/AddToCart?Id='
+
+function AddToCart(Id) {
+    fetch(AddToCartUrl + Id)
+        .then(function (res) {
+            location.reload()
+        })
+};
