@@ -6,95 +6,157 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm">
+        <div class="col-md-12 col-lg-7">
             <div class="card">
                 <div class="card-content">
                     <div class="card-body">
-                        <h3 style="color: #5e676f">Ordernummer: <span class="font-weight-bold">@Model.Id</span></h3>
+                        <h4 style="color: #5e676f">
+                            Ordernummer: <span class="font-weight-bold">
+                                @Model.Id
+                            <svg class="float-right" style="color: cornflowerblue" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-info-square" viewBox="0 0 16 16">
+                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                                <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                            </svg>
+                        </span>
+                    </h4>
 
-                        <div class="page-content page-container" id="page-content">
-                            <div>
-                                <h3 style="color: #5e676f">Order status: <span class="font-weight-bold">@Model.Status</span></h3>
-                            </div>
-
-                            <form asp-action="EditOrder" asp-controller="Admin">
-                                @Html.HiddenFor(x => x.Id)
-                                @Html.HiddenFor(x => x.OrderDate)
-                                @for (int i=0;i<Model.OrderProducts.Count;i++)
+                    <div class="page-content page-container" id="page-content">
+                        <div class="mb-5 mt-3">
+                            <h4 style="color: #5e676f">
+                                Order status:
+                                @if (Model.Status == DeliCode.Library.Models.OrderStatus.Recieved)
                                 {
-                                    @Html.HiddenFor(v => Model.OrderProducts[i].Id)
-                                    @Html.HiddenFor(v => Model.OrderProducts[i].Name)
-                                    @Html.HiddenFor(v => Model.OrderProducts[i].OrderId)
-                                    @Html.HiddenFor(v => Model.OrderProducts[i].Price)
-                                    @Html.HiddenFor(v => Model.OrderProducts[i].ProductId)
-                                    @Html.HiddenFor(v => Model.OrderProducts[i].Quantity)
+                                    <span class="font-weight-bold text-success">
+                                        @Model.Status
+                                    </span>
                                 }
+                                @if (Model.Status == DeliCode.Library.Models.OrderStatus.Delivered)
+                                {
+                                    <span class="font-weight-bold text-info">
+                                        @Model.Status
+                                    </span>
+                                }
+                                @if (Model.Status == DeliCode.Library.Models.OrderStatus.Refunded)
+                                {
+                                    <span class="font-weight-bold text-danger">
+                                        @Model.Status
+                                    </span>
+                                }
+                            </h4>
 
-                                @Html.HiddenFor(x => x.UserId)
-                                @Html.HiddenFor(x => x.BookedDeliveryDate)
-
-
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList<DeliCode.Library.Models.OrderStatus>(), new { @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="inputFirstName">Förnamn</label>
-                                        <input type="text" class="form-control" asp-for="@Model.FirstName" id="inputFirstName" placeholder="@Model.FirstName">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="inputLastName">Efternamn</label>
-                                        <input type="text" class="form-control" asp-for="@Model.LastName" id="inputLastName" placeholder="@Model.LastName">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col">
-                                        <label for="inputEmail">Email</label>
-                                        <input type="email" class="form-control" asp-for="@Model.Email" id="inputEmail" placeholder="@Model.Email">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="inputAddress">Adress</label>
-                                        <input type="text" class="form-control" asp-for="@Model.Address" id="inputAddress" placeholder="@Model.Address">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="inputZipCode">Postnummer</label>
-                                        <input type="text" class="form-control" asp-for="@Model.ZipCode" id="inputZipCode" placeholder="@Model.ZipCode">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="inputCity">Stad</label>
-                                        <input type="text" class="form-control" asp-for="@Model.City" id="inputCity" placeholder="@Model.City">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="inputCountry">Land</label>
-                                        <input type="text" class="form-control" asp-for="@Model.Country" id="inputCountry" placeholder="@Model.Country">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col">
-                                        <label for="inputPhone">Telefonnummer</label>
-                                        <input type="text" class="form-control" asp-for="@Model.Phone" id="inputPhone" placeholder="@Model.Phone">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col">
-                                        <label for="inputNotes">Extra information</label>
-                                        <textarea class="form-control" asp-for="@Model.ShippingNotes" id="inputNotes" placeholder="@Model.ShippingNotes"></textarea>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Spara ändringar</button>
-                            </form>
                         </div>
+
+                        <form asp-action="EditOrder" asp-controller="Admin">
+                            @Html.HiddenFor(x => x.Id)
+                            @Html.HiddenFor(x => x.OrderDate)
+                            @for (int i = 0; i < Model.OrderProducts.Count; i++)
+                            {
+                                @Html.HiddenFor(v => Model.OrderProducts[i].Id)
+                                @Html.HiddenFor(v => Model.OrderProducts[i].Name)
+                                @Html.HiddenFor(v => Model.OrderProducts[i].OrderId)
+                                @Html.HiddenFor(v => Model.OrderProducts[i].Price)
+                                @Html.HiddenFor(v => Model.OrderProducts[i].ProductId)
+                                @Html.HiddenFor(v => Model.OrderProducts[i].Quantity)
+                            }
+
+                            @Html.HiddenFor(x => x.UserId)
+                            @Html.HiddenFor(x => x.BookedDeliveryDate)
+
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    @Html.DropDownListFor(m => m.Status, Html.GetEnumSelectList<DeliCode.Library.Models.OrderStatus>(), new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputFirstName">Förnamn</label>
+                                    <input type="text" class="form-control" asp-for="@Model.FirstName" id="inputFirstName" placeholder="@Model.FirstName">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputLastName">Efternamn</label>
+                                    <input type="text" class="form-control" asp-for="@Model.LastName" id="inputLastName" placeholder="@Model.LastName">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="inputEmail">Email</label>
+                                    <input type="email" class="form-control" asp-for="@Model.Email" id="inputEmail" placeholder="@Model.Email">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputAddress">Adress</label>
+                                    <input type="text" class="form-control" asp-for="@Model.Address" id="inputAddress" placeholder="@Model.Address">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputZipCode">Postnummer</label>
+                                    <input type="text" class="form-control" asp-for="@Model.ZipCode" id="inputZipCode" placeholder="@Model.ZipCode">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputCity">Stad</label>
+                                    <input type="text" class="form-control" asp-for="@Model.City" id="inputCity" placeholder="@Model.City">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputCountry">Land</label>
+                                    <input type="text" class="form-control" asp-for="@Model.Country" id="inputCountry" placeholder="@Model.Country">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="inputPhone">Telefonnummer</label>
+                                    <input type="text" class="form-control" asp-for="@Model.Phone" id="inputPhone" placeholder="@Model.Phone">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="inputNotes">Extra information</label>
+                                    <textarea class="form-control" asp-for="@Model.ShippingNotes" id="inputNotes" placeholder="@Model.ShippingNotes"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Spara ändringar</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-md-12 col-lg-5">
+        <div class="card">
+            <div class="card-content">
+                <div class="card-body">
+                    <h4 style="color: #5e676f">
+                        Varukorg
+                        <svg class="float-right" style="        color: orangered
+" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cart4" viewBox="0 0 16 16">
+                            <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" />
+                        </svg>
+                    </h4>
+
+                    @foreach (var item in Model.OrderProducts)
+                    {
+
+                        <div class="list list-row " id="sortable" data-sortable-id="0" aria-dropeffect="move">
+                            <div class="list-item" data-id="13" data-item-sortable-id="0" draggable="true" role="option" aria-grabbed="false" style="">
+                                <div class="flex">
+                                    <a href="#" class="item-author text-color font-weight-bold" data-abc="true">@item.Name</a>
+                                    <div class="item-except text-muted text-sm h-1x">x @item.Quantity</div>
+                                </div>
+                                <div class="no-wrap">
+                                    <div class="item-date text-muted text-sm d-none d-md-block font-weight-bold">@item.Price :-</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <hr />
+                    Total: <span class="font-weight-bold" style="color: forestgreen">@Model.TotalPrice() :-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 
