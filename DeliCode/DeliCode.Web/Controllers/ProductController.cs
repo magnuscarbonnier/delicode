@@ -33,24 +33,5 @@ namespace DeliCode.Web.Controllers
             return View(product);
 
         }
-        [HttpGet]
-        public async Task<IActionResult> AddToCartAsync(Guid Id)
-        {
-            var product = await _productService.Get(Id);
-            if (product == null)
-            {
-                return BadRequest("produkten fanns inte");
-            }
-
-            Cart cart = await _cartService.AddProductToCart(product);
-            OrderSummary.Cart = cart;
-
-            if (cart == null)
-            {
-                return BadRequest("produkten kunde inte läggas till");
-            }
-
-            return RedirectToAction("Index", "Product");
-        }
     }
 }

@@ -3,11 +3,27 @@
 
 // Write your JavaScript code.
 
-const AddToCartUrl = 'https://localhost:44385/Product/AddToCart?Id='
+const AddToCartUrl = 'https://localhost:44385/Cart/Add?Id='
+const GetCartUrl = 'https://localhost:44385/Cart/Get'
+
+let CartCounter = 0;
+let CartTotal = 0;
 
 function AddToCart(Id) {
     fetch(AddToCartUrl + Id)
         .then(function (res) {
-            
+            GetCart()
         })
 };
+
+function GetCart() {
+    fetch(GetCartUrl)
+        .then(response => response.json())
+        .then(data => {
+            CartCounter = data.totalItemsInCart
+            CartTotal = data.total
+            document.getElementById('carttotal').innerHTML = CartTotal
+            document.getElementById('cartquantity').innerHTML = CartCounter
+        }
+    )
+}

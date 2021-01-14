@@ -1,19 +1,15 @@
 ﻿@using DeliCode.Web.Services
 @inject ICartService _cartService
-@{ 
+@{
     var cart = await _cartService.GetCart();
 }
-<li class="nav-item" style="list-style-type: none">
-    @if (cart.Items.Count == 0)
-    {
-        <div class="nav-link disabled">Kundvagnen tom!</div>
-    }
-    
-    @if (cart.Items.Count > 0)
-    {
-        <a asp-controller="Order" asp-action="Index" class="nav-link">
-            🛒(@cart.Items.Sum(x=>x.Quantity)) SEK: <span class="font-weight-bold">@cart.Total</span>
-        </a>
-    }
 
+
+
+<li class="nav-item" style="list-style-type: none">
+    <a asp-controller="Order" asp-action="Index" class="nav-link">
+        🛒( <span id="cartquantity">
+            @cart.Items.Sum(x => x.Quantity)
+        </span> )SEK: <span class="font-weight-bold" id="carttotal">@cart.Total</span>
+    </a>
 </li>
