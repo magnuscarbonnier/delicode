@@ -18,7 +18,7 @@ namespace DeliCode.Web.Repository
         {
             _httpClient = httpClient;
         }
-        public Task<Order> DeleteOrder(int? orderId)
+        public Task<Order> DeleteOrder(int orderId)
         {
             throw new NotImplementedException();
         }
@@ -31,9 +31,12 @@ namespace DeliCode.Web.Repository
             return JsonConvert.DeserializeObject<List<Order>>(orderResponse);
         }
 
-        public Task<Order> GetOrderById(int? id)
+        public async Task<Order> GetOrderById(int id)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetAsync($"api/order/GetOrderByOrderId?id={id}");
+            var orderResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Order>(orderResponse);
         }
 
         public Task<List<Order>> GetOrdersByUsersId(string userId)

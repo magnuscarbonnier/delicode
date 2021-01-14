@@ -79,6 +79,16 @@ namespace DeliCode.OrderAPI.Tests
         }
 
         [Fact]
+        public async Task AddOrder_WithoutId_ReturnsOrderWithIdAndDateCreated()
+        {
+            _order.OrderDate = DateTime.MinValue;
+            var result = await _repository.AddOrder(_order);
+
+            Assert.IsType<Order>(result);
+            Assert.NotEqual(DateTime.MinValue, result.OrderDate);
+        }
+
+        [Fact]
         public async Task DeleteOrder_IdNotExists_ReturnsNull()
         {
             var orderidNotInDb = 3;

@@ -19,9 +19,10 @@ namespace DeliCode.OrderAPI.Repository
         }
         public async Task<Order> AddOrder(Order order)
         {
-            _context.Orders.Add(order);
             try
             {
+                order.OrderDate = DateTime.UtcNow;
+                _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
             }
             catch
@@ -35,7 +36,7 @@ namespace DeliCode.OrderAPI.Repository
         public async Task<Order> DeleteOrder(int orderId)
         {
             var order = await _context.Orders.FindAsync(orderId);
-            
+
             try
             {
                 _context.Orders.Remove(order);
@@ -70,7 +71,7 @@ namespace DeliCode.OrderAPI.Repository
         public async Task<int> GetFirstOrderId()
         {
             var order = await _context.Orders.FirstOrDefaultAsync();
-            if(order==null)
+            if (order == null)
             {
                 return default;
             }
@@ -84,7 +85,7 @@ namespace DeliCode.OrderAPI.Repository
 
         public Task<int> GetOrdersCount()
         {
-            var ordersCount = _context.Orders.Count();  
+            var ordersCount = _context.Orders.Count();
             return Task.FromResult(ordersCount);
         }
 
