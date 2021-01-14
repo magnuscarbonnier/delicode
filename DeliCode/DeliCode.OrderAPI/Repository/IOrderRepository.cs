@@ -16,5 +16,8 @@ namespace DeliCode.OrderAPI.Services
         Task<List<Order>> GetAllOrders();
         Task<Order> UpdateOrder(Order order);
         Task<Order> DeleteOrder(int orderId);
+        Task<int> GetFirstOrderId();
+        Task<Order> GetFirstOrder();
+        Task<int> GetOrdersCount();
     }
 }   

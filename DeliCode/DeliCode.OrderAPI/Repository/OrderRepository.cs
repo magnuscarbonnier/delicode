@@ -59,9 +59,33 @@ namespace DeliCode.OrderAPI.Repository
             return await _context.Orders.Where(o => o.UserId == userId).Include(op => op.OrderProducts).ToListAsync();
         }
 
+        public async Task<Order> GetFirstOrder()
+        {
+            var order = await _context.Orders.Include(op => op.OrderProducts).FirstOrDefaultAsync();
+
+            return order;
+        }
+
+
+        public async Task<int> GetFirstOrderId()
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync();
+            if(order==null)
+            {
+                return default;
+            }
+            return order.Id;
+        }
+
         public async Task<Order> GetOrderById(int id)
         {
             return await _context.Orders.Include(op => op.OrderProducts).SingleOrDefaultAsync(o => o.Id == id);
+        }
+
+        public Task<int> GetOrdersCount()
+        {
+            var ordersCount = _context.Orders.Count();  
+            return Task.FromResult(ordersCount);
         }
 
         public async Task<Order> UpdateOrder(Order order)

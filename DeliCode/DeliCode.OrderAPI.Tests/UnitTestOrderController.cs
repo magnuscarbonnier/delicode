@@ -17,7 +17,7 @@ using Xunit;
 
 namespace DeliCode.OrderAPI.Tests
 {
-    public class UnitTestOrderService
+    public class UnitTestOrderController
     {
         private readonly Order _order;
         private readonly List<Order> _orderList;
@@ -25,7 +25,7 @@ namespace DeliCode.OrderAPI.Tests
         private readonly OrderController _orderController;
         protected DbContextOptions<OrderDbContext> ContextOptions { get; }
 
-        public UnitTestOrderService()
+        public UnitTestOrderController()
         {
             _order = new Order()
             {
@@ -70,7 +70,7 @@ namespace DeliCode.OrderAPI.Tests
 
         private DbContextOptions<OrderDbContext> SetMockDatabaseOptions()
         {
-            string connectionString = @"Server=(localdb)\mssqllocaldb;Database=EFTestSample;ConnectRetryCount=0";
+            string connectionString = @"Server=(localdb)\mssqllocaldb;Database=OrderApiControllerTestDB;ConnectRetryCount=0";
             return new DbContextOptionsBuilder<OrderDbContext>()
                 .UseSqlServer(connectionString)
                 .Options;
@@ -84,6 +84,7 @@ namespace DeliCode.OrderAPI.Tests
 
             Assert.NotEqual(0, order.Id);
         }
+
         [Fact]
         public async Task AddIncompleteOrder_ShouldReturnBadRequest()
         {
@@ -97,12 +98,11 @@ namespace DeliCode.OrderAPI.Tests
         [Fact]
         public async Task GetOrderById_ShouldReturnSingleOrder()
         {
-            Order order;
-            int id = 1;
+            int id = await _repository.GetFirstOrderId();
 
             var result = await _orderController.GetOrderByOrderId(id);
-            var okobjresult = result.Result as OkObjectResult;
-            order = okobjresult.Value as Order;
+            var okobjresult = result as OkObjectResult;
+            var order = okobjresult.Value as Order;
 
             Assert.IsType<OkObjectResult>(okobjresult);
             Assert.IsType<Order>(order);
@@ -115,7 +115,7 @@ namespace DeliCode.OrderAPI.Tests
             int invalidId = 3;
 
             var result = await _orderController.GetOrderByOrderId(invalidId);
-            var notfoundresult = result.Result as NotFoundResult;
+            var notfoundresult = result as NotFoundResult;
 
             Assert.IsType<NotFoundResult>(notfoundresult);
         }
@@ -126,7 +126,7 @@ namespace DeliCode.OrderAPI.Tests
             string userId = _order.UserId;
 
             var result = await _orderController.GetOrdersByUserId(userId);
-            var okobjresult = result.Result as OkObjectResult;
+            var okobjresult = result as OkObjectResult;
             var orders = okobjresult.Value as List<Order>;
 
             Assert.IsType<OkObjectResult>(okobjresult);
@@ -139,27 +139,25 @@ namespace DeliCode.OrderAPI.Tests
             string userId = String.Empty;
 
             var result = await _orderController.GetOrdersByUserId(userId);
-            var notfoundresult = result.Result as NotFoundResult;
+            var notfoundresult = result as NotFoundResult;
 
             Assert.IsType<NotFoundResult>(notfoundresult);
         }
+
         [Fact]
         public async Task GetAllOrders_ShouldReturnListOfOrders()
         {
-            var order = new Order
-            {
-                Id = 2000,
-                UserId = "d514be83-bebb-4fe7-b905-e8db158a9ffd"
-            };
-            _orderList.Add(order);
+            int ordersInDb = await _repository.GetOrdersCount();
 
             var result = await _orderController.GetOrders();
-            var okobjresult = result.Result as OkObjectResult;
+            var okobjresult = result as OkObjectResult;
             var orders = okobjresult.Value as List<Order>;
 
             Assert.IsType<OkObjectResult>(okobjresult);
-            Assert.Equal(_orderList.Count(), orders.Count());
+            Assert.IsType<List<Order>>(orders);
+            Assert.Equal(ordersInDb, orders.Count());
         }
+
         [Fact]
         public async Task GetAllOrders_NoOrdersAdded_ShouldReturnNoContent()
         {
@@ -170,10 +168,11 @@ namespace DeliCode.OrderAPI.Tests
             }
 
             var result = await _orderController.GetOrders();
-            var noContentResult = result.Result as NoContentResult;
+            var noContentResult = result as NoContentResult;
 
             Assert.IsType<NoContentResult>(noContentResult);
         }
+
         [Fact]
         public async Task UpdateOrder_ReturnsUpdatedOrder()
         {
@@ -181,7 +180,7 @@ namespace DeliCode.OrderAPI.Tests
             _order.Status = OrderStatus.Refunded;
 
             var result = await _orderController.UpdateOrder(_order.Id, _order);
-            var okobjresult = result.Result as OkObjectResult;
+            var okobjresult = result as OkObjectResult;
             var updatedOrder = okobjresult.Value as Order;
 
             Assert.IsType<OkObjectResult>(okobjresult);
@@ -196,10 +195,11 @@ namespace DeliCode.OrderAPI.Tests
             _order.Id = orders[0].Id;
 
             var result = await _orderController.UpdateOrder(6, _order);
-            var badrequestresult = result.Result as BadRequestResult;
+            var badrequestresult = result as BadRequestResult;
 
             Assert.IsType<BadRequestResult>(badrequestresult);
         }
+
         [Fact]
         public async Task UpdateOrder_OrderNotFound_ReturnsBadRequest()
         {
@@ -207,7 +207,7 @@ namespace DeliCode.OrderAPI.Tests
             _order.Id = 6;
 
             var result = await _orderController.UpdateOrder(_order.Id, _order);
-            var badrequestresult = result.Result as BadRequestResult;
+            var badrequestresult = result as BadRequestResult;
 
             Assert.IsType<BadRequestResult>(badrequestresult);
         }
@@ -219,7 +219,7 @@ namespace DeliCode.OrderAPI.Tests
             var orderId = orders.FirstOrDefault().Id;
 
             var result = await _orderController.DeleteOrder(orderId);
-            var okObjectResult = result.Result as OkObjectResult;
+            var okObjectResult = result as OkObjectResult;
             var actual = okObjectResult.Value as Order;
 
             Assert.IsType<OkObjectResult>(okObjectResult);
@@ -232,7 +232,7 @@ namespace DeliCode.OrderAPI.Tests
             var orderId = 668;
 
             var result = await _orderController.DeleteOrder(orderId);
-            var actual = result.Result as BadRequestResult;
+            var actual = result as BadRequestResult;
 
             Assert.IsType<BadRequestResult>(actual);
         }
@@ -277,7 +277,6 @@ namespace DeliCode.OrderAPI.Tests
                 };
                 var order2 = new Order
                 {
-
                     UserId = "d514be83-bebb-4fe7-b905-e8db158a9ffd"
                 };
 
