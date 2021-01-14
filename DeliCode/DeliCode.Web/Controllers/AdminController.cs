@@ -87,9 +87,7 @@ namespace DeliCode.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> EditOrder(int orderId)
         {
-            //TODO: implement GetOrderById()
-            var ordersresult = await _orderService.GetOrders();
-            var order = ordersresult.FirstOrDefault(c => c.Id == orderId);
+            var order = await _orderService.GetOrderById(orderId);
             return View(order);
         }
         

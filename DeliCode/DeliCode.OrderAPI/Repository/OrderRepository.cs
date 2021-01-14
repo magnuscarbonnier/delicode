@@ -35,10 +35,10 @@ namespace DeliCode.OrderAPI.Repository
         public async Task<Order> DeleteOrder(int orderId)
         {
             var order = await _context.Orders.FindAsync(orderId);
-            _context.Orders.Remove(order);
-
+            
             try
             {
+                _context.Orders.Remove(order);
                 await _context.SaveChangesAsync();
             }
             catch
