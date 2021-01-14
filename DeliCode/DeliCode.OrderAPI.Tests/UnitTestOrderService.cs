@@ -57,7 +57,7 @@ namespace DeliCode.OrderAPI.Tests
                 }
             };
             _orderList = new List<Order> { _order };
-            
+
             _service = new MockOrderRepository();
             orderController = new OrderController(_service);
         }
@@ -85,7 +85,7 @@ namespace DeliCode.OrderAPI.Tests
         public async Task GetOrderById_ShouldReturnSingleOrder()
         {
             Order order;
-            int id = 2000;
+            int id = 1;
 
             var result = await orderController.GetOrderByOrderId(id);
             var okobjresult = result.Result as OkObjectResult;
@@ -115,7 +115,7 @@ namespace DeliCode.OrderAPI.Tests
             var result = await orderController.GetOrdersByUserId(userId);
             var okobjresult = result.Result as OkObjectResult;
             var orders = okobjresult.Value as List<Order>;
-            
+
             Assert.IsType<OkObjectResult>(okobjresult);
             Assert.Collection(orders, order => Assert.Contains(userId, order.UserId));
         }
@@ -139,18 +139,24 @@ namespace DeliCode.OrderAPI.Tests
                 UserId = "d514be83-bebb-4fe7-b905-e8db158a9ffd"
             };
             _orderList.Add(order);
-            
+
             var result = await orderController.GetOrders();
             var okobjresult = result.Result as OkObjectResult;
             var orders = okobjresult.Value as List<Order>;
-            
+
             Assert.IsType<OkObjectResult>(okobjresult);
             Assert.Equal(_orderList.Count(), orders.Count());
         }
         [Fact]
         public async Task GetAllOrders_NoOrdersAdded_ShouldReturnNoContent()
         {
-            _service.orders.Clear();
+            //_service.orders.Clear();
+            var orders = await _service.GetAllOrders();
+            foreach (var order in orders)
+            {
+                await _service.DeleteOrder(order.Id);
+            }
+
 
             var result = await orderController.GetOrders();
             var noContentResult = result.Result as NoContentResult;
@@ -160,7 +166,8 @@ namespace DeliCode.OrderAPI.Tests
         [Fact]
         public async Task UpdateOrder_ReturnsUpdatedOrder()
         {
-            _order.Id = _service.orders[0].Id;
+            _order.Id = 1;
+            //_order.Id = _service.orders[0].Id;
             _order.Status = OrderStatus.Refunded;
 
             var result = await orderController.UpdateOrder(_order.Id, _order);
@@ -175,7 +182,9 @@ namespace DeliCode.OrderAPI.Tests
         public async Task UpdateOrder_InvalidId_ReturnsBadRequest()
         {
             _order.Status = OrderStatus.Refunded;
-            _order.Id = _service.orders[0].Id;
+            var orders = await _service.GetAllOrders();
+            _order.Id = orders[0].Id;
+            //_order.Id = _service.orders[0].Id;
 
             var result = await orderController.UpdateOrder(6, _order);
             var badrequestresult = result.Result as BadRequestResult;
@@ -186,7 +195,8 @@ namespace DeliCode.OrderAPI.Tests
         public async Task UpdateOrder_OrderNotFound_ReturnsBadRequest()
         {
             _order.Status = OrderStatus.Refunded;
-            _service.orders[0].Id = 6;
+            _order.Id = 6;
+            // _service.orders[0].Id = 6;
 
             var result = await orderController.UpdateOrder(_order.Id, _order);
             var badrequestresult = result.Result as BadRequestResult;
@@ -197,7 +207,9 @@ namespace DeliCode.OrderAPI.Tests
         [Fact]
         public async Task DeleteOrderReturnsDeletedOrder()
         {
-            var orderId = _service.orders.FirstOrDefault().Id;
+            //var orderId = _service.orders.FirstOrDefault().Id;
+            var orders = await _service.GetAllOrders();
+            var orderId = orders.FirstOrDefault().Id;
 
             var result = await orderController.DeleteOrder(orderId);
             var okObjectResult = result.Result as OkObjectResult;

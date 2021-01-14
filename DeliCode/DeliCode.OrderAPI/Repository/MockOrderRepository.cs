@@ -1,7 +1,9 @@
 ﻿using DeliCode.Library.Models;
+using DeliCode.OrderAPI.Data;
 using DeliCode.OrderAPI.Models;
 using DeliCode.OrderAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,28 +15,45 @@ namespace DeliCode.OrderAPI.Repository
 {
     public class MockOrderRepository : IOrderRepository
     {
-        internal List<Order> orders = new List<Order>()
+        protected DbContextOptions<OrderDbContext> ContextOptions { get; }
+        private readonly OrderDbContext _context;
+        public MockOrderRepository()
         {
-            new Order()
-           {
-                Id = 2000,
-                OrderDate = new DateTime(2020, 11, 20),
-                Status = OrderStatus.Delivered,
-                UserId = "11223344-5566-7788-99AA-BBCCDDEEFF00",
-                Email = "marie.dahlmalm@iths.se",
-                FirstName = "Marie",
-                LastName = "Dahlmalm",
-                Address = "Årstaängsvägen 9",
-                ZipCode = "12345",
-                City = "Stockholm",
-                Country = "Sweden",
-                Phone = "555123456",
-                ShippingNotes = "",
-                OrderProducts = new List<OrderProduct>()
+            ContextOptions = new DbContextOptionsBuilder<OrderDbContext>()
+                .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFTestSample;ConnectRetryCount=0")
+                .Options;
+
+            Seed();
+            _context = new OrderDbContext(ContextOptions);
+        }
+
+        private void Seed()
+        {
+            using (var context = new OrderDbContext(ContextOptions))
+            {
+                context.Database.EnsureDeleted();
+                context.Database.Migrate();
+
+                var order1 = new Order()
+                {
+                    
+                    OrderDate = new DateTime(2020, 11, 20),
+                    Status = OrderStatus.Delivered,
+                    UserId = "11223344-5566-7788-99AA-BBCCDDEEFF00",
+                    Email = "marie.dahlmalm@iths.se",
+                    FirstName = "Marie",
+                    LastName = "Dahlmalm",
+                    Address = "Årstaängsvägen 9",
+                    ZipCode = "12345",
+                    City = "Stockholm",
+                    Country = "Sweden",
+                    Phone = "555123456",
+                    ShippingNotes = "",
+                    OrderProducts = new List<OrderProduct>()
                 {
                      new OrderProduct()
                     {
-                        Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
+                        
                         Name = "Kladdkaka",
                         Quantity = 11,
                         Price = 11.99M,
@@ -42,66 +61,88 @@ namespace DeliCode.OrderAPI.Repository
                     },
                      new OrderProduct()
                     {
-                        Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF11"),
+                        
                         Name = "Cheesecake",
                         Quantity = 2,
                         Price = 29M,
                         OrderId = 2000
                      }
                 }
-            },
-            new Order{
-                Id=2001 ,
-                UserId="d514be83-bebb-4fe7-b905-e8db158a9ffd"
+                };
+                var order2 = new Order
+                {
+                   
+                    UserId = "d514be83-bebb-4fe7-b905-e8db158a9ffd"
+                };
+
+
+                context.AddRange(order1, order2);
+
+                context.SaveChanges();
             }
-        };
-
-        public Task<Order> GetOrderById(int id)
-        {
-            Order order = orders.Where(x => x.Id == id).SingleOrDefault();
-            return Task.FromResult(order);
         }
-
-        public Task<Order> AddOrder(Order order)
+        public async Task<Order> AddOrder(Order order)
         {
-            order.Id = 2021;
-
-            return Task.FromResult(order);
-        }
-
-        public Task<List<Order>> GetAllOrdersByUserId(string userId)
-        {
-            List<Order> ordersList = orders.Where(x => x.UserId == userId).OrderBy(d => d.OrderDate).ToList();
-            return Task.FromResult(ordersList);
-        }
-        public List<Order> DeleteOrderByOrderId(int id)
-        {
-            var orderToDelete = orders.Where(x => x.Id == id).SingleOrDefault();
-            orders.Remove(orderToDelete);
-            return orders;
-        }
-
-        public Task<List<Order>> GetAllOrders()
-        {
-            return Task.FromResult(orders);
-        }
-        public Task<Order> UpdateOrder(Order order)
-        {
-            var orderToUpdate = orders.SingleOrDefault(x => x.Id == order.Id);
-            if (orderToUpdate != null)
+            _context.Orders.Add(order);
+            try
             {
-                orderToUpdate = order;
+                await _context.SaveChangesAsync();
             }
-            return Task.FromResult(orderToUpdate);
+            catch
+            {
+                order = null;
+            }
+
+            return order;
         }
 
-        public Task<Order> DeleteOrder(int orderId)
+        public async Task<Order> DeleteOrder(int orderId)
         {
-            var order = orders.FirstOrDefault(o => o.Id == orderId);
+            var order = await _context.Orders.FindAsync(orderId);
+            
 
-            orders.Remove(order);
+            try
+            {
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                order = null;
+            }
 
-            return Task.FromResult(order);
+            return order;
+        }
+
+        public async Task<List<Order>> GetAllOrders()
+        {
+            return await _context.Orders.Include(o => o.OrderProducts).ToListAsync();
+        }
+
+        public async Task<List<Order>> GetAllOrdersByUserId(string userId)
+        {
+            return await _context.Orders.Where(o => o.UserId == userId).Include(op => op.OrderProducts).ToListAsync();
+        }
+
+        public async Task<Order> GetOrderById(int id)
+        {
+            return await _context.Orders.Include(op => op.OrderProducts).SingleOrDefaultAsync(o => o.Id == id);
+        }
+
+        public async Task<Order> UpdateOrder(Order order)
+        {
+            _context.Entry(order).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                order = null;
+            }
+
+            return order;
         }
     }
 }
