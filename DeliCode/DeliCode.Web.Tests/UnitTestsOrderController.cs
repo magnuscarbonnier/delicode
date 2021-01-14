@@ -15,6 +15,7 @@ namespace DeliCode.Web.Tests
     public class UnitTestsOrderController
     {
         readonly OrderController orderController;
+        private string empty = String.Empty;
         public UnitTestsOrderController()
         {
             orderController = new OrderController();
@@ -31,30 +32,39 @@ namespace DeliCode.Web.Tests
             Assert.IsType<Cart>(actual);
         }
         [Fact]
-        public void ConfirmOrder_ShouldReturnViewResultWithModelCart()
+        public void ConfirmOrder_WithoutStringSend_ShouldReturnViewResultWithModelCart()
         {
             OrderSummary.Cart = new Cart();
-            var action = orderController.ConfirmOrder("", "");
-            ViewResult result = action as ViewResult;
-            var actual = result.Model as Cart;
 
-            Assert.IsType<Cart>(actual);
+            var action = orderController.ConfirmOrder(empty, empty);
+            var viewResult = action as ViewResult;
+            var actualCart = viewResult.Model as Cart;
+
+            Assert.IsType<Cart>(actualCart);
         }
         [Fact]
         public void ConfirmOrder_ShouldReturnExpectedActionName()
         {
-            string expected = "ShipmentAddress";
-            var action = orderController.ConfirmOrder("send", "");
-            var redirect = action as RedirectToActionResult;
-            Assert.Equal(expected, redirect.ActionName);
+            string expectedAction = "ShipmentAddress";
+            string expectedController = "Order";
+
+            var action = orderController.ConfirmOrder("send", empty);
+            var redirectAction = action as RedirectToActionResult;
+
+            Assert.Equal(expectedAction, redirectAction.ActionName);
+            Assert.Equal(expectedController, redirectAction.ControllerName);
         }
         [Fact]
         public void ShipmentAddressPost_ShouldReturnExpectedActionName()
         {
-            string expected = "ConfirmOrder";
-            var action = orderController.ShipmentAddress("", "", "");
+            string expectedAction = "ConfirmOrder";
+            string expectedController = "Order";
+
+            var action = orderController.ShipmentAddress(empty, empty, empty);
             var redirect = action as RedirectToActionResult;
-            Assert.Equal(expected, redirect.ActionName);
+            
+            Assert.Equal(expectedAction, redirect.ActionName);
+            Assert.Equal(expectedController, redirect.ControllerName);
         }
     }
 }
