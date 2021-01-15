@@ -43,7 +43,7 @@ namespace DeliCode.ProductAPI.Repository
             return Task.FromResult(deleteProduct);
         }
 
-        public Task<Product> UpdateOrder(Product product)
+        public Task<Product> UpdateProduct(Product product)
         {
             var productToUpdate = products.SingleOrDefault(p => p.Id == product.Id);
             if (productToUpdate != null)

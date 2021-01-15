@@ -14,6 +14,6 @@ namespace DeliCode.ProductAPI.Repository
         Task<Product> GetProduct(Guid Id);
         Task<Product> AddProduct(Product product);
         Task<Product> DeleteProduct(Guid Id);
-        Task<Product> UpdateOrder(Product product);
+        Task<Product> UpdateProduct(Product product);
     }
 }

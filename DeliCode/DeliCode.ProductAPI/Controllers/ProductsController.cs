@@ -49,7 +49,7 @@ namespace DeliCode.ProductAPI.Controllers
             {
                 return BadRequest();
             }
-            product = await _repository.UpdateOrder(product);
+            product = await _repository.UpdateProduct(product);
 
             if (product == null)
             {

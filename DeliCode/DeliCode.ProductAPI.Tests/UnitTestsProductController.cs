@@ -10,13 +10,13 @@ using Xunit;
 
 namespace DeliCode.ProductAPI.Tests
 {
-    public class UnitTestProductService
+    public class UnitTestProductController
     {
         private readonly ProductsController productsController;
         private readonly MockProductRepository _service;
         private readonly List<Product> _products;
 
-        public UnitTestProductService()
+        public UnitTestProductController()
         {
             {
                 _products = new List<Product>
