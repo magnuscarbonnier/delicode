@@ -23,6 +23,13 @@ namespace DeliCode.Web.Models
                 return total;
             }
         }
+        public int TotalItemsInCart
+        {
+            get
+            {
+                return Items.Sum(x => x.Quantity);
+            }
+        }
     }
 
     public class CartItem

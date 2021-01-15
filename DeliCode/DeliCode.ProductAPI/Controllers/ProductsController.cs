@@ -1,13 +1,11 @@
-﻿using System;
+﻿using DeliCode.ProductAPI.Data;
+using DeliCode.ProductAPI.Models;
+using DeliCode.ProductAPI.Repository;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DeliCode.ProductAPI.Data;
-using DeliCode.ProductAPI.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DeliCode.ProductAPI.Controllers
 {
@@ -15,93 +13,68 @@ namespace DeliCode.ProductAPI.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductDbContext _context;
+        private IProductRepository _repository;
 
-        public ProductsController(ProductDbContext context)
+        public ProductsController(IProductRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _repository.GetAllProducts();
+            if (products != null && products.Any())
+            {
+                return Ok(products);
+            }
+            return NoContent();
         }
 
-        // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(Guid id)
         {
-            var product = await _context.Products.FindAsync(id);
-
-            if (product == null)
+            var product = await _repository.GetProduct(id);
+            if (product != null)
             {
-                return NotFound();
+                return Ok(product);
             }
-
-            return product;
+            return NotFound();
         }
 
-        // PUT: api/Products/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(Guid id, Product product)
+        public async Task<ActionResult> PutProduct(Guid id, Product product)
         {
             if (id != product.Id)
             {
                 return BadRequest();
             }
+            product = await _repository.UpdateProduct(product);
 
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Products
-        [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
-        {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
-        }
-
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
-        {
-            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(product);
         }
 
-        private bool ProductExists(Guid id)
+        [HttpPost]
+        public async Task<ActionResult> PostProduct(Product product)
         {
-            return _context.Products.Any(e => e.Id == id);
+            var productToReturn = await _repository.AddProduct(product);
+
+            return CreatedAtAction("PostProduct", productToReturn);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Product>> DeleteProduct(Guid id)
+        {
+            Product product = await _repository.DeleteProduct(id);
+            if (product == null)
+            {
+                return BadRequest();
+            }
+            return Ok(product);
         }
     }
 }

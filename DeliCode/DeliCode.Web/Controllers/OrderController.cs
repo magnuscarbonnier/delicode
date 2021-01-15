@@ -12,6 +12,10 @@ namespace DeliCode.Web.Controllers
     {
         public IActionResult Index()
         {
+            if(OrderSummary.Cart == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View(OrderSummary.Cart);
         }
         public IActionResult ConfirmOrder(string shipment, string payment)
