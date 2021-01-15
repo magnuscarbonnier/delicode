@@ -14,35 +14,43 @@ namespace DeliCode.ProductAPI.Repository
         internal List<Product> products = new List<Product>()
         {
             new Product() {Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"), Name = "Kanelbulle", Description = "", Price = 10, ImageUrl = "#"},
-            new Product() {Id = Guid.NewGuid(), Name = "Kladdkarta", Description = "", Price = 70, ImageUrl = "#"},
+            new Product() {Id = Guid.NewGuid(), Name = "Kladdkaka", Description = "", Price = 70, ImageUrl = "#"},
             new Product() {Id = Guid.NewGuid(), Name = "Tårta", Description = "", Price = 89, ImageUrl = "#"},
             new Product() {Id = Guid.NewGuid(), Name = "Cheesecake", Description = "", Price = 29, ImageUrl = "#"},
             new Product() {Id = Guid.NewGuid(), Name = "Muffin", Description = "", Price = 19, ImageUrl = "#"}
         };
 
-        public List<Product> GetAllProducts()
+        public Task<List<Product>> GetAllProducts()
         {
-            List<Product> productList = products;
-            return productList;
+            return Task.FromResult(products);
         }
-        public Product GetProduct(Guid Id)
+        public Task<Product> GetProduct(Guid Id)
         {
-            Product product = products.Where(e => e.Id == Id).SingleOrDefault();
-            return product;
+            Product product = products.SingleOrDefault(e => e.Id == Id);
+
+            return Task.FromResult(product);
         }
-        public List<Product> AddProduct(Product product)
+        public Task<Product> AddProduct(Product product)
         {
-            products.Add(product);
-            return products;
+            return Task.FromResult(product);
         }
-        public List<Product> DeleteProduct(Guid Id)
+        public Task<Product> DeleteProduct(Guid Id)
         {
-            var deleteProduct = products
-                .Where(e => e.Id == Id)
-                .SingleOrDefault();
+            var deleteProduct = products.SingleOrDefault(e => e.Id == Id);
 
             products.Remove(deleteProduct);
-            return products;
+
+            return Task.FromResult(deleteProduct);
+        }
+
+        public Task<Product> UpdateOrder(Product product)
+        {
+            var productToUpdate = products.SingleOrDefault(p => p.Id == product.Id);
+            if (productToUpdate != null)
+            {
+                productToUpdate = product;
+            }
+            return Task.FromResult(productToUpdate);
         }
     }
 }
