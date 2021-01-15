@@ -1,7 +1,9 @@
 ﻿using DeliCode.ProductAPI.Controllers;
+using DeliCode.ProductAPI.Data;
 using DeliCode.ProductAPI.Models;
 using DeliCode.ProductAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,28 +15,44 @@ namespace DeliCode.ProductAPI.Tests
     public class UnitTestProductController
     {
         private readonly ProductsController productsController;
-        private readonly MockProductRepository _service;
+        private readonly IProductRepository _repository;
         private readonly List<Product> _products;
-
+        protected DbContextOptions<ProductDbContext> ContextOptions { get; }
         public UnitTestProductController()
         {
-            {
-                _products = new List<Product>
+            _products = new List<Product>
                 {
-                    new Product() { Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"), Name = "Kanelbulle", Description = "", Price = 10, ImageUrl = "#" },
-                    new Product() { Id = Guid.NewGuid(), Name = "Kladdkaka", Description = "", Price = 70, ImageUrl = "#" },
-                    new Product() { Id = Guid.NewGuid(), Name = "Tårta", Description = "", Price = 89, ImageUrl = "#" },
-                    new Product() { Id = Guid.NewGuid(), Name = "Cheesecake", Description = "", Price = 29, ImageUrl = "#" },
-                    new Product() { Id = Guid.NewGuid(), Name = "Muffin", Description = "", Price = 19, ImageUrl = "#" }
+                    new Product() { Name = "Kanelbulle", Description = "", Price = 10, ImageUrl = "#" },
+                    new Product() { Name = "Kladdkaka", Description = "", Price = 70, ImageUrl = "#" },
+                    new Product() { Name = "Tårta", Description = "", Price = 89, ImageUrl = "#" },
+                    new Product() { Name = "Cheesecake", Description = "", Price = 29, ImageUrl = "#" },
+                    new Product() { Name = "Muffin", Description = "", Price = 19, ImageUrl = "#" }
                 };
-            };
-            _service = new MockProductRepository();
-            productsController = new ProductsController(_service);
-        }
+            ContextOptions = SetMockDatabaseOptions();
+            SeedMockData();
 
+            _repository = new ProductRepository(new ProductDbContext(ContextOptions));
+            productsController = new ProductsController(_repository);
+        }
+        private DbContextOptions<ProductDbContext> SetMockDatabaseOptions()
+        {
+            string connectionString = @"Server=(localdb)\mssqllocaldb;Database=ProductApiControllerTestDB;ConnectRetryCount=0";
+            return new DbContextOptionsBuilder<ProductDbContext>()
+                .UseSqlServer(connectionString)
+                .Options;
+        }
+        private void SeedMockData()
+        {
+            using (var context = new ProductDbContext(ContextOptions))
+            {
+                context.Database.EnsureDeleted();
+                context.Database.Migrate();
+            }
+        }
         [Fact]
         public async Task GetAllProducts_ShouldReturnAllProducts()
         {
+
             var result = await productsController.GetProducts();
 
             var okobjectresult = result.Result as OkObjectResult;
@@ -46,7 +64,11 @@ namespace DeliCode.ProductAPI.Tests
         [Fact]
         public async Task GetAllProducts_NoProductsAdded_ShouldReturnNoContent()
         {
-            _service.products.Clear();
+            var products = await _repository.GetAllProducts();
+            foreach (var product in products)
+            {
+                await _repository.DeleteProduct(product.Id);
+            }
 
             var result = await productsController.GetProducts();
             var nocontentresult = result.Result as NoContentResult;
@@ -56,14 +78,15 @@ namespace DeliCode.ProductAPI.Tests
         [Fact]
         public async Task GetProductById_ShouldReturnProduct()
         {
-            var id = _products.FirstOrDefault().Id;
+            var products = await _repository.GetAllProducts();
+            var productid = products.FirstOrDefault().Id;
 
-            var result = await productsController.GetProduct(id);
+            var result = await productsController.GetProduct(productid);
             var okobjectresult = result.Result as OkObjectResult;
             var product = okobjectresult.Value as Product;
 
             Assert.IsType<OkObjectResult>(okobjectresult);
-            Assert.Equal(product.Id, id);
+            Assert.Equal(productid, product.Id);
         }
         [Fact]
         public async Task GetProductByInvalidId_ShouldReturnNotFound()
@@ -87,15 +110,16 @@ namespace DeliCode.ProductAPI.Tests
         [Fact]
         public async Task UpdateProduct_ShouldReturnUpdatedOrder()
         {
-            var updatedProduct = _products.FirstOrDefault();
+            var products = await _repository.GetAllProducts();
+            var updatedProduct = products.FirstOrDefault();
             updatedProduct.Name = "TestTårta";
 
             var result = await productsController.PutProduct(updatedProduct.Id, updatedProduct);
             var okobjectresult = result as OkObjectResult;
-            var expectedProduct = okobjectresult.Value as Product;
+            var actualProduct = okobjectresult.Value as Product;
 
             Assert.IsType<OkObjectResult>(okobjectresult);
-            Assert.Equal(expectedProduct.Name, updatedProduct.Name);
+            Assert.Equal(updatedProduct.Name, actualProduct.Name);
         }
         [Fact]
         public async Task UpdateProduct_InvalidId_ReturnsBadRequest()
@@ -110,8 +134,7 @@ namespace DeliCode.ProductAPI.Tests
         [Fact]
         public async Task UpdateProduct_ProductNotExistsInDataBase_ReturnsNotFound()
         {
-            var updatedProduct = _products.FirstOrDefault();
-            updatedProduct.Id = new Guid();
+            var updatedProduct = new Product { Id = Guid.NewGuid() };
 
             var result = await productsController.PutProduct(updatedProduct.Id, updatedProduct);
 
@@ -120,7 +143,8 @@ namespace DeliCode.ProductAPI.Tests
         [Fact]
         public async Task DeleteProduct_ReturnsDeletedProduct()
         {
-            var productId = _service.products.FirstOrDefault().Id;
+            var productInDb = await _repository.GetAllProducts();
+            var productId = productInDb.FirstOrDefault().Id;
 
             var result = await productsController.DeleteProduct(productId);
             var okobjectresult = result.Result as OkObjectResult;

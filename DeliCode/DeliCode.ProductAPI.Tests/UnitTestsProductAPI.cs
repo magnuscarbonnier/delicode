@@ -1,3 +1,5 @@
+// TODO: Remove this file or run edit to run with test database, not production database.
+
 //using DeliCode.ProductAPI.Models;
 //using DeliCode.ProductAPI.Repository;
 //using Newtonsoft.Json;

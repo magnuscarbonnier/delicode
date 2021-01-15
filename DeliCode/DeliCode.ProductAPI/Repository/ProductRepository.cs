@@ -67,7 +67,6 @@ namespace DeliCode.ProductAPI.Repository
 
             try
             {
-                _context.Products.Add(product);
                 await _context.SaveChangesAsync();
             }
             catch
