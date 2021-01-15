@@ -28,6 +28,6 @@ namespace DeliCode.Web.Models
         {
             return OrderProducts.Sum(x => x.Price * x.Quantity);
         }
-        public List<OrderProduct> OrderProducts { get; set; }
+        public List<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
     }
 }

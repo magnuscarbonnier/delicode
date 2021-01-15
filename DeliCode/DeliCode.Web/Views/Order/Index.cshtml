@@ -1,4 +1,16 @@
-﻿<component type="typeof(DeliCode.Web.Components.OrderComponent)" render-mode="Server" />
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    string userid = default;
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+    userid = UserManager.GetUserId(User);
+}
+
+<component type="typeof(DeliCode.Web.Components.OrderComponent)" param-UserId="@userid" render-mode="Server" />
 
 @section Scripts {
     <script src="_framework/blazor.server.js"></script>
