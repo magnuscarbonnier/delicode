@@ -35,6 +35,7 @@
             </div>
         </nav>
     </header>
+    @await RenderSectionAsync("JumbotronHeader", required: false)
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -49,6 +50,8 @@
             @RenderBody()
         </main>
     </div>
+
+    @await RenderSectionAsync("JumbotronFooter", required: false)
 
     <footer class="border-top footer text-muted">
         <div class="container">

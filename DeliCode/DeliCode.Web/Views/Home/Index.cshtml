@@ -3,14 +3,9 @@
     ViewData["Title"] = "Välkommen till Deli Code!";
 }
 
-<div class="jumbotron jumbotron-fluid jumbotron-custom">
-    <div class="container">
-        <div class="jumboheader text-center">
-            <h1 class="display-4">Beställ en av våra godsaker!</h1>
-            <p class="lead">Vi erbjuder hemleverans och catering</p>
-        </div>
-    </div>
-</div>
+@section JumbotronHeader {
+    @await Html.PartialAsync("_JumbotronHeader")
+}
 <div class="text-center mb-5">
     <h3 class="display-4">Godaste grejjerna i stan</h3>
 
@@ -103,15 +98,6 @@
         </p>
     </div>
 </div>
-
-<div class="jumbotron jumbotron-fluid jumbotron-subscribe">
-    <div class="container">
-        <div class="text-center">
-            <h1 class="display-4">Prenumerera på vårat nyhetsbrev</h1>
-            <div style="text-align:center">
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Skriv in email">
-                    <button type="submit" class="btn btn-light btn-trans mt-3">Skicka</button>
-            </div>
-        </div>
-    </div>
-</div>
+@section JumbotronFooter {
+    @await Html.PartialAsync("_JumbotronFooter")
+}

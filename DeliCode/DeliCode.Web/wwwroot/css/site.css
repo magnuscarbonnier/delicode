@@ -79,26 +79,24 @@ body {
     opacity: 0.8;
 }
 
-.jumbotron-custom {
-    background: url('/img/jumbobg-min.jpg') no-repeat !important;
-    height: 500px;
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+.jumbofooter {
+    background: #eaeced;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 30px;
+    padding-right: 30px;
+    opacity: 0.8;
+    color: black;
 }
 
-.jumbotron-subscribe {
+.jumbotron-custom {
+    background: url('/img/jumbobg-min.jpg') no-repeat !important;
+    background-position: center !important;
+}
+
+.jumbotron-footer {
     background: url('/img/subscribe-min.jpg') no-repeat !important;
-    height: 500px;
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    background-position: center !important;
 }
 
 .btn-trans {
@@ -112,4 +110,8 @@ body {
     border-radius: 50%;
     display: block;
     margin: auto;
+}
+
+.strokeme {
+    color: #777;
 }
