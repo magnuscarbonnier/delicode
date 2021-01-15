@@ -153,17 +153,32 @@ Order Total Price: @orderModel.TotalPrice()
                                     <button class="btn btn-primary" type="submit">Välj leveranssätt</button>
                                 </EditForm>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
-        }
+        } 
+        @if (isValidPersonalDetails && isDeliverySelected)
+        {
+            <div class="col-md-12 col-lg-5">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="page-content page-container" id="page-content">
+
+                                <button class="btn btn-primary" @onclick="@PlaceOrder">Beställ</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         }
     </div>
+
 </div>
-@if (isValidPersonalDetails && isDeliverySelected)
-{
-    <button class="btn btn-primary" @onclick="@PlaceOrder">Beställ</button>
-}
+
 
 @code {
     [Parameter]
@@ -193,10 +208,12 @@ Order Total Price: @orderModel.TotalPrice()
     {
         isValidPersonalDetails = true;
     }
+
     private void NavigateToProduct(Guid productid)
     {
         NavManager.NavigateTo("/product/Details?productId=" + productid.ToString(), true);
     }
+
     private void SelectDelivery(string selectedDelivery)
     {
         var deliveryprice = deliveryOptions.SingleOrDefault(x => x.Key == selectedDelivery).Value;
