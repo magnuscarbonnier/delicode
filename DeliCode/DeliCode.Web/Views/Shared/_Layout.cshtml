@@ -11,9 +11,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DeliCode.Web</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Deli Code</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,6 +35,8 @@
             </div>
         </nav>
     </header>
+    @await RenderSectionAsync("JumbotronHeader", required: false)
+
     <div class="container">
         <main role="main" class="pb-3">
             @if (TempData["Success"] != null)
@@ -48,6 +50,8 @@
             @RenderBody()
         </main>
     </div>
+
+    @await RenderSectionAsync("JumbotronFooter", required: false)
 
     <footer class="border-top footer text-muted">
         <div class="container">
