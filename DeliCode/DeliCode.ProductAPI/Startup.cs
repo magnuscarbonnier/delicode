@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DeliCode.Library.Models;
+using DeliCode.ProductAPI.Repository;
 
 namespace DeliCode.ProductAPI
 {
@@ -64,6 +65,7 @@ namespace DeliCode.ProductAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DeliCode.ProductAPI", Version = "v1" });
             });
+            services.AddTransient<IProductRepository, ProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
