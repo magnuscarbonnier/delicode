@@ -1,11 +1,12 @@
 ﻿@inject ICartService CartService
 @inject IOrderService OrderService
+@inject IProductService ProductService
 @inject NavigationManager NavManager
 
 <div class="container">
     <div class="row">
 
-            <ShowCart DeliveryMethod="@SelectedDeliverytype" Cart="@cart" OrderModel="@orderModel" />
+        <ShowCart DeliveryMethod="@SelectedDeliverytype" Cart="@cart" OrderModel="@orderModel" />
 
 
         @if (!isValidPersonalDetails)
@@ -78,24 +79,24 @@
         }
         else
         {
-            
-                <ShowDeliveryOptions DeliveryOptions="@DeliveryOptions" OnClickCallback="SelectDelivery" OrderModel="@orderModel" />
-        
+
+            <ShowDeliveryOptions DeliveryOptions="@DeliveryOptions" OnClickCallback="SelectDelivery" OrderModel="@orderModel" />
+
         }
         @if (isValidPersonalDetails && isDeliverySelected)
         {
 
-                <div class="card">
-                    <div class="card-content">
-                        <div class="card-body">
-                            <div class="page-content page-container" id="page-content">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="page-content page-container" id="page-content">
 
-                                <button class="btn btn-primary" @onclick="@PlaceOrder">Beställ</button>
+                            <button class="btn btn-primary" @onclick="@PlaceOrder">Beställ</button>
 
-                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
         }
     </div>
@@ -109,8 +110,8 @@
 
     private string messageText;
 
-    private Order orderModel = new Order();
-    private Cart cart = new Cart();
+    private Order orderModel=new Order();
+    private Cart cart=new Cart();
     private string userid;
     private bool isValidPersonalDetails = false;
     private bool isDeliverySelected = false;
@@ -119,24 +120,48 @@
 
     protected override async Task OnInitializedAsync()
     {
-        cart = await CartService.GetCart();
+        cart = await GetValidCart();
+
+        orderModel = await InitializeNewOrder();
+
+        SetDeliveryOptionsAvailable();
+    }
+
+    private async Task<Cart> GetValidCart()
+    {
+        var cartItems = new List<CartItem>();
+        var cartResponse = await CartService.GetCart();
+        foreach (var product in cartResponse.Items)
+        {
+            var productResponse = await ProductService.Get(product.Product.Id);
+            if (productResponse.Id != Guid.Empty)
+            {
+                cartItems.Add(product);
+            }
+        }
+        cartResponse.Items = cartItems;
+        return cartResponse;
+    }
+
+    private async Task<Order> InitializeNewOrder()
+    {
+        var order = new Order();
         foreach (var item in cart.Items)
         {
             orderModel.OrderProducts.Add(new OrderProduct { Name = item.Product.Name, Price = item.Product.Price, ProductId = item.Product.Id, Quantity = item.Quantity });
         }
-        DeliveryOptions.Add("Hemleverans", 299);
+        return await Task.FromResult(order);
+    }
+
+    private void SetDeliveryOptionsAvailable()
+    {
+        DeliveryOptions.Add("Hemleverans", 99);
         DeliveryOptions.Add("Hämta i butik", 0);
-        StateHasChanged();
     }
 
     private void SavePersonalDetails()
     {
         isValidPersonalDetails = true;
-    }
-
-    private void NavigateToProduct(Guid productid)
-    {
-        NavManager.NavigateTo("/product/Details?productId=" + productid.ToString(), true);
     }
 
     private void SelectDelivery(KeyValuePair<string, decimal> selectedDelivery)
