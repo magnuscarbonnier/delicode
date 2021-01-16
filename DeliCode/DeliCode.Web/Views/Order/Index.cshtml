@@ -4,7 +4,7 @@
 @{
     string userid = default;
 }
-
+<link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css">
 @if (SignInManager.IsSignedIn(User))
 {
     userid = UserManager.GetUserId(User);
@@ -14,6 +14,7 @@
 
 @section Scripts {
     <script src="_framework/blazor.server.js"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 }
 @*@model DeliCode.Web.Models.Cart
     @{

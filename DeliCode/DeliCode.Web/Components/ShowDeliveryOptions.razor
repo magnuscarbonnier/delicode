@@ -1,0 +1,33 @@
+﻿<div class="col-md-12 col-lg-6">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-body">
+                <h4>
+                    Välj leveranssätt
+                </h4>
+
+                @foreach (var item in DeliveryOptions)
+                {
+                    <div class="col-8">
+                        <button @onclick="@(() => OnClickCallback.InvokeAsync(item))" class="btn btn-outline-secondary" data-abc="true">@item.Key</button>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted font-weight-bold">@item.Value :-</div>
+                    </div>
+                }
+                <hr />
+                Total: <span class="font-weight-bold" style="color: forestgreen">@OrderModel.TotalPrice() :-</span>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public EventCallback<KeyValuePair<string, decimal>> OnClickCallback { get; set; }
+
+    [Parameter]
+    public Dictionary<string, decimal> DeliveryOptions { get; set; }
+
+    [Parameter]
+    public Order OrderModel { get; set; }
+}
