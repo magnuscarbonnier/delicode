@@ -71,6 +71,7 @@ namespace DeliCode.Web.Services
             var isSuccess = false;
             foreach (var orderProduct in orderProducts)
             {
+                //TODO: not finished
                 var blah=new KeyValuePair<Guid, int>(orderProduct.ProductId, orderProduct.Quantity);
 
                 //var product = await _productService.Get(orderProduct.ProductId);
