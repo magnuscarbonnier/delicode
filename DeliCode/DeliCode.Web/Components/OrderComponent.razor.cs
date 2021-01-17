@@ -53,20 +53,6 @@ namespace DeliCode.Web.Components
         {
             var cartItems = new List<CartItem>();
             var cartResponse = await CartService.GetCart();
-            foreach (var cartItem in cartResponse.Items)
-            {
-                var productResponse = await ProductService.Get(cartItem.Product.Id);
-                if (productResponse.Id != Guid.Empty && productResponse.AmountInStorage>=cartItem.Quantity)
-                {
-                    cartItems.Add(cartItem);
-                }
-                else if (productResponse.Id != Guid.Empty && productResponse.AmountInStorage < cartItem.Quantity && productResponse.AmountInStorage>0)
-                {
-                    cartItem.Quantity = productResponse.AmountInStorage;
-                    cartItems.Add(cartItem);
-                }
-            }
-            cartResponse.Items = cartItems;
 
             cart = cartResponse;
         }
@@ -124,6 +110,12 @@ namespace DeliCode.Web.Components
         protected async Task PlaceOrder()
         {
             isLoading = true;
+            isDeliverySelected = false;
+            isValidPersonalDetails = false;
+            isHomeDelivery = false;
+            isHomeDeliveryBooked = false;
+            isPaymentSelected = false;
+
             var order = orderModel;
             if(UserId != null)
             {
@@ -132,17 +124,16 @@ namespace DeliCode.Web.Components
             try
             {
                 order = await OrderService.PlaceOrder(orderModel); 
-              
+                foreach (var orderProduct in order.OrderProducts)
+                {
+                    var product=await ProductService.Get(orderProduct.Id);
+                    product.AmountInStorage = product.AmountInStorage - orderProduct.Quantity;
+                    await ProductService.Update(product);
+                }
                 NavManager.NavigateTo($"/admin/editorder?orderid={order.Id}", true);
-                isLoading = false;
             }
             catch
             {
-                isDeliverySelected = false;
-                isValidPersonalDetails = false;
-                isHomeDelivery = false;
-                isHomeDeliveryBooked = false;
-                isPaymentSelected = false;
                 isLoading = false;
             }
         }

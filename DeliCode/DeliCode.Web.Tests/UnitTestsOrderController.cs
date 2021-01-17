@@ -22,14 +22,14 @@ namespace DeliCode.Web.Tests
         }
 
         [Fact]
-        public void Index_ShouldReturnViewResultWithModelCart()
+        public void Index_ShouldReturnViewResultWithoutModel()
         {
             OrderSummary.Cart = new Cart();
             var action = orderController.Index();
             ViewResult result = action as ViewResult;
-            var actual = result.Model as Cart;
+            var actual = result.Model;
 
-            Assert.IsType<Cart>(actual);
+            Assert.Null(actual);
         }
         [Fact]
         public void ConfirmOrder_WithoutStringSend_ShouldReturnViewResultWithModelCart()

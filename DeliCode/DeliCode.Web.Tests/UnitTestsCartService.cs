@@ -19,11 +19,13 @@ namespace DeliCode.Web.Tests
         private readonly Product _product;
         private readonly MockCartRepository _repository;
         private readonly ICartService _cartService;
+        private readonly IProductService _productService;
+        private HttpClient _httpClient;
 
         public UnitTestsCartService()
         {
             _repository = new MockCartRepository();
-            _cartService = new CartService(_repository);
+            
             _product = new Product()
             {
                 Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
@@ -31,6 +33,12 @@ namespace DeliCode.Web.Tests
                 Price = 12.50m,
                 Description = "En jättegod tårta"
             };
+            var productAPIUrl = "https://localhost:44333";
+
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = new Uri(productAPIUrl);
+            _productService = new ProductService(_httpClient);
+            _cartService = new CartService(_repository,_productService);
         }
         [Fact]
         private async Task GetCart_ReturnsCart()
@@ -51,26 +59,58 @@ namespace DeliCode.Web.Tests
         }
         [Fact]
         private async Task GetCart_ReturnsListOfCartItems()
-        {
-            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity=2 } };
-            
+        {            
             var result = await _cartService.GetCart();
             var cartItemsResult = result.Items;
 
             Assert.IsType<List<CartItem>>(cartItemsResult);
-            Assert.Equal(cartitems.FirstOrDefault().Product.Id, cartItemsResult.FirstOrDefault().Product.Id );
-            Assert.Equal(cartitems.FirstOrDefault().Total, cartItemsResult.FirstOrDefault().Total);
         }
+
+        [Fact]
+        private async Task GetCart_CartItemsCountLessThanProductsInStorage_ReturnsCartWithOnlyProductsAvailable()
+        {
+            _repository._cart.Items.Clear();
+            _repository._cart.Items.Add(new CartItem { Quantity = 3, Product = await _productService.Get(new Guid("4DF795CF-EA1C-47C1-A4E0-F20742CFE359"))});
+
+            var result = await _cartService.GetCart();
+            var cartItemsResult = result.Items;
+            foreach (var cartitem in cartItemsResult)
+            {
+                var cartitemamount= cartitem.Quantity;
+                var product = await _productService.Get(cartitem.Product.Id);
+                var productamount = product.AmountInStorage;
+                Assert.InRange(cartitem.Quantity, 1, productamount);
+            }
+        }
+
+        [Fact]
+        private async Task GetCart_CartItemsMoreThanProductsInStorage_ReturnsCartWithOnlyProductsAvailable()
+        {
+            _repository._cart.Items.Clear();
+            _repository._cart.Items.Add(new CartItem { Quantity = 5, Product = await _productService.Get(new Guid("4DF795CF-EA1C-47C1-A4E0-F20742CFE359")) });
+
+            var result = await _cartService.GetCart();
+            var cartItemsResult = result.Items;
+            foreach (var cartitem in cartItemsResult)
+            {
+                var cartitemamount = cartitem.Quantity;
+                var product = await _productService.Get(cartitem.Product.Id);
+                var productamount = product.AmountInStorage;
+                Assert.InRange(cartitem.Quantity, 1, productamount);
+            }
+        }
+
         [Fact]
         private async Task AddProductToCart_ProductAlreadyInCart_ReturnsCart()
         {
-            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 3 } };
+            var product = await _productService.Get(new Guid("4DF795CF-EA1C-47C1-A4E0-F20742CFE359"));
+            var cartitems = new List<CartItem> { new CartItem { Product = product, Quantity = 2 } };
 
-            var result = await _cartService.AddProductToCart(_product);
+            var result = await _cartService.AddProductToCart(product);
             var cartResult = result.Items;
 
             Assert.IsType<Cart>(result);
-            Assert.Equal(_product.Id, cartResult.FirstOrDefault().Product.Id);
+            Assert.Equal(product.Id, cartResult.FirstOrDefault().Product.Id);
             Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault().Quantity);
 
         }

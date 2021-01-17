@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace DeliCode.Web.Services
@@ -42,6 +43,14 @@ namespace DeliCode.Web.Services
         public Task<Product> Add(Product product)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Product> Update(Product product)
+        {
+            var response = await _httpClient.PutAsJsonAsync<Product>($"api/products/{product.Id}", product);
+            var orderResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Product>(orderResponse);
         }
     }
 }

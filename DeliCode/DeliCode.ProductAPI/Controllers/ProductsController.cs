@@ -43,7 +43,7 @@ namespace DeliCode.ProductAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutProduct(Guid id, Product product)
+        public async Task<ActionResult> PutProduct(Guid id,[FromBody] Product product)
         {
             if (id != product.Id)
             {

@@ -30,7 +30,7 @@ namespace DeliCode.Web.Tests
             _productService = new ProductService(_httpClient);
             _productRepository = new MockProductRepository();
             _cartRepository = new MockCartRepository();
-            _cartService = new CartService(_cartRepository);
+            _cartService = new CartService(_cartRepository,_productService);
             _controller = new CartController(_productService, _cartService);
         }
 

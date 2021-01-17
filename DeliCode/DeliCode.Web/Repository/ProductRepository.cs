@@ -45,9 +45,12 @@ namespace DeliCode.Web.Repository
             throw new NotImplementedException();
         }
 
-        public Task<Product> Update(Product product)
+        public async Task<Product> Update(Product product)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.PutAsJsonAsync<Product>($"api/products/{product.Id}", product);
+            var orderResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Product>(orderResponse);
         }
     }
 }
