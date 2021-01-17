@@ -1,0 +1,36 @@
+﻿<div class="card">
+    <div class="card-content">
+        <div class="card-body">
+            <h4>
+                Välj leveranssätt
+            </h4>
+
+            @foreach (var item in DeliveryOptions)
+            {
+                if (SelectedDeliveryOption.Key == item.Key)
+                {
+                    <button @onclick="@(() => OnClickCallback.InvokeAsync(item))" class="btn btn-secondary">@item.Key @item.Value :-</button>
+
+                }
+                else
+                {
+                    <button @onclick="@(() => OnClickCallback.InvokeAsync(item))" class="btn btn-outline-secondary">@item.Key @item.Value :-</button>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public EventCallback<KeyValuePair<string, decimal>> OnClickCallback { get; set; }
+
+    [Parameter]
+    public Dictionary<string, decimal> DeliveryOptions { get; set; }
+
+    [Parameter]
+    public Order OrderModel { get; set; }
+
+    [Parameter]
+    public KeyValuePair<string, decimal> SelectedDeliveryOption { get; set; }
+}

@@ -1,4 +1,4 @@
-﻿<div class="col-md-12 col-lg-6">
+﻿
     <div class="card">
         <div class="card-content">
             <div class="card-body">
@@ -10,7 +10,7 @@
                     </svg>
                 </h4>
 
-                @foreach (var item in Cart.Items)
+                @foreach (var item in CartModel.Items)
                 {
                     <ShowCartItem Item="@item" />
                 }
@@ -20,6 +20,7 @@
                     <h4 style="color: #5e676f">Vald fraktmetod</h4>
                     <ul>
                         <li class="text-muted">@DeliveryMethod.Key <label class="font-weight-bold">@DeliveryMethod.Value :-</label></li>
+                        <label class="text-muted">@OrderModel.BookedDeliveryDate?.ToString("yyyy-MM-dd")</label>
                     </ul>
                     <hr />
                 }
@@ -27,10 +28,9 @@
             </div>
         </div>
     </div>
-</div>
 @code {
     [Parameter]
-    public Cart Cart { get; set; }
+    public Cart CartModel { get; set; }
 
     [Parameter]
     public Order OrderModel { get; set; }

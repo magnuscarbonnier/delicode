@@ -1,0 +1,78 @@
+﻿
+    <div class="card">
+        <div class="card-content">
+            <div class="card-body">
+      
+
+                    <EditForm Model="@OrderModel" OnValidSubmit="@(() => OnSaveCallback.InvokeAsync())">
+                        <DataAnnotationsValidator />
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Förnamn</label>
+                                <InputText class="form-control" id="firstname" @bind-Value="OrderModel.FirstName" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.FirstName" /></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Efternamn</label>
+                                <InputText class="form-control" id="lastname" @bind-Value="OrderModel.LastName" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.LastName" /></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Epost</label>
+                                <InputText class="form-control" id="email" @bind-Value="OrderModel.Email" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.Email" /></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Adress</label>
+                                <InputText class="form-control" id="address" @bind-Value="OrderModel.Address" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.Address" /></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Postnummer</label>
+                                <InputText class="form-control" id="zipcode" @bind-Value="OrderModel.ZipCode" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.ZipCode" /></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Stad</label>
+                                <InputText class="form-control" id="city" @bind-Value="OrderModel.City" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.City" /></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Land</label>
+                                <InputText class="form-control" id="country" @bind-Value="OrderModel.Country" disabled="true" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.Country" /></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Telefon</label>
+                                <InputText class="form-control" id="phone" @bind-Value="OrderModel.Phone" />
+                                <div class="text-danger"><ValidationMessage For="() => OrderModel.Phone" /></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Extra information</label>
+                                <InputTextArea class="form-control" id="shippingnotes" @bind-Value="OrderModel.ShippingNotes" />
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="submit">Spara Uppgifter</button>
+                    </EditForm>
+                </div>
+
+            </div>
+
+    </div>
+@code {
+    [Parameter]
+    public Order OrderModel { get; set; }
+
+    [Parameter]
+    public EventCallback OnSaveCallback { get; set; }
+}

@@ -15,25 +15,26 @@ namespace DeliCode.Web.Models
         public OrderStatus Status { get; set; }
         public DateTime? BookedDeliveryDate { get; set; }
         public string UserId { get; set; }
+        [Required(ErrorMessage = "Du måste fylla i epost")]
+        [EmailAddress(ErrorMessage = "Ogiltig epostadress")]
         public string Email { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Du måste fylla i förnamn")]
         public string FirstName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Du måste fylla i efternamn")]
 
         public string LastName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Du måste fylla i adress")]
 
         public string Address { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Du måste fylla i postnummer")]
 
         public string ZipCode { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Du måste fylla i stad")]
 
         public string City { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Du måste fylla i land")]
 
         public string Country { get; set; }
-        [Required]
 
         public string Phone { get; set; }
         public string ShippingNotes { get; set; }

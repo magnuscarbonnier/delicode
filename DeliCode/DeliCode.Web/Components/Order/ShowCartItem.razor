@@ -17,11 +17,6 @@
     [Parameter]
     public CartItem Item { get; set; }
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    StateHasChanged();
-    //}
-
     private void NavigateToProduct(Guid productid)
     {
         NavManager.NavigateTo("/product/Details?productId=" + productid.ToString(), true);

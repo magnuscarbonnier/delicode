@@ -1,0 +1,177 @@
+﻿@inject ICartService CartService
+@inject IOrderService OrderService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+<br />
+
+    <div class="row">
+        <div class="col-12 col-lg-5">
+            <ShowCart DeliveryMethod="SelectedDeliverytype" OrderModel="orderModel" CartModel="cart" />
+        </div>
+        <div class="col-12 col-lg-7">
+            <ShowDeliveryOptions DeliveryOptions="DeliveryOptions" OnClickCallback="SelectDelivery" OrderModel="orderModel" SelectedDeliveryOption="SelectedDeliverytype" />
+            @if (isDeliverySelected && isHomeDelivery)
+            {
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <h4>Välj leveranstid</h4>
+                            @foreach (var date in AvailableDeliveryDates)
+                            {
+                                @if (isHomeDeliveryBooked && orderModel.BookedDeliveryDate==date)
+                                {
+                                    <button class="btn btn-secondary" @onclick="(()=>SelectDate(date))">@date.ToShortDateString()</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn@(btndesign)-secondary" @onclick="(()=>SelectDate(date))">@date.ToShortDateString()</button>
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            }
+            @if ((isDeliverySelected && !isHomeDelivery) || (isDeliverySelected && isHomeDelivery && isHomeDeliveryBooked))
+            {
+
+                <ShowEditPersonalDetails OnSaveCallback="SavePersonalDetails" OrderModel="orderModel" />
+
+            }
+            @if ((isDeliverySelected && !isHomeDelivery && isValidPersonalDetails) || (isDeliverySelected && isHomeDelivery && isHomeDeliveryBooked && isValidPersonalDetails))
+            {
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <h4>Betalmetod</h4>
+                            <button class="btn btn-outline-secondary" @onclick="(()=>isPaymentSelected=true)">Faktura 14 dagar</button>
+
+                            @if (isPaymentSelected)
+                            {
+                                <hr />
+                                <button class="btn btn-secondary" @onclick="PlaceOrder">Beställ</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+@code {
+    [Parameter]
+    public string UserId { get; set; }
+
+    private Order orderModel = new Order();
+    private Cart cart = new Cart();
+
+    private bool isValidPersonalDetails = false;
+    private bool isDeliverySelected = false;
+    private bool isPaymentSelected = false;
+    private bool isHomeDelivery = false;
+    private bool isHomeDeliveryBooked = false;
+    private string btndesign = "-outline";
+
+    private KeyValuePair<string, decimal> SelectedDeliverytype;
+    private Dictionary<string, decimal> DeliveryOptions = new Dictionary<string, decimal>();
+
+    private List<DateTime> AvailableDeliveryDates = new List<DateTime>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetValidCart();
+
+        InitializeOrderProducts();
+
+        SetDeliveryOptionsAvailable();
+
+        GetAvailableDeliveryDates();
+    }
+
+    private async Task GetValidCart()
+    {
+        var cartItems = new List<CartItem>();
+        var cartResponse = await CartService.GetCart();
+        foreach (var product in cartResponse.Items)
+        {
+            var productResponse = await ProductService.Get(product.Product.Id);
+            if (productResponse.Id != Guid.Empty)
+            {
+                cartItems.Add(product);
+            }
+        }
+        cartResponse.Items = cartItems;
+
+        cart = cartResponse;
+    }
+
+    private void InitializeOrderProducts()
+    {
+        foreach (var item in cart.Items)
+        {
+            orderModel.OrderProducts.Add(new OrderProduct { Name = item.Product.Name, Price = item.Product.Price, ProductId = item.Product.Id, Quantity = item.Quantity });
+        }
+        orderModel.Country = "Sverige";
+    }
+
+    private void SetDeliveryOptionsAvailable()
+    {
+        DeliveryOptions.Add("Hemleverans", 99);
+        DeliveryOptions.Add("Hämta i butik", 0);
+    }
+
+    private void GetAvailableDeliveryDates()
+    {
+        for (int i = 2; i < 10; i++)
+        {
+            DateTime date = DateTime.Today.AddDays(i);
+            AvailableDeliveryDates.Add(date);
+        }
+    }
+
+    private void SavePersonalDetails()
+    {
+        isValidPersonalDetails = true;
+    }
+
+    private void SelectDelivery(KeyValuePair<string, decimal> selectedDelivery)
+    {
+        orderModel.ShippingPrice = selectedDelivery.Value;
+        SelectedDeliverytype = selectedDelivery;
+        isDeliverySelected = true;
+        if (selectedDelivery.Key == "Hemleverans")
+        {
+            isHomeDelivery = true;
+        }
+        else
+        {
+            isHomeDelivery = false;
+            isHomeDeliveryBooked = false;
+            orderModel.BookedDeliveryDate = default;
+        }
+    }
+    private void SelectDate(DateTime date)
+    {
+        isHomeDeliveryBooked = true;
+        orderModel.BookedDeliveryDate = date;
+    }
+    private async Task PlaceOrder()
+    {
+        @if (UserId != null)
+        {
+            orderModel.UserId = UserId;
+        }
+        try
+        {
+            var order = await OrderService.PlaceOrder(orderModel);
+            NavManager.NavigateTo("/", true);
+        }
+        catch
+        {
+            isDeliverySelected = false;
+            isValidPersonalDetails = false;
+        }
+    }
+}
