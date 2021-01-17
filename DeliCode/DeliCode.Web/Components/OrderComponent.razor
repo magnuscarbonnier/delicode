@@ -1,0 +1,69 @@
+﻿@inherits OrderComponentBase
+<br />
+@if (isLoading)
+{
+    <h4>Din order behandlas</h4>
+    <p>vänligen vänta...</p>
+    <div class="col-5"><RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" /></div>
+    
+}
+else
+{
+
+    <div class="row">
+        <div class="col-12 col-lg-5">
+            <ShowCart DeliveryMethod="SelectedDeliverytype" OrderModel="orderModel" CartModel="cart" />
+        </div>
+        <div class="col-12 col-lg-7">
+            <ShowDeliveryOptions DeliveryOptions="DeliveryOptions" OnClickCallback="SelectDelivery" OrderModel="orderModel" SelectedDeliveryOption="SelectedDeliverytype" />
+            @if (isDeliverySelected && isHomeDelivery)
+            {
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <h4>Välj leveranstid</h4>
+                            @foreach (var date in AvailableDeliveryDates)
+                            {
+                                @if (isHomeDeliveryBooked && orderModel.BookedDeliveryDate == date)
+                                {
+                                    <button class="btn btn-secondary" @onclick="(()=>SelectDate(date))">@date.ToShortDateString()</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn@(btndesign)-secondary" @onclick="(()=>SelectDate(date))">@date.ToShortDateString()</button>
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            }
+            @if ((isDeliverySelected && !isHomeDelivery) || (isDeliverySelected && isHomeDelivery && isHomeDeliveryBooked))
+            {
+
+                <ShowEditPersonalDetails OnSaveCallback="SavePersonalDetails" OrderModel="orderModel" />
+
+            }
+            @if ((isDeliverySelected && !isHomeDelivery && isValidPersonalDetails) || (isDeliverySelected && isHomeDelivery && isHomeDeliveryBooked && isValidPersonalDetails))
+            {
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <h4>Betalmetod</h4>
+                            <button class="btn btn-outline-secondary" @onclick="(()=>isPaymentSelected=true)">Faktura 14 dagar</button>
+
+                            @if (isPaymentSelected)
+                            {
+                                <hr />
+                                <button class="btn btn-secondary" @onclick="PlaceOrder">Beställ</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+}
