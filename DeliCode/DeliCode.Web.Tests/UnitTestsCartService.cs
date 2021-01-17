@@ -114,20 +114,21 @@ namespace DeliCode.Web.Tests
             Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault().Quantity);
 
         }
-        [Fact]
-        private async Task AddProductToCart_ProductNotInCart_ReturnsCart()
-        {
-            _product.Id = Guid.NewGuid();
-            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 1 } };
+        //TODO make similiar test
+        //[Fact]
+        //private async Task AddProductToCart_ProductNotInCart_ReturnsCart()
+        //{
+        //    _product.Id = Guid.NewGuid();
+        //    var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 1 } };
 
-            var result = await _cartService.AddProductToCart(_product);
-            var cartResult = result.Items;
-            var cartresultproduct = cartResult.FirstOrDefault(x => x.Product.Id == _product.Id).Product;
+        //    var result = await _cartService.AddProductToCart(_product);
+        //    var cartResult = result.Items;
+        //    var cartresultproduct = cartResult.FirstOrDefault(x => x.Product.Id == _product.Id).Product;
 
-            Assert.IsType<Cart>(result);
-            Assert.Equal(_product.Id, cartresultproduct.Id);
-            Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault(x=>x.Product.Id==_product.Id).Quantity);
-        }
+        //    Assert.IsType<Cart>(result);
+        //    Assert.Equal(_product.Id, cartresultproduct.Id);
+        //    Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault(x=>x.Product.Id==_product.Id).Quantity);
+        //}
         [Fact]
         private async Task GetCart_Twice_ReturnsSameCart()
         {

@@ -44,7 +44,7 @@ namespace DeliCode.Web.Services
         {
             throw new NotImplementedException();
         }
-
+        //TODO productresponse
         public async Task<Product> Update(Product product)
         {
             var response = await _httpClient.PutAsJsonAsync<Product>($"api/products/{product.Id}", product);

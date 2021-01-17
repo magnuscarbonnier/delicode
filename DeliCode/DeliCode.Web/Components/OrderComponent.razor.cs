@@ -126,7 +126,7 @@ namespace DeliCode.Web.Components
                 order = await OrderService.PlaceOrder(orderModel); 
                 foreach (var orderProduct in order.OrderProducts)
                 {
-                    var product=await ProductService.Get(orderProduct.Id);
+                    var product=await ProductService.Get(orderProduct.ProductId);
                     product.AmountInStorage = product.AmountInStorage - orderProduct.Quantity;
                     await ProductService.Update(product);
                 }
