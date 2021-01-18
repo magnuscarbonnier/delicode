@@ -15,7 +15,14 @@
                 <div class="buy d-flex justify-content-between align-items-center">
                     <div class="price text-success"><h5 class="mt-4">SEK @Model.Price</h5></div>
                     @Html.HiddenFor(x => x.Id)
-                    <button type="submit" class="btn btn-primary" onclick="AddToCart('@Model.Id')">Lägg till</button>
+                    @if (Model.AmountInStorage == 0)
+                    {
+                        <button type="submit" class="btn btn-secondary disabled">Slut i lager</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-primary" onclick="AddToCart('@Model.Id')">Lägg till</button>
+                    }
                 </div>
             </div>
             <div class="card-footer text-info">@Model.AmountInStorage i lager</div>
