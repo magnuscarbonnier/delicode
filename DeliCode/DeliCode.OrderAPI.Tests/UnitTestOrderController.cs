@@ -22,7 +22,7 @@ namespace DeliCode.OrderAPI.Tests
         private readonly Order _order;
         private readonly List<Order> _orderList;
         private readonly OrderRepository _repository;
-        private readonly OrderController _orderController;
+        private readonly OrdersController _orderController;
         protected DbContextOptions<OrderDbContext> ContextOptions { get; }
 
         public UnitTestOrderController()
@@ -65,7 +65,7 @@ namespace DeliCode.OrderAPI.Tests
             SeedMockData();
 
             _repository = new OrderRepository(new OrderDbContext(ContextOptions));
-            _orderController = new OrderController(_repository);
+            _orderController = new OrdersController(_repository);
         }
 
         private DbContextOptions<OrderDbContext> SetMockDatabaseOptions()

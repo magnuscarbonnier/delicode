@@ -25,7 +25,7 @@ namespace DeliCode.Web.Repository
 
         public async Task<List<Order>> GetAll()
         {
-            var response = await _httpClient.GetAsync("api/order/getorders");
+            var response = await _httpClient.GetAsync("api/orders");
             var orderResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<List<Order>>(orderResponse);
@@ -33,15 +33,18 @@ namespace DeliCode.Web.Repository
 
         public async Task<Order> GetOrderById(int id)
         {
-            var response = await _httpClient.GetAsync($"api/order/GetOrderByOrderId?id={id}");
+            var response = await _httpClient.GetAsync($"api/orders/{id}");
             var orderResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<Order>(orderResponse);
         }
 
-        public Task<List<Order>> GetOrdersByUsersId(string userId)
+        public async Task<List<Order>> GetOrdersByUsersId(string userId)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetAsync($"api/orders/getbyuserid/{userId}");
+            var orderResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<Order>>(orderResponse);
         }
 
         public async Task<Order> PlaceOrder(Order order)
@@ -51,7 +54,7 @@ namespace DeliCode.Web.Repository
                 ReferenceHandler = ReferenceHandler.Preserve,
                 WriteIndented = true
             };
-            var response = await _httpClient.PostAsJsonAsync<Order>("api/order/addorder", order,options);
+            var response = await _httpClient.PostAsJsonAsync<Order>("api/orders", order,options);
             var orderResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<Order>(orderResponse);
@@ -60,7 +63,7 @@ namespace DeliCode.Web.Repository
 
         public async Task<Order> UpdateOrder(Order order)
         {
-            var response = await _httpClient.PutAsJsonAsync<Order>($"api/order/updateorder?id={order.Id}",order);
+            var response = await _httpClient.PutAsJsonAsync<Order>($"api/orders/{order.Id}",order);
             var orderResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<Order>(orderResponse);
