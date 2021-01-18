@@ -51,12 +51,17 @@ namespace DeliCode.Web.Tests
 
         public Task<Product> Update(Product product)
         {
-            var productToUpdate = products.SingleOrDefault(o => o.Id==product.Id);
+            var productToUpdate = products.SingleOrDefault(o => o.Id == product.Id);
             if (productToUpdate != null)
             {
                 productToUpdate = product;
             }
             return Task.FromResult(productToUpdate);
+        }
+
+        public Task<bool> UpdateInventoryAmount(Dictionary<Guid, int> productsKeyValuePairs)
+        {
+            throw new NotImplementedException();
         }
     }
 }

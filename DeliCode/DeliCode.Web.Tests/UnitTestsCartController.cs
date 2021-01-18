@@ -20,15 +20,11 @@ namespace DeliCode.Web.Tests
         private readonly IProductService _productService;
         private readonly MockCartRepository _cartRepository;
         private readonly MockProductRepository _productRepository;
-        private HttpClient _httpClient;
+
         public UnitTestsCartController()
         {
-            var productAPIUrl = "https://localhost:44333";
-
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(productAPIUrl);
-            _productService = new ProductService(_httpClient);
             _productRepository = new MockProductRepository();
+            _productService = new ProductService(_productRepository);
             _cartRepository = new MockCartRepository();
             _cartService = new CartService(_cartRepository,_productService);
             _controller = new CartController(_productService, _cartService);
@@ -46,7 +42,8 @@ namespace DeliCode.Web.Tests
         [Fact]
         public async Task AddProductToCart_ProductExistsInProductDb_ReturnsOk()
         {
-            var idInProductDb = new Guid("BD8F361D-E5E3-4F33-82CF-2594368D78C3");
+            var idInProductDb = _productRepository.products.FirstOrDefault().Id;
+        
             var result = await _controller.AddAsync(idInProductDb);
 
             Assert.IsType<OkResult>(result);

@@ -9,88 +9,60 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
+using DeliCode.Web.Repository;
 
 namespace DeliCode.Web.Tests
 {
     public class UnitTestsProductService
     {
-        private readonly Mock<IProductService> _productService;
-        private readonly Product product;
-        private readonly List<Product> productList;
+        private readonly IProductService _productService;
+        private readonly MockProductRepository _repository;
 
         public UnitTestsProductService()
         {
-            _productService = new Mock<IProductService>();
-            productList = new List<Product>();
-            product = new Product()
-            {
-                Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
-                Name = "Chokladtårta",
-                Price = 12.50m,
-                Description = "En jättegod tårta"
-            };
-            var product2 = new Product()
-            {
-                Id = new Guid("55667788-5566-7788-99AA-BBCCDDEEFF00"),
-                Name = "Red velvet cake",
-                Price = 29.50m,
-                Description = "Så jävla gott"
-            };
-            productList.Add(product2);
-            productList.Add(product);
+            _repository = new MockProductRepository();
+            _productService = new ProductService(_repository);
         }
 
-        //GetAll()
         [Fact]
         public async Task GetAllProductsShouldReturnListOfProducts()
         {
-            var products = new List<Product>()
-            {
-                product
-            };
-            _productService.Setup(productservice => productservice.GetAll()).ReturnsAsync(products);
-            var actual = await _productService.Object.GetAll();
-            Assert.IsType<List<Product>>(actual);
+            var products = await _productService.GetAll();
+           
+            Assert.IsType<List<Product>>(products);
+            Assert.NotEmpty(products);
+        }
+
+        [Fact]
+        public async Task GetAllProducts_NoProductsInDb_ShouldReturnEmptyListOfProducts()
+        {
+            _repository.products.Clear();
+
+            var result = await _productService.GetAll();
+
+            Assert.IsType<List<Product>>(result);
+            Assert.Empty(result);
         }
 
         [Fact]
         public async Task GetProductByIdShouldReturnProduct()
         {
+            var products = await _repository.GetAll();
+            var product = products.FirstOrDefault();
 
-            Guid id = product.Id;
-            _productService.Setup(productservice => productservice.Get(id)).ReturnsAsync(product);
-            var actual = await _productService.Object.Get(id);
-            Assert.IsType<Product>(actual);
-            Assert.Equal(id, actual.Id);
-            Assert.Equal(product, actual);
+            var result = await _productService.Get(product.Id);
+           
+            Assert.IsType<Product>(result);
+            Assert.NotEqual(Guid.Empty, result.Id);
+            Assert.Equal(product.Id, result.Id);
         }
 
         [Fact]
-        public async Task RemoveProductShouldReturnRemovedProduct()
+        public async Task GetProductById_ProductNotExists_ShouldReturnNull()
         {
-            Guid id = product.Id;
-            _productService.Setup(productservice => productservice.Remove(id)).ReturnsAsync(product);
-            var actual = await _productService.Object.Remove(id);
-            Assert.IsType<Product>(actual);
-            Assert.Equal(id, actual.Id);
-            Assert.Equal(product, actual);
-        }
+            var product = await _productService.Get(Guid.NewGuid());
 
-        [Fact]
-        public async Task RemoveProductThatDoesNotExist()
-        {
-            Guid id = Guid.NewGuid();
-            _productService.Setup(productservice => productservice.Remove(id)).ReturnsAsync((Product)null);
-            var actual = await _productService.Object.Remove(id);
-            Assert.Null(actual);
-        }
-
-        [Fact]
-        public async Task AddProductShouldReturnAddedProduct()
-        {
-            _productService.Setup(productservice => productservice.Add(product)).ReturnsAsync(product);
-            var actual = await _productService.Object.Add(product);
-            Assert.Equal(product, actual);
+            Assert.Null(product);
         }
     }
 }

@@ -135,6 +135,7 @@ namespace DeliCode.Web.Components
 
         public async Task<Order> NewMethod(Order order)
         {
+
             order = await OrderService.PlaceOrder(orderModel);
             foreach (var orderProduct in order.OrderProducts)
             {

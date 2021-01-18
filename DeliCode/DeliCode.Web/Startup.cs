@@ -57,7 +57,8 @@ namespace DeliCode.Web
                 options.ValidationInterval = TimeSpan.FromMinutes(5);
             });
             services.AddTransient<IJwtTokenService, JwtTokenService>();
-            services.AddHttpClient<IProductService, ProductService>(client =>
+            services.AddTransient<IProductService, ProductService>();
+            services.AddHttpClient<IProductRepository, ProductRepository>(client =>
                 client.BaseAddress = new Uri(Configuration["ProductAPIUrl"])
             );
             services.AddTransient<IOrderService, OrderService>();

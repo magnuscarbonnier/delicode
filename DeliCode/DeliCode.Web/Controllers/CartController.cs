@@ -23,9 +23,9 @@ namespace DeliCode.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> AddAsync(Guid Id)
         {
-            //TODO: Product does not return null at the moment so we use empty guid as nullcheck
+            
             var product = await _productService.Get(Id);
-            if (product.Id == Guid.Empty)
+            if (product == null)
             {
                 return BadRequest("produkten fanns inte");
             }

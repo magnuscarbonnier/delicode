@@ -11,12 +11,10 @@ namespace DeliCode.Web.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
-        private readonly IProductService _productService; //TODO Tight coupling needs to be revised.
 
         public OrderService(IOrderRepository repository)
         {
             _repository = repository;
-            _productService = new ProductService(new System.Net.Http.HttpClient());
         }
 
         public async Task<Order> DeleteOrder(int orderId)
@@ -55,26 +53,20 @@ namespace DeliCode.Web.Services
         public async Task<Order> PlaceOrder(Order order)
         {
             var newOrder = new Order();
-            bool isSuccess = await UpdateProductInventory(order.OrderProducts);
-            if (isSuccess)
-            {
-                newOrder = await _repository.PlaceOrder(order);
-            }
-            else
-            {
-                newOrder = null;
-            }
+    
+            newOrder = await _repository.PlaceOrder(order);
+
             return newOrder;
         }
 
-        private async Task<bool> UpdateProductInventory(List<OrderProduct> orderProducts)
-        {
-            Dictionary<Guid, int> orderProductsQuantity = MapOrderProductsToDictionary(orderProducts);
+        //private async Task<bool> UpdateProductInventory(List<OrderProduct> orderProducts)
+        //{
+        //    Dictionary<Guid, int> orderProductsQuantity = MapOrderProductsToDictionary(orderProducts);
 
-            bool isSuccess = await _productService.UpdateInventoryAmount(orderProductsQuantity);
+        //    bool isSuccess = await _productService.UpdateInventoryAmount(orderProductsQuantity);
             
-            return isSuccess;
-        }
+        //    return isSuccess;
+        //}
 
         private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)
         {

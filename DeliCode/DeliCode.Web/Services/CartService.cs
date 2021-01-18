@@ -38,7 +38,7 @@ namespace DeliCode.Web.Services
             {
                 cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity++;
             }
-            else if (!isProductInCart && product.AmountInStorage > 0)
+            else if (!isProductInCart && product!=null && product.AmountInStorage > 0)
             {
                 cart.Items.Add(new CartItem { Product = product, Quantity = 1 });
             }
@@ -56,7 +56,7 @@ namespace DeliCode.Web.Services
             foreach (var item in cart.Items)
             {
                 var product = await _productService.Get(item.Product.Id);
-                if (item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
+                if (product!=null && item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
                 {
                     cartitems.Add(item);
                 }
