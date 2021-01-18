@@ -19,6 +19,7 @@ namespace DeliCode.Web.Tests
         private readonly MockOrderRepository _repository;
         public UnitTestsAdminController()
         {
+
             _repository = new MockOrderRepository();
             _orderService = new OrderService(_repository);
             _controller = new AdminController(_orderService);

@@ -13,9 +13,9 @@ namespace DeliCode.Web.Services
         private readonly ICartRepository _repository;
         private readonly IProductService _productService;
         private static string _cookieName = "Delicode.CartCookie";
-        private readonly CookieOptions _cookieOptions; 
+        private readonly CookieOptions _cookieOptions;
 
-        public CartService(ICartRepository repository,IProductService productService)
+        public CartService(ICartRepository repository, IProductService productService)
         {
             _repository = repository;
             _cookieOptions = new CookieOptions
@@ -27,24 +27,23 @@ namespace DeliCode.Web.Services
             };
             _productService = productService;
         }
+        //TODO productid inparam
         public async Task<Cart> AddProductToCart(Product product)
         {
             var cart = await GetCart();
             var isProductInCart = await ProductIdExistsInCart(cart, product.Id);
             product = await _productService.Get(product.Id);
-            if(isProductInCart && cart.Items.SingleOrDefault(x=>x.Product.Id==product.Id).Quantity < product.AmountInStorage)
+            //TODO fix
+            if (isProductInCart && cart.Items?.SingleOrDefault(x => x.Product.Id == product.Id).Quantity < product.AmountInStorage)
             {
                 cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity++;
             }
-            else if(isProductInCart && cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity >= product.AmountInStorage)
+            else if (!isProductInCart && product!=null && product.AmountInStorage > 0)
             {
+                cart.Items.Add(new CartItem { Product = product, Quantity = 1 });
+            }
 
-            }
-            else
-            {
-                cart.Items.Add(new CartItem { Product = product, Quantity=1 });
-            }
-            cart=await SaveCart(cart);
+            cart = await SaveCart(cart);
             return cart;
         }
 
@@ -57,11 +56,11 @@ namespace DeliCode.Web.Services
             foreach (var item in cart.Items)
             {
                 var product = await _productService.Get(item.Product.Id);
-                if (item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
+                if (product!=null && item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
                 {
                     cartitems.Add(item);
                 }
-                
+
             }
             cart.Items = cartitems;
             return cart;

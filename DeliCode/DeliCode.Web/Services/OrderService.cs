@@ -1,6 +1,7 @@
 ﻿using DeliCode.Web.Models;
 using DeliCode.Web.Repository;
 using DeliCode.Web.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace DeliCode.Web.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
+
         public OrderService(IOrderRepository repository)
         {
             _repository = repository;
@@ -17,7 +19,7 @@ namespace DeliCode.Web.Services
 
         public async Task<Order> DeleteOrder(int orderId)
         {
-            Order order =  await _repository.DeleteOrder(orderId);
+            Order order = await _repository.DeleteOrder(orderId);
             return order;
         }
 
@@ -30,7 +32,7 @@ namespace DeliCode.Web.Services
         public async Task<List<Order>> GetOrders()
         {
             var orders = await _repository.GetAll();
-            if(orders==null || !orders.Any())
+            if (orders == null || !orders.Any())
             {
                 return null;
             }
@@ -50,13 +52,36 @@ namespace DeliCode.Web.Services
 
         public async Task<Order> PlaceOrder(Order order)
         {
-            order = await _repository.PlaceOrder(order);
-            return order;
+            var newOrder = new Order();
+    
+            newOrder = await _repository.PlaceOrder(order);
+
+            return newOrder;
+        }
+
+        //private async Task<bool> UpdateProductInventory(List<OrderProduct> orderProducts)
+        //{
+        //    Dictionary<Guid, int> orderProductsQuantity = MapOrderProductsToDictionary(orderProducts);
+
+        //    bool isSuccess = await _productService.UpdateInventoryAmount(orderProductsQuantity);
+            
+        //    return isSuccess;
+        //}
+
+        private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)
+        {
+            Dictionary<Guid, int> productQuantityValuePairs = new Dictionary<Guid, int>();
+            foreach (var product in orderProducts)
+            {
+                productQuantityValuePairs.Add(product.Id, product.Quantity);
+            }
+
+            return productQuantityValuePairs;
         }
 
         public async Task<Order> UpdateOrder(int orderId, Order order)
         {
-            if(orderId != order.Id)
+            if (orderId != order.Id)
             {
                 return null;
             }

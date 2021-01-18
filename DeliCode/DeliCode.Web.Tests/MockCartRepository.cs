@@ -19,7 +19,7 @@ namespace DeliCode.Web.Tests
         {
             _product = new Product()
             {
-                Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
+                Id = new Guid("BD8F361A-E5E3-4F33-82CF-2594368D78A9"),
                 Name = "Chokladtårta",
                 Price = 12.50m,
                 Description = "En jättegod tårta"

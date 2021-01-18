@@ -68,6 +68,7 @@ namespace DeliCode.Web.Components
 
         protected void SetDeliveryOptionsAvailable()
         {
+            //TODO "Hemleverans"
             DeliveryOptions.Add("Hemleverans", 99);
             DeliveryOptions.Add("Hämta i butik", 0);
         }
@@ -123,19 +124,27 @@ namespace DeliCode.Web.Components
             }
             try
             {
-                order = await OrderService.PlaceOrder(orderModel); 
-                foreach (var orderProduct in order.OrderProducts)
-                {
-                    var product=await ProductService.Get(orderProduct.ProductId);
-                    product.AmountInStorage = product.AmountInStorage - orderProduct.Quantity;
-                    await ProductService.Update(product);
-                }
+                order = await NewMethod(order);
                 NavManager.NavigateTo($"/admin/editorder?orderid={order.Id}", true);
             }
             catch
             {
                 isLoading = false;
             }
+        }
+
+        public async Task<Order> NewMethod(Order order)
+        {
+
+            order = await OrderService.PlaceOrder(orderModel);
+            foreach (var orderProduct in order.OrderProducts)
+            {
+                var product = await ProductService.Get(orderProduct.ProductId);
+                product.AmountInStorage = product.AmountInStorage - orderProduct.Quantity;
+                await ProductService.Update(product);
+            }
+
+            return order;
         }
     }
 }

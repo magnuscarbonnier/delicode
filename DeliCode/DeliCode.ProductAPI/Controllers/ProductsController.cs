@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DeliCode.ProductAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")]    
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -40,6 +40,21 @@ namespace DeliCode.ProductAPI.Controllers
                 return Ok(product);
             }
             return NotFound();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateInventory(Dictionary<Guid, int> productQuantityValuePairs)
+        {
+            bool updateIsSuccessfull = await _repository.UpdateInventoryQuanties(productQuantityValuePairs);
+
+            if (updateIsSuccessfull)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPut("{id}")]

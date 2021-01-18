@@ -35,14 +35,20 @@ namespace DeliCode.Web.Repository
             return JsonConvert.DeserializeObject<Product>(productResponse);
         }
 
-        public Task<Product> Remove(Guid id)
+        public async Task<Product> Remove(Guid id)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.DeleteAsync($"/api/products/{id}");
+            var productResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Product>(productResponse);
         }
 
-        public Task<Product> Add(Product product)
+        public async Task<Product> Add(Product product)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.PostAsJsonAsync<Product>($"/api/products/",product);
+            var productResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Product>(productResponse);
         }
 
         public async Task<Product> Update(Product product)
@@ -51,6 +57,14 @@ namespace DeliCode.Web.Repository
             var orderResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<Product>(orderResponse);
+        }
+
+        public async Task<bool> UpdateInventoryAmount(Dictionary<Guid, int> productsKeyValuePairs)
+        {
+            var response = await _httpClient.PutAsJsonAsync<Dictionary<Guid, int>>($"api/products/update", productsKeyValuePairs);
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<bool>(content);
         }
     }
 }

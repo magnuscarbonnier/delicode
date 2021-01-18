@@ -61,6 +61,7 @@ namespace DeliCode.ProductAPI.Repository
             return await _context.Products.SingleOrDefaultAsync(o => o.Id == Id);
         }
 
+
         public async Task<Product> UpdateProduct(Product product)
         {
             _context.Entry(product).State = EntityState.Modified;
@@ -75,6 +76,49 @@ namespace DeliCode.ProductAPI.Repository
             }
 
             return product;
+        }
+
+        //TODO needs Revising
+        public async Task<bool> UpdateInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs)
+        {
+            bool updateSuccessful = CheckIfEnoughInStorage(productQuantityValuePairs);
+            if (updateSuccessful == false)            
+                return updateSuccessful;
+
+            updateSuccessful = ReduceAmountInStorage(productQuantityValuePairs);
+
+            return updateSuccessful;
+        }
+
+        //TODO needs revising
+        private bool ReduceAmountInStorage(Dictionary<Guid, int> productQuantityValuePairs)
+        {
+            foreach (var productPair in productQuantityValuePairs)
+            {
+                var product = _context.Products.SingleOrDefault(p => p.Id == productPair.Key);
+                product.AmountInStorage -= productPair.Value;
+            }
+            _context.SaveChanges();
+            return true;
+        }
+
+        //TODO Needs revising
+        private bool CheckIfEnoughInStorage(Dictionary<Guid, int> products)
+        {
+            bool amountInStorageIsEnough = true;
+            foreach (var productQuantity in products)
+            {
+                var amountInStorage = _context.Products.FirstOrDefault(p => p.Id == productQuantity.Key).AmountInStorage;
+
+                if (amountInStorage < productQuantity.Value)
+                {
+                    amountInStorageIsEnough = false;
+                    return amountInStorageIsEnough;
+                }
+                else
+                    amountInStorageIsEnough = true;
+            }
+            return amountInStorageIsEnough;
         }
     }
 }
