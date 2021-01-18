@@ -52,5 +52,13 @@ namespace DeliCode.Web.Services
 
             return JsonConvert.DeserializeObject<Product>(orderResponse);
         }
+
+        public async Task<bool> UpdateInventoryAmount(Dictionary<Guid, int> productsKeyValuePairs)
+        {
+            var response = await _httpClient.PutAsJsonAsync<Dictionary<Guid, int>>($"https://localhost:44333/api/products/update", productsKeyValuePairs);
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<bool>(content);
+        }
     }
 }
