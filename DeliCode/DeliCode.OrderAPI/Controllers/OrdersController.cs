@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 
 namespace DeliCode.OrderAPI.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class OrderController : Controller
+    public class OrdersController : Controller
     {
         private IOrderRepository _repository;
 
 
-        public OrderController(IOrderRepository repository)
+        public OrdersController(IOrderRepository repository)
         {
             _repository = repository;
         }
@@ -38,7 +38,7 @@ namespace DeliCode.OrderAPI.Controllers
             return NoContent();
         }
 
-        [HttpGet]
+        [HttpGet("getbyuserid/{id}")]
         public async Task<ActionResult> GetOrdersByUserId(string id)
         {
             var orders = await _repository.GetAllOrdersByUserId(id);
@@ -49,7 +49,7 @@ namespace DeliCode.OrderAPI.Controllers
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult> GetOrderByOrderId(int id)
         {
             var order = await _repository.GetOrderById(id);
@@ -77,7 +77,7 @@ namespace DeliCode.OrderAPI.Controllers
         }
 
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult> UpdateOrder(int id, Order order)
         {
             if (id != order.Id)
@@ -91,7 +91,7 @@ namespace DeliCode.OrderAPI.Controllers
             }
             return Ok(order);
         }
-
+        [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteOrder(int orderId)
         {
             Order order = await _repository.DeleteOrder(orderId);
