@@ -38,7 +38,6 @@ namespace DeliCode.Web.Models
 
         public string Phone { get; set; }
         public string ShippingNotes { get; set; }
-        public bool IsTestOrder { get; set; }
         public decimal ShippingPrice { get; set; }
         public decimal TotalPrice()
         {
