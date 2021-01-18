@@ -11,10 +11,11 @@ namespace DeliCode.Web.Services
     public class CartService : ICartService
     {
         private readonly ICartRepository _repository;
+        private readonly IProductService _productService;
         private static string _cookieName = "Delicode.CartCookie";
         private readonly CookieOptions _cookieOptions; 
 
-        public CartService(ICartRepository repository)
+        public CartService(ICartRepository repository,IProductService productService)
         {
             _repository = repository;
             _cookieOptions = new CookieOptions
@@ -24,14 +25,20 @@ namespace DeliCode.Web.Services
                 SameSite = SameSiteMode.Strict,
                 Secure = true
             };
+            _productService = productService;
         }
         public async Task<Cart> AddProductToCart(Product product)
         {
             var cart = await GetCart();
             var isProductInCart = await ProductIdExistsInCart(cart, product.Id);
-            if(isProductInCart)
+            product = await _productService.Get(product.Id);
+            if(isProductInCart && cart.Items.SingleOrDefault(x=>x.Product.Id==product.Id).Quantity < product.AmountInStorage)
             {
                 cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity++;
+            }
+            else if(isProductInCart && cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity >= product.AmountInStorage)
+            {
+
             }
             else
             {
@@ -46,7 +53,17 @@ namespace DeliCode.Web.Services
             var sessionId = await GetCartSession();
 
             var cart = await _repository.GetCart(sessionId);
-
+            var cartitems = new List<CartItem>();
+            foreach (var item in cart.Items)
+            {
+                var product = await _productService.Get(item.Product.Id);
+                if (item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
+                {
+                    cartitems.Add(item);
+                }
+                
+            }
+            cart.Items = cartitems;
             return cart;
         }
 

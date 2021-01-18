@@ -24,7 +24,10 @@ namespace DeliCode.Web.Tests
                 Price = 12.50m,
                 Description = "En jättegod tårta"
             };
-            _cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity=2 } };
+            _cartitems = new List<CartItem> {
+                new CartItem { Product = _product, Quantity=2 },
+                new CartItem{Product=new Product{ Id=new Guid("4DF795CF-EA1C-47C1-A4E0-F20742CFE359")}, Quantity=1}
+            };
             _cart = new Cart { Items = _cartitems, SessionId = _sessionId };
         }
         public Task<Cart> SaveCart(Cart cart)

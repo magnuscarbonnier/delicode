@@ -74,7 +74,7 @@ namespace DeliCode.Web
             });
             services.AddTransient<ICartRepository, CartRepository>();
             services.AddTransient<ICartService, CartService>();
-
+            services.AddServerSideBlazor();
             services.AddControllersWithViews();
           
         }
@@ -105,6 +105,7 @@ namespace DeliCode.Web
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapBlazorHub();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
