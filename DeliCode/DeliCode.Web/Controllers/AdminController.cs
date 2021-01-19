@@ -11,7 +11,7 @@ namespace DeliCode.Web.Controllers
     public class AdminController : Controller
     {
         private readonly IOrderService _orderService;
-        private List<Order> orders=new List<Order>();
+        private readonly List<Order> orders=new List<Order>();
         public AdminController(IOrderService orderService)
         {
              var order = new Order

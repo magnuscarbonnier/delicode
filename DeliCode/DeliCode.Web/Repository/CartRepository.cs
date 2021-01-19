@@ -10,7 +10,7 @@ namespace DeliCode.Web.Repository
 {
     public class CartRepository : ICartRepository
     {
-        IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public CartRepository(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -29,7 +29,7 @@ namespace DeliCode.Web.Repository
         public Task<Guid> GetCartCookie(string cookieName)
         {
             var cookie = _httpContextAccessor.HttpContext.Request.Cookies[cookieName];
-            Guid.TryParse(cookie, out var result);
+            _=Guid.TryParse(cookie, out var result);
             return Task.FromResult(result);
         }
 

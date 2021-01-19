@@ -52,13 +52,12 @@ namespace DeliCode.Web.Services
 
         public async Task<Order> PlaceOrder(Order order)
         {
-            var newOrder = new Order();
-    
-            newOrder = await _repository.PlaceOrder(order);
+            var newOrder = await _repository.PlaceOrder(order);
 
             return newOrder;
         }
 
+        //TODO ERik!
         //private async Task<bool> UpdateProductInventory(List<OrderProduct> orderProducts)
         //{
         //    Dictionary<Guid, int> orderProductsQuantity = MapOrderProductsToDictionary(orderProducts);
@@ -67,7 +66,7 @@ namespace DeliCode.Web.Services
             
         //    return isSuccess;
         //}
-
+        //TODO Unused
         private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)
         {
             Dictionary<Guid, int> productQuantityValuePairs = new Dictionary<Guid, int>();

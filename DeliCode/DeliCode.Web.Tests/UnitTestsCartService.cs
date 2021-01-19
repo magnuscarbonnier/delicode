@@ -17,30 +17,20 @@ namespace DeliCode.Web.Tests
 {
     public class UnitTestsCartService
     {
-        private readonly Product _product;
-        private readonly ICartRepository _repository;
-        private readonly IProductRepository _mockProductRepository;
+        private readonly MockCartRepository _repository;
+        private readonly MockProductRepository _mockProductRepository;
         private readonly ICartService _cartService;
         private readonly IProductService _productService;
-        private HttpClient _httpClient;
 
         public UnitTestsCartService()
         {
             _repository = new MockCartRepository();
-
-            _product = new Product()
-            {
-                Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
-                Name = "Chokladtårta",
-                Price = 12.50m,
-                Description = "En jättegod tårta"
-            };
             _mockProductRepository = new MockProductRepository();
             _productService = new ProductService(_mockProductRepository);
             _cartService = new CartService(_repository,_productService);
         }
         [Fact]
-        private async Task GetCart_ReturnsCart()
+        public async Task GetCart_ReturnsCart()
         {
             var cart= await _cartService.GetCart();
 
@@ -48,7 +38,7 @@ namespace DeliCode.Web.Tests
             Assert.NotEqual(Guid.Empty, cart.SessionId);
         }
         [Fact]
-        private async Task GetCart_ReturnsSessionId()
+        public async Task GetCart_ReturnsSessionId()
         {
             var result = await _cartService.GetCart();
             var sessionId = result.SessionId;
@@ -57,7 +47,7 @@ namespace DeliCode.Web.Tests
             Assert.NotEqual(Guid.Empty, sessionId);
         }
         [Fact]
-        private async Task GetCart_ReturnsListOfCartItems()
+        public async Task GetCart_ReturnsListOfCartItems()
         {            
             var result = await _cartService.GetCart();
             var cartItemsResult = result.Items;
@@ -65,42 +55,38 @@ namespace DeliCode.Web.Tests
             Assert.IsType<List<CartItem>>(cartItemsResult);
         }
 
-        //[Fact]
-        //private async Task GetCart_CartItemsCountLessThanProductsInStorage_ReturnsCartWithOnlyProductsAvailable()
-        //{
-        //    var cart = await _repository.GetCart(Guid.NewGuid());
-        //    cart.Items.Clear();
+        [Fact]
+        public async Task GetCart_AddMoreItemsThanInDB_ReturnsCartWithAllDBProducts()
+        {
+            var product = _mockProductRepository.products.FirstOrDefault();
+            product.AmountInStorage = 1;
+            _repository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
 
-        //    var result = await _cartService.GetCart();
-        //    var cartItemsResult = result.Items;
-        //    foreach (var cartitem in cartItemsResult)
-        //    {
-        //        var cartitemamount= cartitem.Quantity;
-        //        var product = await _productService.Get(cartitem.Product.Id);
-        //        var productamount = product.AmountInStorage;
-        //        Assert.InRange(cartitem.Quantity, 1, productamount);
-        //    }
-        //}
+            var cart = await _cartService.GetCart();
+            var amount = cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity;
 
-        //[Fact]
-        //private async Task GetCart_CartItemsMoreThanProductsInStorage_ReturnsCartWithOnlyProductsAvailable()
-        //{
-        //    _repository._cart.Items.Clear();
-        //    _repository._cart.Items.Add(new CartItem { Quantity = 5, Product = await _productService.Get(new Guid("4DF795CF-EA1C-47C1-A4E0-F20742CFE359")) });
-
-        //    var result = await _cartService.GetCart();
-        //    var cartItemsResult = result.Items;
-        //    foreach (var cartitem in cartItemsResult)
-        //    {
-        //        var cartitemamount = cartitem.Quantity;
-        //        var product = await _productService.Get(cartitem.Product.Id);
-        //        var productamount = product.AmountInStorage;
-        //        Assert.InRange(cartitem.Quantity, 1, productamount);
-        //    }
-        //}
+            Assert.Equal(product.AmountInStorage, amount);
+        }
 
         [Fact]
-        private async Task AddProductToCart_ProductAlreadyInCart_ReturnsCartWithIncreasedQuantity()
+        public async Task GetCart_AddItemsNotAvailableInDB_ReturnsCartWithoutProduct()
+        {
+            var product = _mockProductRepository.products.FirstOrDefault();
+            product.AmountInStorage = 0;
+            _repository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+
+            var cart = await _cartService.GetCart();
+
+            Assert.Empty(cart.Items);
+        }
+
+
+        [Fact]
+        public async Task AddProductToCart_ProductAlreadyInCart_ReturnsCartWithIncreasedQuantity()
         {
             var cart = await _repository.GetCart(Guid.NewGuid());
             var cartItem = cart.Items.FirstOrDefault();
@@ -115,7 +101,7 @@ namespace DeliCode.Web.Tests
 
         }
         [Fact]
-        private async Task AddProductToCart_ProductNotInCart_ReturnsCartWithNewProduct()
+        public async Task AddProductToCart_ProductNotInCart_ReturnsCartWithNewProduct()
         {
             var cart = await _repository.GetCart(Guid.NewGuid());
             var cartItem = cart.Items.FirstOrDefault();
@@ -130,7 +116,7 @@ namespace DeliCode.Web.Tests
             Assert.Equal(1, cartResult.FirstOrDefault(x => x.Product.Id == product.Id).Quantity);
         }
         [Fact]
-        private async Task GetCart_Twice_ReturnsSameCart()
+        public async Task GetCart_Twice_ReturnsSameCart()
         {
             var firstcart = await _cartService.GetCart();
             var secondCart= await _cartService.GetCart();

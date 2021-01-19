@@ -58,10 +58,7 @@ namespace DeliCode.Web.Components
 
         protected async Task GetValidCart()
         {
-            var cartItems = new List<CartItem>();
-            var cartResponse = await CartService.GetCart();
-
-            cart = cartResponse;
+            cart = await CartService.GetCart();
         }
 
         protected void InitializeOrderProducts()
@@ -160,13 +157,13 @@ namespace DeliCode.Web.Components
             }
         }
 
-        public async Task<Order> ConfirmOrderAndUpdateDatabaseValues(Order order)
+        protected async Task<Order> ConfirmOrderAndUpdateDatabaseValues(Order order)
         {
             order = await OrderService.PlaceOrder(orderModel);
             foreach (var orderProduct in order.OrderProducts)
             {
                 var product = await ProductService.Get(orderProduct.ProductId);
-                product.AmountInStorage = product.AmountInStorage - orderProduct.Quantity;
+                product.AmountInStorage -= orderProduct.Quantity;
                 await ProductService.Update(product);
             }
 

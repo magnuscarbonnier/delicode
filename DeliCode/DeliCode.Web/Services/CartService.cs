@@ -12,7 +12,7 @@ namespace DeliCode.Web.Services
     {
         private readonly ICartRepository _repository;
         private readonly IProductService _productService;
-        private static string _cookieName = "Delicode.CartCookie";
+        private static readonly string _cookieName = "Delicode.CartCookie";
         private readonly CookieOptions _cookieOptions;
 
         public CartService(ICartRepository repository, IProductService productService)
@@ -37,7 +37,7 @@ namespace DeliCode.Web.Services
             {
                 cart.Items.SingleOrDefault(x => x.Product.Id == productId).Quantity++;
             }
-            else if (!isProductInCart && product!=null && product.AmountInStorage > 0)
+            else if (!isProductInCart && product != null && product.AmountInStorage > 0)
             {
                 cart.Items.Add(new CartItem { Product = product, Quantity = 1 });
             }
@@ -55,8 +55,13 @@ namespace DeliCode.Web.Services
             foreach (var item in cart.Items)
             {
                 var product = await _productService.Get(item.Product.Id);
-                if (product!=null && item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
+                if (product != null && item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
                 {
+                    cartitems.Add(item);
+                }
+                else if(product != null && item.Quantity > 0 && item.Quantity > product.AmountInStorage)
+                {
+                    item.Quantity = product.AmountInStorage;
                     cartitems.Add(item);
                 }
 
@@ -75,7 +80,7 @@ namespace DeliCode.Web.Services
             return session;
         }
 
-        private Task<bool> ProductIdExistsInCart(Cart cart, Guid productId)
+        private static Task<bool> ProductIdExistsInCart(Cart cart, Guid productId)
         {
             var exists = cart.Items.Exists(x => x.Product.Id == productId);
             return Task.FromResult(exists);

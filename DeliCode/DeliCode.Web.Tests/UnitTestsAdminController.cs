@@ -14,7 +14,7 @@ namespace DeliCode.Web.Tests
 {
     public class UnitTestsAdminController
     {
-        private AdminController _controller;
+        private readonly AdminController _controller;
         private readonly IOrderService _orderService;
         private readonly MockOrderRepository _repository;
         public UnitTestsAdminController()

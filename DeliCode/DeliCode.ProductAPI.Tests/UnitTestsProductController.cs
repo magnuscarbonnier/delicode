@@ -34,7 +34,7 @@ namespace DeliCode.ProductAPI.Tests
             _repository = new ProductRepository(new ProductDbContext(ContextOptions));
             productsController = new ProductsController(_repository);
         }
-        private DbContextOptions<ProductDbContext> SetMockDatabaseOptions()
+        private static DbContextOptions<ProductDbContext> SetMockDatabaseOptions()
         {
             string connectionString = @"Server=(localdb)\mssqllocaldb;Database=ProductApiControllerTestDB;ConnectRetryCount=0";
             return new DbContextOptionsBuilder<ProductDbContext>()
@@ -43,11 +43,9 @@ namespace DeliCode.ProductAPI.Tests
         }
         private void SeedMockData()
         {
-            using (var context = new ProductDbContext(ContextOptions))
-            {
-                context.Database.EnsureDeleted();
-                context.Database.Migrate();
-            }
+            using var context = new ProductDbContext(ContextOptions);
+            context.Database.EnsureDeleted();
+            context.Database.Migrate();
         }
         [Fact]
         public async Task GetAllProducts_ShouldReturnAllProducts()
@@ -59,7 +57,7 @@ namespace DeliCode.ProductAPI.Tests
             var products = okobjectresult.Value as List<Product>;
 
             Assert.IsType<OkObjectResult>(okobjectresult);
-            Assert.Equal(products.Count(), _products.Count());
+            Assert.Equal(products.Count, _products.Count);
         }
         [Fact]
         public async Task GetAllProducts_NoProductsAdded_ShouldReturnNoContent()
