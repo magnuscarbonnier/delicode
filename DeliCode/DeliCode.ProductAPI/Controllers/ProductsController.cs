@@ -42,7 +42,7 @@ namespace DeliCode.ProductAPI.Controllers
             return NotFound();
         }
 
-        [HttpPut("inventory")]
+        [HttpPut("update")]
         public async Task<ActionResult> UpdateInventory(Dictionary<Guid, int> productQuantityValuePairs)
         {
             bool checkIsSuccessful = await _repository.CheckInventoryQuantities(productQuantityValuePairs);
