@@ -15,7 +15,7 @@ namespace DeliCode.Web.Tests
     {
         private readonly IOrderService _orderService;
         private readonly MockOrderRepository _repository;
-        private Order _order;
+        private readonly Order _order;
         public UnitTestsOrderService()
         {
             _repository = new MockOrderRepository();

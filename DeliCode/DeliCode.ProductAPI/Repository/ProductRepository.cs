@@ -79,15 +79,15 @@ namespace DeliCode.ProductAPI.Repository
         }
 
         //TODO needs Revising
-        public async Task<bool> UpdateInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs)
+        public Task<bool> UpdateInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs)
         {
             bool updateSuccessful = CheckIfEnoughInStorage(productQuantityValuePairs);
             if (updateSuccessful == false)            
-                return updateSuccessful;
+                return Task.FromResult(updateSuccessful);
 
             updateSuccessful = ReduceAmountInStorage(productQuantityValuePairs);
 
-            return updateSuccessful;
+            return Task.FromResult(updateSuccessful);
         }
 
         //TODO needs revising

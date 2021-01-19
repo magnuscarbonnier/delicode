@@ -31,8 +31,7 @@ namespace DeliCode.Web.Controllers
             }
 
             Cart cart = await _cartService.AddProductToCart(Id);
-            OrderSummary.Cart = cart;
-
+          
             if (cart == null)
             {
                 return BadRequest("produkten kunde inte läggas till");

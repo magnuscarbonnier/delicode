@@ -10,7 +10,7 @@ namespace DeliCode.Web.Repository
 {
     public class CartRepository : ICartRepository
     {
-        readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public CartRepository(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;

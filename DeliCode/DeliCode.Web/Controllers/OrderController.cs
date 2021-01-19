@@ -14,24 +14,5 @@ namespace DeliCode.Web.Controllers
         {
             return View();
         }
-        public IActionResult ConfirmOrder(string shipment, string payment)
-        { 
-            if (shipment == "send")
-            {
-                return RedirectToAction("ShipmentAddress", "Order");
-            }
-            return View(OrderSummary.Cart);
-        }
-        [HttpGet]
-        public IActionResult ShipmentAddress()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult ShipmentAddress(string address, string zipCode, string phoneNumber)
-        {
-            return RedirectToAction("ConfirmOrder", "Order");
-        }
     }
 }

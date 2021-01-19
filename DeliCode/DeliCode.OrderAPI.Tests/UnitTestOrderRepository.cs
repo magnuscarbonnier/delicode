@@ -17,8 +17,8 @@ namespace DeliCode.OrderAPI.Tests
     {
         private readonly IOrderRepository _repository;
         protected DbContextOptions<OrderDbContext> ContextOptions { get; }
-        private Order _order;
-        private int orderProductsInOrder1 = 2;
+        private readonly Order _order;
+        private readonly int orderProductsInOrder1 = 2;
         public UnitTestOrderRepository()
         {
             ContextOptions = SetMockDatabaseOptions();
@@ -142,7 +142,7 @@ namespace DeliCode.OrderAPI.Tests
             var result = await _repository.GetAllOrdersByUserId(_order.UserId);
 
             Assert.IsType<List<Order>>(result);
-            Assert.Equal(expectedcount, result.Count());
+            Assert.Equal(expectedcount, result.Count);
             Assert.Equal(expectedorderid, result.FirstOrDefault().Id);
             Assert.Equal(orderProductsInOrder1, result.FirstOrDefault().OrderProducts.Count);
         }
@@ -275,7 +275,7 @@ namespace DeliCode.OrderAPI.Tests
             Assert.Equal(ordersinDb, result);
         }
 
-        private DbContextOptions<OrderDbContext> SetMockDatabaseOptions()
+        private static DbContextOptions<OrderDbContext> SetMockDatabaseOptions()
         {
             string connectionString = @"Server=(localdb)\mssqllocaldb;Database=OrderApiRepositoryTestDB;ConnectRetryCount=0";
             return new DbContextOptionsBuilder<OrderDbContext>()
@@ -284,26 +284,25 @@ namespace DeliCode.OrderAPI.Tests
         }
         private void SeedMockData()
         {
-            using (var context = new OrderDbContext(ContextOptions))
-            {
-                context.Database.EnsureDeleted();
-                context.Database.Migrate();
+            using var context = new OrderDbContext(ContextOptions);
+            context.Database.EnsureDeleted();
+            context.Database.Migrate();
 
-                var order1 = new Order()
-                {
-                    OrderDate = new DateTime(2020, 11, 20),
-                    Status = OrderStatus.Delivered,
-                    UserId = "11223344-5566-7788-99AA-BBCCDDEEFF00",
-                    Email = "marie.dahlmalm@iths.se",
-                    FirstName = "Marie",
-                    LastName = "Dahlmalm",
-                    Address = "Årstaängsvägen 9",
-                    ZipCode = "12345",
-                    City = "Stockholm",
-                    Country = "Sweden",
-                    Phone = "555123456",
-                    ShippingNotes = "",
-                    OrderProducts = new List<OrderProduct>()
+            var order1 = new Order()
+            {
+                OrderDate = new DateTime(2020, 11, 20),
+                Status = OrderStatus.Delivered,
+                UserId = "11223344-5566-7788-99AA-BBCCDDEEFF00",
+                Email = "marie.dahlmalm@iths.se",
+                FirstName = "Marie",
+                LastName = "Dahlmalm",
+                Address = "Årstaängsvägen 9",
+                ZipCode = "12345",
+                City = "Stockholm",
+                Country = "Sweden",
+                Phone = "555123456",
+                ShippingNotes = "",
+                OrderProducts = new List<OrderProduct>()
                 {
                      new OrderProduct()
                     {
@@ -320,16 +319,15 @@ namespace DeliCode.OrderAPI.Tests
                         OrderId = 2000
                      }
                 }
-                };
-                var order2 = new Order
-                {
-                    UserId = "d514be83-bebb-4fe7-b905-e8db158a9ffd"
-                };
+            };
+            var order2 = new Order
+            {
+                UserId = "d514be83-bebb-4fe7-b905-e8db158a9ffd"
+            };
 
-                context.AddRange(order1, order2);
+            context.AddRange(order1, order2);
 
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
     }
 }
