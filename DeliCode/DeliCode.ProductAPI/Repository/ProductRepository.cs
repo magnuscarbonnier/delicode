@@ -82,7 +82,7 @@ namespace DeliCode.ProductAPI.Repository
         public async Task<bool> UpdateInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs)
         {
             bool updateSuccessful = CheckIfEnoughInStorage(productQuantityValuePairs);
-            if (updateSuccessful == false)            
+            if (updateSuccessful == false)
                 return updateSuccessful;
 
             updateSuccessful = ReduceAmountInStorage(productQuantityValuePairs);

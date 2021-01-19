@@ -23,7 +23,7 @@ namespace DeliCode.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> AddAsync(Guid Id)
         {
-            
+
             var product = await _productService.Get(Id);
             if (product == null)
             {
@@ -41,11 +41,12 @@ namespace DeliCode.Web.Controllers
             return Ok();
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> DeleteAsync(Guid Id)
-        //{
-
-        //}
+        [HttpGet]
+        public IActionResult Delete()
+        {
+            Response.Cookies.Delete("Delicode.CartCookie");
+            return Ok();
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAsync()

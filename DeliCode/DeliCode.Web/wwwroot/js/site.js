@@ -3,6 +3,7 @@
 
 // Write your JavaScript code.
 
+const DeleteCartUrl = 'https://localhost:44385/Cart/Delete'
 const AddToCartUrl = 'https://localhost:44385/Cart/Add?Id='
 const GetCartUrl = 'https://localhost:44385/Cart/Get'
 
@@ -25,5 +26,13 @@ function GetCart() {
             document.getElementById('carttotal').innerHTML = CartTotal
             document.getElementById('cartquantity').innerHTML = CartCounter
         }
-    )
+        )
+}
+
+function DeleteCart() {
+    fetch(DeleteCartUrl)
+        .then(function (res) {
+            GetCart()
+        })
+    window.location.href = '/product'
 }
