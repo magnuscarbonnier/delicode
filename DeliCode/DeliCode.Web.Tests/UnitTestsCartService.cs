@@ -106,7 +106,7 @@ namespace DeliCode.Web.Tests
             var cartItem = cart.Items.FirstOrDefault();
             var quantity = cartItem.Quantity+1;
 
-            var result = await _cartService.AddProductToCart(cartItem.Product);
+            var result = await _cartService.AddProductToCart(cartItem.Product.Id);
             var cartResult = result.Items;
 
             Assert.IsType<Cart>(result);
@@ -114,21 +114,21 @@ namespace DeliCode.Web.Tests
             Assert.Equal(quantity, cartResult.FirstOrDefault().Quantity);
 
         }
-        //TODO make similiar test
-        //[Fact]
-        //private async Task AddProductToCart_ProductNotInCart_ReturnsCart()
-        //{
-        //    _product.Id = Guid.NewGuid();
-        //    var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 1 } };
+        [Fact]
+        private async Task AddProductToCart_ProductNotInCart_ReturnsCartWithNewProduct()
+        {
+            var cart = await _repository.GetCart(Guid.NewGuid());
+            var cartItem = cart.Items.FirstOrDefault();
+            var product =  new Product { Id = cartItem.Product.Id };
+            cart.Items.Clear();
+            var result = await _cartService.AddProductToCart(product.Id);
+            var cartResult = result.Items;
+            var cartresultproduct = cartResult.FirstOrDefault(x => x.Product.Id == product.Id).Product;
 
-        //    var result = await _cartService.AddProductToCart(_product);
-        //    var cartResult = result.Items;
-        //    var cartresultproduct = cartResult.FirstOrDefault(x => x.Product.Id == _product.Id).Product;
-
-        //    Assert.IsType<Cart>(result);
-        //    Assert.Equal(_product.Id, cartresultproduct.Id);
-        //    Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault(x=>x.Product.Id==_product.Id).Quantity);
-        //}
+            Assert.IsType<Cart>(result);
+            Assert.Equal(product.Id, cartresultproduct.Id);
+            Assert.Equal(1, cartResult.FirstOrDefault(x => x.Product.Id == product.Id).Quantity);
+        }
         [Fact]
         private async Task GetCart_Twice_ReturnsSameCart()
         {

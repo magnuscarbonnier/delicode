@@ -7,6 +7,6 @@ namespace DeliCode.Web.Services
     public interface ICartService
     {
         Task<Cart> GetCart();
-        Task<Cart> AddProductToCart(Product product);
+        Task<Cart> AddProductToCart(Guid id);
     }
 }
