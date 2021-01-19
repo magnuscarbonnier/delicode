@@ -75,7 +75,6 @@ namespace DeliCode.Web.Components
 
         protected void SetDeliveryOptionsAvailable()
         {
-            //TODO "Hemleverans"
             DeliveryOptions.Add(DeliveryAlternatives.hemLeverans, 99);
             DeliveryOptions.Add(DeliveryAlternatives.upphämtning, 0);
         }

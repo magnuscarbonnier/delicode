@@ -27,16 +27,15 @@ namespace DeliCode.Web.Services
             };
             _productService = productService;
         }
-        //TODO productid inparam
-        public async Task<Cart> AddProductToCart(Product product)
+        public async Task<Cart> AddProductToCart(Guid productId)
         {
             var cart = await GetCart();
-            var isProductInCart = await ProductIdExistsInCart(cart, product.Id);
-            product = await _productService.Get(product.Id);
+            var isProductInCart = await ProductIdExistsInCart(cart, productId);
+            var product = await _productService.Get(productId);
             //TODO fix
-            if (isProductInCart && cart.Items?.SingleOrDefault(x => x.Product.Id == product.Id).Quantity < product.AmountInStorage)
+            if (isProductInCart && cart.Items?.SingleOrDefault(x => x.Product.Id == productId).Quantity < product.AmountInStorage)
             {
-                cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity++;
+                cart.Items.SingleOrDefault(x => x.Product.Id == productId).Quantity++;
             }
             else if (!isProductInCart && product!=null && product.AmountInStorage > 0)
             {
