@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DeliCode.Web.Components
 {
+
     public class OrderComponentBase : ComponentBase
     {
         [Inject]
@@ -75,8 +76,8 @@ namespace DeliCode.Web.Components
         protected void SetDeliveryOptionsAvailable()
         {
             //TODO "Hemleverans"
-            DeliveryOptions.Add("Hemleverans", 99);
-            DeliveryOptions.Add("Hämta i butik", 0);
+            DeliveryOptions.Add(DeliveryAlternatives.hemLeverans, 99);
+            DeliveryOptions.Add(DeliveryAlternatives.upphämtning, 0);
         }
 
         protected void GetAvailableDeliveryDates()
@@ -108,8 +109,8 @@ namespace DeliCode.Web.Components
         {
             orderModel.ShippingPrice = selectedDelivery.Value;
             SelectedDeliverytype = selectedDelivery;
-
-            if (selectedDelivery.Key == "Hemleverans")
+            
+            if (selectedDelivery.Key == DeliveryAlternatives.hemLeverans)
             {
                 renderHomeDelivery = true;
                 isHomeDeliveryBooked = true;
@@ -151,7 +152,7 @@ namespace DeliCode.Web.Components
             }
             try
             {
-                order = await NewMethod(order);
+                order = await ConfirmOrderAndUpdateDatabaseValues(order);
                 NavManager.NavigateTo($"/admin/editorder?orderid={order.Id}", true);
             }
             catch
@@ -160,8 +161,7 @@ namespace DeliCode.Web.Components
             }
         }
 
-        //TODO rename or place in another service to update quantity in storage when order created
-        public async Task<Order> NewMethod(Order order)
+        public async Task<Order> ConfirmOrderAndUpdateDatabaseValues(Order order)
         {
             order = await OrderService.PlaceOrder(orderModel);
             foreach (var orderProduct in order.OrderProducts)
