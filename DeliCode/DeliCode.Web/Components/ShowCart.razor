@@ -24,6 +24,17 @@
                     </ul>
                     <hr />
                 }
+                
+
+                <div class="text-muted font-weight-bold">@OrderModel.FirstName @OrderModel.LastName</div>
+                <div class="text-muted">@OrderModel.Address</div>
+                <div class="text-muted">@OrderModel.ZipCode @OrderModel.City</div>
+                <div class="text-muted">@OrderModel.Country</div>
+                <div class="text-muted">@OrderModel.Email</div>
+                <div class="text-muted">@OrderModel.Phone</div>
+                <div class="text-muted">@OrderModel.ShippingNotes</div>
+   
+                <hr />
                 Total: <span class="font-weight-bold" style="color: forestgreen">@OrderModel.TotalPrice() :-</span>
             </div>
         </div>

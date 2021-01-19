@@ -1,6 +1,7 @@
 ﻿using DeliCode.Web.Models;
 using DeliCode.Web.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,23 +16,27 @@ namespace DeliCode.Web.Components
         ICartService CartService { get; set; }
         [Inject]
         IOrderService OrderService { get; set; }
-        [Inject] 
+        [Inject]
         IProductService ProductService { get; set; }
-        [Inject] 
+        [Inject]
         NavigationManager NavManager { get; set; }
 
         [Parameter]
         public string UserId { get; set; }
 
+        [CascadingParameter]
+        protected EditContext CurrentEditContext { get; set; }
+ 
         protected Models.Order orderModel = new Models.Order();
         protected Cart cart = new Cart();
 
         protected bool isLoading = false;
-        protected bool isValidPersonalDetails = false;
-        protected bool isDeliverySelected = false;
-        protected bool isPaymentSelected = false;
-        protected bool isHomeDelivery = false;
         protected bool isHomeDeliveryBooked = false;
+        protected bool renderPersonalDetails = false;
+        protected bool renderDeliveryOptions = true;
+        protected bool renderPayment = false;
+        protected bool renderHomeDelivery = false;
+        protected bool renderOrderButton = false;
         protected string btndesign = "-outline";
 
         protected KeyValuePair<string, decimal> SelectedDeliverytype;
@@ -48,6 +53,7 @@ namespace DeliCode.Web.Components
             SetDeliveryOptionsAvailable();
 
             GetAvailableDeliveryDates();
+            CurrentEditContext = new EditContext(orderModel);
         }
 
         protected async Task GetValidCart()
@@ -85,41 +91,62 @@ namespace DeliCode.Web.Components
 
         protected void SavePersonalDetails()
         {
-            isValidPersonalDetails = true;
+            bool isOrderModelValid = CurrentEditContext.Validate(); 
+            if (isOrderModelValid)
+            {
+                renderPersonalDetails = false;
+                renderPayment = true;
+            }
+            else
+            {
+                renderPersonalDetails = true;
+                renderPayment = false;
+            }
+            renderOrderButton = false;
         }
 
         protected void SelectDelivery(KeyValuePair<string, decimal> selectedDelivery)
         {
             orderModel.ShippingPrice = selectedDelivery.Value;
             SelectedDeliverytype = selectedDelivery;
-            isDeliverySelected = true;
+            
             if (selectedDelivery.Key == DeliveryAlternatives.hemLeverans)
             {
-                isHomeDelivery = true;
+                renderHomeDelivery = true;
+                isHomeDeliveryBooked = true;
+                renderPersonalDetails = false;
             }
             else
             {
-                isHomeDelivery = false;
+                renderHomeDelivery = false;
                 isHomeDeliveryBooked = false;
+                renderPersonalDetails = true;
                 orderModel.BookedDeliveryDate = default;
             }
+            
+            renderPayment = false;
+            renderOrderButton = false;
         }
         protected void SelectDate(DateTime date)
         {
             isHomeDeliveryBooked = true;
+            renderPersonalDetails = true;
             orderModel.BookedDeliveryDate = date;
+            renderOrderButton = false;
+            renderPayment = false;
+            renderHomeDelivery = false;
         }
         protected async Task PlaceOrder()
         {
             isLoading = true;
-            isDeliverySelected = false;
-            isValidPersonalDetails = false;
-            isHomeDelivery = false;
-            isHomeDeliveryBooked = false;
-            isPaymentSelected = false;
+            renderDeliveryOptions = false;
+            renderHomeDelivery = false;
+            renderOrderButton = false;
+            renderPayment = false;
+            renderPersonalDetails = false;
 
             var order = orderModel;
-            if(UserId != null)
+            if (UserId != null)
             {
                 orderModel.UserId = UserId;
             }
@@ -136,7 +163,6 @@ namespace DeliCode.Web.Components
 
         public async Task<Order> ConfirmOrderAndUpdateDatabaseValues(Order order)
         {
-
             order = await OrderService.PlaceOrder(orderModel);
             foreach (var orderProduct in order.OrderProducts)
             {
