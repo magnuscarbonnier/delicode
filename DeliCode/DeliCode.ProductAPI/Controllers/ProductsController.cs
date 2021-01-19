@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace DeliCode.ProductAPI.Controllers
 {
-    [Route("api/[controller]")]    
+    [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private IProductRepository _repository;
+        private readonly IProductRepository _repository;
 
         public ProductsController(IProductRepository repository)
         {
@@ -42,23 +42,30 @@ namespace DeliCode.ProductAPI.Controllers
             return NotFound();
         }
 
-        [HttpPut]
+        [HttpPut("inventory")]
         public async Task<ActionResult> UpdateInventory(Dictionary<Guid, int> productQuantityValuePairs)
         {
-            bool updateIsSuccessfull = await _repository.UpdateInventoryQuanties(productQuantityValuePairs);
+            bool checkIsSuccessful = await _repository.CheckInventoryQuantities(productQuantityValuePairs);
 
-            if (updateIsSuccessfull)
+            if (!checkIsSuccessful)
+            {
+                return BadRequest("Product/inventory error");
+            }
+
+            bool updateIsSuccessful = await _repository.ReduceInventoryQuanties(productQuantityValuePairs);
+
+            if (updateIsSuccessful)
             {
                 return Ok();
             }
             else
             {
-                return BadRequest();
+                return BadRequest("Unknown error");
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutProduct(Guid id,[FromBody] Product product)
+        public async Task<ActionResult> PutProduct(Guid id, [FromBody] Product product)
         {
             if (id != product.Id)
             {

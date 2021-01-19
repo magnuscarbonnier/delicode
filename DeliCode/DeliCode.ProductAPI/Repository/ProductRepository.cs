@@ -78,45 +78,44 @@ namespace DeliCode.ProductAPI.Repository
             return product;
         }
 
-        //TODO needs Revising
-        public async Task<bool> UpdateInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs)
+        public async Task<bool> ReduceInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs)
         {
-            bool updateSuccessful = CheckIfEnoughInStorage(productQuantityValuePairs);
-            if (updateSuccessful == false)            
-                return updateSuccessful;
+            bool updateSuccessful;
+            try
+            {
+                foreach (var productPair in productQuantityValuePairs)
+                {
+                    var product = await _context.Products.FindAsync(productPair.Key);
+                    product.AmountInStorage -= productPair.Value;
+                }
+                await _context.SaveChangesAsync();
 
-            updateSuccessful = ReduceAmountInStorage(productQuantityValuePairs);
-
+                updateSuccessful = true;
+            }
+            catch
+            {
+                updateSuccessful = false;
+            }
             return updateSuccessful;
         }
 
-        //TODO needs revising
-        private bool ReduceAmountInStorage(Dictionary<Guid, int> productQuantityValuePairs)
-        {
-            foreach (var productPair in productQuantityValuePairs)
-            {
-                var product = _context.Products.SingleOrDefault(p => p.Id == productPair.Key);
-                product.AmountInStorage -= productPair.Value;
-            }
-            _context.SaveChanges();
-            return true;
-        }
-
-        //TODO Needs revising
-        private bool CheckIfEnoughInStorage(Dictionary<Guid, int> products)
+        public async Task<bool> CheckInventoryQuantities(Dictionary<Guid, int> productsQuantities)
         {
             bool amountInStorageIsEnough = true;
-            foreach (var productQuantity in products)
+            foreach (var productQuantity in productsQuantities)
             {
-                var amountInStorage = _context.Products.FirstOrDefault(p => p.Id == productQuantity.Key).AmountInStorage;
+                var product = await _context.Products.FindAsync(productQuantity.Key);
+                var amountInStorage = product?.AmountInStorage;
 
-                if (amountInStorage < productQuantity.Value)
+                if (amountInStorage >= productQuantity.Value)
                 {
+                    amountInStorageIsEnough = true;
+                }
+                else
+                { 
                     amountInStorageIsEnough = false;
                     return amountInStorageIsEnough;
                 }
-                else
-                    amountInStorageIsEnough = true;
             }
             return amountInStorageIsEnough;
         }

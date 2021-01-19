@@ -15,6 +15,7 @@ namespace DeliCode.ProductAPI.Repository
         Task<Product> AddProduct(Product product);
         Task<Product> DeleteProduct(Guid Id);
         Task<Product> UpdateProduct(Product product);
-        Task<bool> UpdateInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs);
+        Task<bool> ReduceInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs);
+        Task<bool> CheckInventoryQuantities(Dictionary<Guid, int> productQuantityValuePairs);
     }
 }
