@@ -58,7 +58,6 @@ namespace DeliCode.Web.Repository
             var orderResponse = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<Order>(orderResponse);
-
         }
 
         public async Task<Order> UpdateOrder(Order order)
