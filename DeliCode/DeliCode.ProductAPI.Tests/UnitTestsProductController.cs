@@ -106,7 +106,6 @@ namespace DeliCode.ProductAPI.Tests
 
             Assert.Equal(product.Id, _products.FirstOrDefault().Id);
         }
-        // TODO Göra ett test för Addproduct som misslyckas
         [Fact]
         public async Task UpdateProduct_ShouldReturnUpdatedOrder()
         {
