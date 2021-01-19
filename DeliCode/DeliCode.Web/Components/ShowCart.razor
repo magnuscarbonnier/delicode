@@ -20,10 +20,21 @@
                     <h4 style="color: #5e676f">Vald fraktmetod</h4>
                     <ul>
                         <li class="text-muted">@DeliveryMethod.Key <label class="font-weight-bold">@DeliveryMethod.Value :-</label></li>
-                        <label class="text-muted">@OrderModel.BookedDeliveryDate?.ToString("yyyy-MM-dd")</label>
+                        <li class="text-muted" style="list-style-type: none;">@OrderModel.BookedDeliveryDate?.ToString("yyyy-MM-dd")</li>
                     </ul>
                     <hr />
                 }
+                
+
+                <div class="text-muted font-weight-bold">@OrderModel.FirstName @OrderModel.LastName</div>
+                <div class="text-muted">@OrderModel.Address</div>
+                <div class="text-muted">@OrderModel.ZipCode @OrderModel.City</div>
+                <div class="text-muted">@OrderModel.Country</div>
+                <div class="text-muted">@OrderModel.Email</div>
+                <div class="text-muted">@OrderModel.Phone</div>
+                <div class="text-muted">@OrderModel.ShippingNotes</div>
+   
+                <hr />
                 Total: <span class="font-weight-bold" style="color: forestgreen">@OrderModel.TotalPrice() :-</span>
             </div>
         </div>

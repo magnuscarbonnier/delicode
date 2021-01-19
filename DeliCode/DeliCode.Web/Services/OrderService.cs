@@ -11,12 +11,10 @@ namespace DeliCode.Web.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
-        private readonly IProductService _productService; //TODO Tight coupling needs to be revised.
 
         public OrderService(IOrderRepository repository)
         {
             _repository = repository;
-            _productService = new ProductService(new System.Net.Http.HttpClient());
         }
 
         public async Task<Order> DeleteOrder(int orderId)

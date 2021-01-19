@@ -1,4 +1,5 @@
 ﻿using DeliCode.Web.Models;
+using DeliCode.Web.Repository;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,56 +12,44 @@ namespace DeliCode.Web.Services
 {
     public class ProductService : IProductService
     {
+        private readonly IProductRepository _repository;
 
-        private readonly HttpClient _httpClient;
-
-        public ProductService(HttpClient httpClient)
+        public ProductService(IProductRepository repository)
         {
-            _httpClient = httpClient;
+            _repository = repository;
         }
 
-        public async Task<List<Product>> GetAll()
+        public async Task<Product> Add(Product product)
         {
-            var response = await _httpClient.GetAsync("/api/products");
-            var productResponse = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<List<Product>>(productResponse);
+            return await _repository.Add(product);
         }
 
         public async Task<Product> Get(Guid id)
         {
-            var response = await _httpClient.GetAsync($"/api/products/{id}");
-            var productResponse = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<Product>(productResponse);
+            return await _repository.Get(id);
         }
 
-        public Task<Product> Remove(Guid id)
+        public async Task<List<Product>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAll();
         }
 
-        public Task<Product> Add(Product product)
+        public async Task<Product> Remove(Guid id)
         {
-            throw new NotImplementedException();
+            return await _repository.Remove(id);
         }
-        //TODO productresponse
+
         public async Task<Product> Update(Product product)
         {
-            var response = await _httpClient.PutAsJsonAsync<Product>($"api/products/{product.Id}", product);
-            var orderResponse = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<Product>(orderResponse);
+            return await _repository.Update(product);
         }
 
         public async Task<bool> UpdateInventoryAmount(List<OrderProduct> orderProducts)
         {
+
             var productsKeyValuePairs = MapOrderProductsToDictionary(orderProducts);
 
-            var response = await _httpClient.PutAsJsonAsync<Dictionary<Guid, int>>($"https://localhost:44333/api/products/update", productsKeyValuePairs);
-            var content = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<bool>(content);
+            return await _repository.UpdateInventoryAmount(productsKeyValuePairs);
         }
 
         private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)

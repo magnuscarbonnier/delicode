@@ -18,8 +18,7 @@ namespace DeliCode.OrderAPI.Controllers
     [ApiController]
     public class OrdersController : Controller
     {
-        private IOrderRepository _repository;
-
+        private readonly IOrderRepository _repository;
 
         public OrdersController(IOrderRepository repository)
         {
@@ -75,7 +74,6 @@ namespace DeliCode.OrderAPI.Controllers
 
             return BadRequest("order not added");
         }
-
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateOrder(int id, Order order)

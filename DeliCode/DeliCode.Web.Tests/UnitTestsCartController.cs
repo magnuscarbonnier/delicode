@@ -15,20 +15,16 @@ namespace DeliCode.Web.Tests
 {
     public class UnitTestsCartController
     {
-        private CartController _controller;
+        private readonly CartController _controller;
         private readonly ICartService _cartService;
         private readonly IProductService _productService;
         private readonly MockCartRepository _cartRepository;
         private readonly MockProductRepository _productRepository;
-        private HttpClient _httpClient;
+
         public UnitTestsCartController()
         {
-            var productAPIUrl = "https://localhost:44333";
-
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(productAPIUrl);
-            _productService = new ProductService(_httpClient);
             _productRepository = new MockProductRepository();
+            _productService = new ProductService(_productRepository);
             _cartRepository = new MockCartRepository();
             _cartService = new CartService(_cartRepository,_productService);
             _controller = new CartController(_productService, _cartService);
@@ -46,7 +42,8 @@ namespace DeliCode.Web.Tests
         [Fact]
         public async Task AddProductToCart_ProductExistsInProductDb_ReturnsOk()
         {
-            var idInProductDb = new Guid("BD8F361D-E5E3-4F33-82CF-2594368D78C3");
+            var idInProductDb = _productRepository.products.FirstOrDefault().Id;
+        
             var result = await _controller.AddAsync(idInProductDb);
 
             Assert.IsType<OkResult>(result);
@@ -70,5 +67,34 @@ namespace DeliCode.Web.Tests
          
             Assert.IsType<OkObjectResult>(result);
         }
+        [Fact]
+        public async Task GetCart_AddMoreItemsThanInDB_ReturnsCartWithAllDBProducts()
+        {
+            var product = _productRepository.products.FirstOrDefault();
+            product.AmountInStorage = 1;
+            _cartRepository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
+
+            var cart = await _cartService.GetCart();
+            var amount = cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity;
+
+            Assert.Equal(product.AmountInStorage, amount);
+        }
+
+        [Fact]
+        public async Task GetCart_AddItemsNotAvailableInDB_ReturnsCartWithoutProduct()
+        {
+            var product = _productRepository.products.FirstOrDefault();
+            product.AmountInStorage = 0;
+            _cartRepository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+
+            var cart = await _cartService.GetCart();
+
+            Assert.Empty(cart.Items);
+        }
     }
+
 }
