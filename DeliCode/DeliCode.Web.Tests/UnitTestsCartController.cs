@@ -15,7 +15,7 @@ namespace DeliCode.Web.Tests
 {
     public class UnitTestsCartController
     {
-        private CartController _controller;
+        private readonly CartController _controller;
         private readonly ICartService _cartService;
         private readonly IProductService _productService;
         private readonly MockCartRepository _cartRepository;

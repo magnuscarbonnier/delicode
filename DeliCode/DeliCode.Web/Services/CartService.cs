@@ -12,7 +12,7 @@ namespace DeliCode.Web.Services
     {
         private readonly ICartRepository _repository;
         private readonly IProductService _productService;
-        private static string _cookieName = "Delicode.CartCookie";
+        private static readonly string _cookieName = "Delicode.CartCookie";
         private readonly CookieOptions _cookieOptions;
 
         public CartService(ICartRepository repository, IProductService productService)
@@ -80,7 +80,7 @@ namespace DeliCode.Web.Services
             return session;
         }
 
-        private Task<bool> ProductIdExistsInCart(Cart cart, Guid productId)
+        private static Task<bool> ProductIdExistsInCart(Cart cart, Guid productId)
         {
             var exists = cart.Items.Exists(x => x.Product.Id == productId);
             return Task.FromResult(exists);
