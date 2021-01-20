@@ -1,9 +1,80 @@
-﻿@model DeliCode.Web.Models.Cart
-@{
-}
+﻿@model DeliCode.Web.Models.Order
 
-<center>
-    <h1>Tack för din order!</h1>
-    <br />
-    <h3>Ditt ordernummer är @Model.SessionId</h3>
-</center>
+
+
+<div class="row justify-content-center pt-5">
+    <div class="card">
+        <div class="card-body">
+            <h4>Tack för din order!</h4>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <address>
+                        <strong>@Model.FirstName @Model.LastName</strong>
+                        <br>
+                        @Model.Address
+                        <br>
+                        @Model.City, @Model.ZipCode
+                        <br>
+                        <abbr title="Phone">P:</abbr> @Model.Phone
+                    </address>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                    <p>
+                        <em>@Model.OrderDate</em>
+                    </p>
+                    <p>
+                        <em>Order#: @Model.Id</em>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <h1>Kvitto</h1>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Produkter</th>
+                            <th>#</th>
+                            <th class="text-center">Pris</th>
+                            <th class="text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderProducts)
+                        {
+                            <tr>
+                                <td class="col-md-9"><em>@item.Name</em>
+                                <td class="col-md-1" style="text-align: center">@item.Quantity</td>
+                                <td class="col-md-1 text-center">@item.Price</td>
+                                <td class="col-md-1 text-center">@(item.Quantity*item.Price)</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>   </td>
+                            <td>   </td>
+                            <td class="text-right">
+                                <p>
+                                    <strong>Frakt: </strong>
+                                </p>
+                            </td>
+                            <td class="text-center">
+                                <p>
+                                    <strong>@Model.ShippingPrice</strong>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>   </td>
+                            <td>   </td>
+                            <td class="text-right"><h4><strong>Total: </strong></h4></td>
+                            <td class="text-center text-danger"><h4><strong>@(Model.ShippingPrice+Model.OrderProducts.Sum(x => x.Price))</strong></h4></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a href="@Url.Action("Index", "Product")" , class="btn btn-success btn-lg btn-block">Handla mer</a>
+            </div>
+        </div>
+    </div>
+
+</div>

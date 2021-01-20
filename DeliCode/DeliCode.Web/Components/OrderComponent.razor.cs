@@ -125,7 +125,7 @@ namespace DeliCode.Web.Components
             try
             {
                 order = await NewMethod(order);
-                NavManager.NavigateTo($"/admin/editorder?orderid={order.Id}", true);
+                NavManager.NavigateTo($"/order/confirmorder?orderid={order.Id}", true);
             }
             catch
             {
