@@ -56,7 +56,7 @@ namespace DeliCode.ProductAPI.Controllers
 
             if (updateIsSuccessful)
             {
-                return Ok();
+                return Ok(updateIsSuccessful);
             }
             else
             {
