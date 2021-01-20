@@ -57,27 +57,6 @@ namespace DeliCode.Web.Services
             return newOrder;
         }
 
-        //TODO ERik!
-        //private async Task<bool> UpdateProductInventory(List<OrderProduct> orderProducts)
-        //{
-        //    Dictionary<Guid, int> orderProductsQuantity = MapOrderProductsToDictionary(orderProducts);
-
-        //    bool isSuccess = await _productService.UpdateInventoryAmount(orderProductsQuantity);
-            
-        //    return isSuccess;
-        //}
-        //TODO Unused
-        private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)
-        {
-            Dictionary<Guid, int> productQuantityValuePairs = new Dictionary<Guid, int>();
-            foreach (var product in orderProducts)
-            {
-                productQuantityValuePairs.Add(product.Id, product.Quantity);
-            }
-
-            return productQuantityValuePairs;
-        }
-
         public async Task<Order> UpdateOrder(int orderId, Order order)
         {
             if (orderId != order.Id)
