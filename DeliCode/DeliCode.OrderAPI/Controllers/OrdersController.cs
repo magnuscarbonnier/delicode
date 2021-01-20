@@ -3,6 +3,7 @@ using DeliCode.OrderAPI.Data;
 using DeliCode.OrderAPI.Models;
 using DeliCode.OrderAPI.Repository;
 using DeliCode.OrderAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace DeliCode.OrderAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrdersController : Controller
     {
         private readonly IOrderRepository _repository;

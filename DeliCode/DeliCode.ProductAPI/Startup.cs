@@ -38,27 +38,16 @@ namespace DeliCode.ProductAPI
             services.AddDbContext<ProductDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            services.AddAuthentication(options => {
+            // 1. Add Authentication Services
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(options => {
-                    options.RequireHttpsMetadata = true;//change to true in production
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        RequireSignedTokens=true,
-                        RequireExpirationTime=true,
-                        ValidateIssuer = true,
-                        ValidIssuer = MicroserviceType.ProductApi.ToString(),
-                        ValidateAudience = true,
-                        ValidAudience = Configuration["Jwt:Audience"],
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"])),
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = "https://dev-5fnthzy6.eu.auth0.com/";
+                options.Audience = "https://localhost:44333/";
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
