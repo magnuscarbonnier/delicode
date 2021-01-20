@@ -57,7 +57,7 @@ namespace DeliCode.Web.Services
             Dictionary<Guid, int> productQuantityValuePairs = new Dictionary<Guid, int>();
             foreach (var product in orderProducts)
             {
-                productQuantityValuePairs.Add(product.Id, product.Quantity);
+                productQuantityValuePairs.Add(product.ProductId, product.Quantity);
             }
 
             return productQuantityValuePairs;

@@ -75,6 +75,8 @@ namespace DeliCode.Web
             });
             services.AddTransient<ICartRepository, CartRepository>();
             services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IInventoryService, InventoryService>();
+
             services.AddServerSideBlazor();
             services.AddControllersWithViews();
           

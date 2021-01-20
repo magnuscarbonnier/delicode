@@ -17,7 +17,8 @@ namespace DeliCode.Web.Tests
         readonly OrderController orderController;
         public UnitTestsOrderController()
         {
-            orderController = new OrderController();
+            var orderService = new OrderService(new MockOrderRepository());
+            orderController = new OrderController(orderService);
         }
 
         [Fact]
