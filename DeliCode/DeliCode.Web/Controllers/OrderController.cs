@@ -25,6 +25,8 @@ namespace DeliCode.Web.Controllers
         public async Task<IActionResult> ConfirmOrder(int orderId)
         {
             var order = await _orderService.GetOrderById(orderId);
+            Response.Cookies.Delete("Delicode.CartCookie");
+
             return View("ConfirmOrder" , order);
         }
         [HttpGet]
