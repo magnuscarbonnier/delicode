@@ -22,11 +22,11 @@ namespace DeliCode.ProductAPI.Tests
         {
             _products = new List<Product>
                 {
-                    new Product() { Name = "Kanelbulle", Description = "", Price = 10, ImageUrl = "#" },
-                    new Product() { Name = "Kladdkaka", Description = "", Price = 70, ImageUrl = "#" },
-                    new Product() { Name = "Tårta", Description = "", Price = 89, ImageUrl = "#" },
-                    new Product() { Name = "Cheesecake", Description = "", Price = 29, ImageUrl = "#" },
-                    new Product() { Name = "Muffin", Description = "", Price = 19, ImageUrl = "#" }
+                    new Product() { Name = "Kanelbulle", Description = "", Price = 10, ImageUrl = "#", AmountInStorage = 1 },
+                    new Product() { Name = "Kladdkaka", Description = "", Price = 70, ImageUrl = "#", AmountInStorage = 2 },
+                    new Product() { Name = "Tårta", Description = "", Price = 89, ImageUrl = "#", AmountInStorage = 3 },
+                    new Product() { Name = "Cheesecake", Description = "", Price = 29, ImageUrl = "#", AmountInStorage = 2 },
+                    new Product() { Name = "Muffin", Description = "", Price = 19, ImageUrl = "#", AmountInStorage = 3 }
                 };
             ContextOptions = SetMockDatabaseOptions();
             SeedMockData();
@@ -160,5 +160,51 @@ namespace DeliCode.ProductAPI.Tests
 
             Assert.IsType<BadRequestResult>(badrequestresult);
         }
+
+        [Fact]
+        public async Task UpdateInventory_ShouldReturn_BadRequestObjectResult_IfInventoryIsTooLow()
+        {
+            var product = (await _repository.GetAllProducts()).First();           
+            var quantityInInventory = product.AmountInStorage;
+            var productQuantities = new Dictionary<Guid, int>
+            {
+                { product.Id, quantityInInventory + 1 }
+            };
+
+            var result = await productsController.UpdateInventory(productQuantities);
+            var resultCode = result as BadRequestObjectResult;
+
+            Assert.IsType<BadRequestObjectResult>(resultCode);
+        }
+
+        [Fact]
+        public async Task UpdateInventory_InvalidId_ShouldReturn_BadRequestObjectResult()
+        {
+            var productQuantities = new Dictionary<Guid, int>
+            {
+                { Guid.NewGuid(), 0 }
+            };
+
+            var result = await productsController.UpdateInventory(productQuantities);
+            var resultCode = result as BadRequestObjectResult;
+
+            Assert.IsType<BadRequestObjectResult>(resultCode);
+        }
+        [Fact]
+        public async Task UpdateInventory_ValidUpdateShouldReturn_Ok()
+        {
+            var product = (await _repository.GetAllProducts()).First();
+            var quantityInInventory = product.AmountInStorage;
+            var productQuantities = new Dictionary<Guid, int>
+            {
+                { product.Id, quantityInInventory }
+            };
+
+            var result = await productsController.UpdateInventory(productQuantities);
+            var resultCode = result as OkObjectResult;
+
+            Assert.IsType<OkObjectResult>(resultCode);
+        }
+
     }
 }
