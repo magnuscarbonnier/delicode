@@ -31,7 +31,7 @@ namespace DeliCode.Web.Services
             bool updateSuccess = await _productService.UpdateInventoryAmount(orderResult.OrderProducts);
 
             if (!updateSuccess)
-                await _orderService.DeleteOrder(orderResult.Id);
+                orderResult = await _orderService.DeleteOrder(orderResult.Id);
 
             return orderResult;
         }
