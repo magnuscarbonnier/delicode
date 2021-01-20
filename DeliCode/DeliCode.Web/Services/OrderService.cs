@@ -52,31 +52,9 @@ namespace DeliCode.Web.Services
 
         public async Task<Order> PlaceOrder(Order order)
         {
-            var newOrder = new Order();
-    
-            newOrder = await _repository.PlaceOrder(order);
+            var newOrder = await _repository.PlaceOrder(order);
 
             return newOrder;
-        }
-
-        //private async Task<bool> UpdateProductInventory(List<OrderProduct> orderProducts)
-        //{
-        //    Dictionary<Guid, int> orderProductsQuantity = MapOrderProductsToDictionary(orderProducts);
-
-        //    bool isSuccess = await _productService.UpdateInventoryAmount(orderProductsQuantity);
-            
-        //    return isSuccess;
-        //}
-
-        private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)
-        {
-            Dictionary<Guid, int> productQuantityValuePairs = new Dictionary<Guid, int>();
-            foreach (var product in orderProducts)
-            {
-                productQuantityValuePairs.Add(product.Id, product.Quantity);
-            }
-
-            return productQuantityValuePairs;
         }
 
         public async Task<Order> UpdateOrder(int orderId, Order order)

@@ -43,9 +43,24 @@ namespace DeliCode.Web.Services
         {
             return await _repository.Update(product);
         }
-        public async Task<bool> UpdateInventoryAmount(Dictionary<Guid, int> productsKeyValuePairs)
+
+        public async Task<bool> UpdateInventoryAmount(List<OrderProduct> orderProducts)
         {
+
+            var productsKeyValuePairs = MapOrderProductsToDictionary(orderProducts);
+
             return await _repository.UpdateInventoryAmount(productsKeyValuePairs);
+        }
+
+        private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)
+        {
+            Dictionary<Guid, int> productQuantityValuePairs = new Dictionary<Guid, int>();
+            foreach (var product in orderProducts)
+            {
+                productQuantityValuePairs.Add(product.ProductId, product.Quantity);
+            }
+
+            return productQuantityValuePairs;
         }
     }
 }

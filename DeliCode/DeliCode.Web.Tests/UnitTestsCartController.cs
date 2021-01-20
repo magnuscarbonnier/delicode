@@ -15,7 +15,7 @@ namespace DeliCode.Web.Tests
 {
     public class UnitTestsCartController
     {
-        private CartController _controller;
+        private readonly CartController _controller;
         private readonly ICartService _cartService;
         private readonly IProductService _productService;
         private readonly MockCartRepository _cartRepository;
@@ -67,5 +67,34 @@ namespace DeliCode.Web.Tests
          
             Assert.IsType<OkObjectResult>(result);
         }
+        [Fact]
+        public async Task GetCart_AddMoreItemsThanInDB_ReturnsCartWithAllDBProducts()
+        {
+            var product = _productRepository.products.FirstOrDefault();
+            product.AmountInStorage = 1;
+            _cartRepository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
+
+            var cart = await _cartService.GetCart();
+            var amount = cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity;
+
+            Assert.Equal(product.AmountInStorage, amount);
+        }
+
+        [Fact]
+        public async Task GetCart_AddItemsNotAvailableInDB_ReturnsCartWithoutProduct()
+        {
+            var product = _productRepository.products.FirstOrDefault();
+            product.AmountInStorage = 0;
+            _cartRepository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+
+            var cart = await _cartService.GetCart();
+
+            Assert.Empty(cart.Items);
+        }
     }
+
 }

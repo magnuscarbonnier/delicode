@@ -17,6 +17,8 @@ namespace DeliCode.Web.Components
         [Inject]
         IOrderService OrderService { get; set; }
         [Inject]
+        IInventoryService InventoryService { get; set; }
+        [Inject]
         IProductService ProductService { get; set; }
         [Inject]
         NavigationManager NavManager { get; set; }
@@ -31,6 +33,7 @@ namespace DeliCode.Web.Components
         protected Cart cart = new Cart();
 
         protected bool isLoading = false;
+        protected bool renderSelectDelivery = false;
         protected bool isHomeDeliveryBooked = false;
         protected bool renderPersonalDetails = false;
         protected bool renderDeliveryOptions = true;
@@ -58,10 +61,11 @@ namespace DeliCode.Web.Components
 
         protected async Task GetValidCart()
         {
-            var cartItems = new List<CartItem>();
-            var cartResponse = await CartService.GetCart();
-
-            cart = cartResponse;
+            cart = await CartService.GetCart();
+            if (cart.Items.Count > 0)
+                renderSelectDelivery = true;
+            else
+                renderSelectDelivery = false;
         }
 
         protected void InitializeOrderProducts()
@@ -151,26 +155,13 @@ namespace DeliCode.Web.Components
             }
             try
             {
-                order = await ConfirmOrderAndUpdateDatabaseValues(order);
-                NavManager.NavigateTo($"/admin/editorder?orderid={order.Id}", true);
+                order = await InventoryService.FinalizeOrder(orderModel);
+                NavManager.NavigateTo($"/order/confirmorder?orderid={order.Id}", true);
             }
             catch
             {
                 isLoading = false;
             }
-        }
-
-        public async Task<Order> ConfirmOrderAndUpdateDatabaseValues(Order order)
-        {
-            order = await OrderService.PlaceOrder(orderModel);
-            foreach (var orderProduct in order.OrderProducts)
-            {
-                var product = await ProductService.Get(orderProduct.ProductId);
-                product.AmountInStorage = product.AmountInStorage - orderProduct.Quantity;
-                await ProductService.Update(product);
-            }
-
-            return order;
         }
     }
 }
