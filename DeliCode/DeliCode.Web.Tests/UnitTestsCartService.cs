@@ -20,13 +20,12 @@ namespace DeliCode.Web.Tests
         private readonly MockCartRepository _repository;
         private readonly MockProductRepository _mockProductRepository;
         private readonly ICartService _cartService;
-        private readonly IProductService _productService;
 
         public UnitTestsCartService()
         {
             _repository = new MockCartRepository();
             _mockProductRepository = new MockProductRepository();
-            _productService = new ProductService(_mockProductRepository);
+            IProductService _productService = new ProductService(_mockProductRepository);
             _cartService = new CartService(_repository,_productService);
         }
         [Fact]
