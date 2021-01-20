@@ -33,6 +33,6 @@ function DeleteCart() {
     fetch(DeleteCartUrl)
         .then(function (res) {
             GetCart()
+            location.reload(); 
         })
-    window.location.href = '/product'
 }

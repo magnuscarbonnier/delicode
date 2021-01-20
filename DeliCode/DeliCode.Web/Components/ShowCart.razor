@@ -25,7 +25,7 @@
                 </ul>
                 <hr />
             }
-            
+
 
             <div class="text-muted font-weight-bold">@OrderModel.FirstName @OrderModel.LastName</div>
             <div class="text-muted">@OrderModel.Address</div>
@@ -37,7 +37,10 @@
 
             <hr />
             Total: <span class="font-weight-bold" style="color: forestgreen">@OrderModel.TotalPrice() :-</span>
-            <button class="btn btn-danger" style="float:right" onclick="DeleteCart()">Töm varukorg</button>
+            @if(CartModel.Items.Count > 0)
+            {
+                <button class="btn btn-danger" style="float:right" onclick="DeleteCart()">Töm varukorg</button>
+            }
         </div>
     </div>
 </div>
