@@ -4,7 +4,7 @@
             <div class="card-body">
       
 
-                    <EditForm Model="@OrderModel" OnValidSubmit="@(() => OnSaveCallback.InvokeAsync())">
+                    <EditForm EditContext="@CurrentEditContext" Model="@OrderModel" OnValidSubmit="@(() => OnSaveCallback.InvokeAsync())">
                         <DataAnnotationsValidator />
                         <div class="form-row">
                             <div class="form-group col-md-6">
@@ -62,7 +62,7 @@
                                 <InputTextArea class="form-control" id="shippingnotes" @bind-Value="OrderModel.ShippingNotes" />
                             </div>
                         </div>
-                        <button class="btn btn-primary" type="submit">Spara Uppgifter</button>
+                        <button class="btn btn-primary" type="submit">Gå till betalning</button>
                     </EditForm>
                 </div>
 
@@ -75,4 +75,7 @@
 
     [Parameter]
     public EventCallback OnSaveCallback { get; set; }
+
+    [Parameter]
+    public EditContext CurrentEditContext { get; set; }
 }
