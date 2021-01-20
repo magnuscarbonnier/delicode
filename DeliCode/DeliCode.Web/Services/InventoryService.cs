@@ -36,7 +36,7 @@ namespace DeliCode.Web.Services
             return orderResult;
         }
 
-        private async Task<bool> ValidateInventory(List<OrderProduct> orderProducts)
+        public async Task<bool> ValidateInventory(List<OrderProduct> orderProducts)
         {
             bool isSuccessful;
             foreach (var orderProduct in orderProducts)
@@ -52,7 +52,5 @@ namespace DeliCode.Web.Services
             isSuccessful = true;
             return isSuccessful;
         }
-
-
     }
 }

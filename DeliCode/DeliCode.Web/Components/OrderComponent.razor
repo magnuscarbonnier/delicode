@@ -15,8 +15,10 @@ else
             <ShowCart DeliveryMethod="SelectedDeliverytype" OrderModel="orderModel" CartModel="cart" />
         </div>
         <div class="col-12 col-lg-7">
-
-            <ShowDeliveryOptions DeliveryOptions="DeliveryOptions" OnClickCallback="SelectDelivery" OrderModel="orderModel" SelectedDeliveryOption="SelectedDeliverytype" />
+            @if (renderSelectDelivery)
+            {
+                <ShowDeliveryOptions DeliveryOptions="DeliveryOptions" OnClickCallback="SelectDelivery" OrderModel="orderModel" SelectedDeliveryOption="SelectedDeliverytype" />
+            }
             @if (renderHomeDelivery)
             {
                 <div class="card">
