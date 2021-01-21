@@ -21,24 +21,12 @@ namespace DeliCode.Web.Controllers
         {
             return View();
         }
-        [Authorize]
         public async Task<IActionResult> ConfirmOrder(int orderId)
         {
             var order = await _orderService.GetOrderById(orderId);
             Response.Cookies.Delete("Delicode.CartCookie");
 
             return View("ConfirmOrder" , order);
-        }
-        [HttpGet]
-        public IActionResult ShipmentAddress()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult ShipmentAddress(string address, string zipCode, string phoneNumber)
-        {
-            return RedirectToAction("ConfirmOrder", "Order");
         }
     }
 }
