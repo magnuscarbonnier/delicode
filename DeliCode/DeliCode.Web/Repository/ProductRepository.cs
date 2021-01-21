@@ -1,9 +1,12 @@
 ﻿using DeliCode.Web.Models;
+using DeliCode.Web.Services;
 using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,9 +17,11 @@ namespace DeliCode.Web.Repository
     public class ProductRepository : IProductRepository
     {
         private readonly HttpClient _httpClient;
-        public ProductRepository(HttpClient httpClient)
+        public ProductRepository(HttpClient httpClient, ITokenService tokenService)
         {
+            var token = tokenService.GetProductApiToken();
             _httpClient = httpClient;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.TokenType, token.AccessToken);
         }
 
         public async Task<List<Product>> GetAll()

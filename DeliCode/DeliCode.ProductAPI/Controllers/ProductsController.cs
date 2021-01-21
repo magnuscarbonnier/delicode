@@ -1,6 +1,7 @@
 ﻿using DeliCode.ProductAPI.Data;
 using DeliCode.ProductAPI.Models;
 using DeliCode.ProductAPI.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace DeliCode.ProductAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _repository;
