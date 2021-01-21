@@ -20,11 +20,11 @@ namespace DeliCode.ProductAPI.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Product>().HasData
             (
-                new Product() { Id = Guid.NewGuid(), Name = "Kanelbulle", Description = "Varma", Price = 9.50m, ImageUrl = "https://picsum.photos/id/133/286/180", AmountInStorage = 3 },
-                new Product() { Id = Guid.NewGuid(), Name = "Kladdkarta", Description = "Extra florsocker", Price = 50.00m, ImageUrl = "https://picsum.photos/id/106/286/180", AmountInStorage = 0 },
-                new Product() { Id = Guid.NewGuid(), Name = "Tårta", Description = "Innehåller grädde", Price = 79.90m, ImageUrl = "https://picsum.photos/id/292/286/180", AmountInStorage = 3 },
-                new Product() { Id = Guid.NewGuid(), Name = "Cheesecake", Description = "En vanlig cheesecake", Price = 29.90m, ImageUrl = "https://picsum.photos/id/104/286/180", AmountInStorage = 1 },
-                new Product() { Id = Guid.NewGuid(), Name = "Muffin", Description = "Stora", Price = 19.90m, ImageUrl = "https://picsum.photos/id/143/286/180", AmountInStorage = 4 }
+                new Product() { Id = Guid.NewGuid(), Name = "Kanelbulle", Description = "Varma, frysta", Price = 9.50m, ImageUrl = "img/bullar-min.jpg", AmountInStorage = 3 },
+                new Product() { Id = Guid.NewGuid(), Name = "Kladdkaka", Description = "Extra florsocker, extra kall", Price = 50.00m, ImageUrl = "img/kladdkaka-min.jpg", AmountInStorage = 0 },
+                new Product() { Id = Guid.NewGuid(), Name = "Tårta", Description = "Innehåller grädde och is", Price = 79.90m, ImageUrl = "img/tarta-min.jpg", AmountInStorage = 3 },
+                new Product() { Id = Guid.NewGuid(), Name = "Cheesecake", Description = "En vanlig cheesecake, mellanfryst", Price = 29.90m, ImageUrl = "img/ostkaka-min.jpg", AmountInStorage = 1 },
+                new Product() { Id = Guid.NewGuid(), Name = "Muffin", Description = "Stora, tinade", Price = 19.90m, ImageUrl = "img/muffin-min.jpg", AmountInStorage = 4 }
             );
         }
     }
