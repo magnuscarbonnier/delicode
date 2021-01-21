@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace DeliCode.OrderAPI.Data
 {
-    public class OrderDbContext:DbContext
+    public class OrderDbContext : DbContext
     {
         public OrderDbContext(DbContextOptions<OrderDbContext> options)
         : base(options)
         {
+            base.Database.Migrate();
         }
 
         public DbSet<Order> Orders { get; set; }

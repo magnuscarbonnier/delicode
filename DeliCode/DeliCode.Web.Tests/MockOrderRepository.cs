@@ -41,7 +41,7 @@ namespace DeliCode.Web.Tests
 
         }
 
-        public Task<Order> DeleteOrder(int? orderId)
+        public Task<Order> DeleteOrder(int orderId)
         {
             var order = orders.FirstOrDefault(o => o.Id == orderId);
 
@@ -55,7 +55,7 @@ namespace DeliCode.Web.Tests
             return Task.FromResult(orders);
         }
 
-        public Task<Order> GetOrderById(int? id)
+        public Task<Order> GetOrderById(int id)
         {
             var order = orders.SingleOrDefault(o => o.Id == id);
             return Task.FromResult(order);
@@ -63,8 +63,10 @@ namespace DeliCode.Web.Tests
 
         public Task<List<Order>> GetOrdersByUsersId(string userId)
         {
-            var orderToReturn = orders.Where(o => o.UserId == userId).ToList();
-            return Task.FromResult(orderToReturn);
+           
+            var order = orders.Where(o => o.UserId == userId).ToList();
+            
+            return Task.FromResult(order);
         }
 
         public Task<Order> PlaceOrder(Order order)
@@ -77,7 +79,10 @@ namespace DeliCode.Web.Tests
         public Task<Order> UpdateOrder(Order order)
         {
             var orderToUpdate = orders.SingleOrDefault(o => o.Id == order.Id);
-            orderToUpdate = order;
+            if (orderToUpdate != null)
+            {
+                orderToUpdate = order;
+            }
             return Task.FromResult(orderToUpdate);
         }
     }

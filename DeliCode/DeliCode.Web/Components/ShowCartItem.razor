@@ -1,0 +1,24 @@
+﻿@inject NavigationManager NavManager
+
+<div class="list list-row " id="sortable" data-sortable-id="0" aria-dropeffect="move">
+    <div class="list-item" data-id="13" data-item-sortable-id="0" draggable="true" role="option" aria-grabbed="false" style="">
+        <div class="flex">
+
+            <a @onclick="@(()=>NavigateToProduct(Item.Product.Id))" class="item-author text-color font-weight-bold" data-abc="true">@Item.Product.Name</a>
+            <div class="item-except text-muted text-sm h-1x">x @Item.Quantity</div>
+        </div>
+        <div class="no-wrap">
+            <div class="item-date text-muted text-sm d-none d-md-block font-weight-bold">@Item.Product.Price :-</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public CartItem Item { get; set; }
+
+    private void NavigateToProduct(Guid productid)
+    {
+        NavManager.NavigateTo("/product/Details?productId=" + productid.ToString(), true);
+    }
+}

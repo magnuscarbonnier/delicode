@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 
 namespace DeliCode.ProductAPI.Repository
 {
-    interface IProductRepository
+    public interface IProductRepository
     {
-        List<Product> GetAllProducts();
-        Product GetProduct(Guid Id);
-        List<Product> AddProduct(Product product);
-        List<Product> DeleteProduct(Guid Id);
+        Task<List<Product>> GetAllProducts();
+        Task<Product> GetProduct(Guid Id);
+        Task<Product> AddProduct(Product product);
+        Task<Product> DeleteProduct(Guid Id);
+        Task<Product> UpdateProduct(Product product);
+        Task<bool> ReduceInventoryQuanties(Dictionary<Guid, int> productQuantityValuePairs);
+        Task<bool> CheckInventoryQuantities(Dictionary<Guid, int> productQuantityValuePairs);
     }
 }

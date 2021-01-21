@@ -15,7 +15,7 @@ namespace DeliCode.Web.Tests
     {
         private readonly IOrderService _orderService;
         private readonly MockOrderRepository _repository;
-        private Order _order;
+        private readonly Order _order;
         public UnitTestsOrderService()
         {
             _repository = new MockOrderRepository();
@@ -39,7 +39,7 @@ namespace DeliCode.Web.Tests
         {
             var order = await _orderService.PlaceOrder(_order);
 
-            Assert.NotNull(order.Id);
+            Assert.NotEqual(0,order.Id);
         }
 
         [Fact]
@@ -107,6 +107,26 @@ namespace DeliCode.Web.Tests
             var orders = await _orderService.GetOrdersByUserId(userId);
 
             Assert.Null(orders);
+        }
+
+        [Fact]
+        public async Task GetOrderById_EmptyDb_ReturnsNull()
+        {
+            _repository.orders.Clear();
+
+            var orders = await _orderService.GetOrderById(1);
+
+            Assert.Null(orders);
+        }
+
+        [Fact]
+        public async Task GetOrderById_ReturnsOrders()
+        {
+            var orderid = 1;
+
+            var order = await _orderService.GetOrderById(orderid);
+
+            Assert.Equal(orderid, order.Id);
         }
 
         [Fact]

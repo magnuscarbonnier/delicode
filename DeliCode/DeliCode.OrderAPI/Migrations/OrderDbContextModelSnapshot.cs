@@ -17,7 +17,7 @@ namespace DeliCode.OrderAPI.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("DeliCode.OrderAPI.Models.Order", b =>
                 {
@@ -44,9 +44,6 @@ namespace DeliCode.OrderAPI.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsTestOrder")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -58,6 +55,9 @@ namespace DeliCode.OrderAPI.Migrations
 
                     b.Property<string>("ShippingNotes")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ShippingPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

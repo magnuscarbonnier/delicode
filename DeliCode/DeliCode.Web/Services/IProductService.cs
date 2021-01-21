@@ -11,6 +11,7 @@ namespace DeliCode.Web.Services
         Task<Product> Get(Guid id);
         Task<Product> Remove(Guid id);
         Task<Product> Add(Product product);
-        //Task<Product> Remove(Guid id);
+        Task<Product> Update(Product product);
+        Task<bool> UpdateInventoryAmount(List<OrderProduct> orderProducts);
     }
 }

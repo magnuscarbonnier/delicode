@@ -34,12 +34,10 @@ namespace DeliCode.Web
             //Get Connectionstring from Built-in user secrets in .NET
             var connectionString = Configuration["SqlConnection:UserDB"];
 
-            //Add context
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            //add Identity framework
             services.AddDefaultIdentity<ApplicationUser>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
@@ -56,9 +54,25 @@ namespace DeliCode.Web
                 //validate logged in user every 5 min
                 options.ValidationInterval = TimeSpan.FromMinutes(5);
             });
-            services.AddTransient<IJwtTokenService, JwtTokenService>();
-            services.AddHttpClient<IProductService, ProductService>(client =>
+
+            var orderApiOptions = new OrderApiTokenOptions();
+            var productApiOptions = new ProductApiTokenOptions();
+            Configuration.Bind("ApiTokenOptions:Order", orderApiOptions);
+            Configuration.Bind("ApiTokenOptions:Product", productApiOptions);
+            services.AddSingleton<ProductApiTokenOptions>(productApiOptions);
+            services.AddSingleton<OrderApiTokenOptions>(orderApiOptions);
+
+            //services.Configure<OrderApiTokenOptions>(Configuration.Bind("ApiTokenOptions:Order",OrderApiTokenOptions));
+            //services.Configure<ProductApiTokenOptions>(Configuration.Bind("ApiTokenOptions:Product"));
+            services.AddSingleton<ITokenService, TokenService>();
+
+            services.AddSingleton<IProductService, ProductService>();
+            services.AddHttpClient<IProductRepository, ProductRepository>(client =>
                 client.BaseAddress = new Uri(Configuration["ProductAPIUrl"])
+            );
+            services.AddSingleton<IOrderService, OrderService>();
+            services.AddHttpClient<IOrderRepository, OrderRepository>(client =>
+                client.BaseAddress = new Uri(Configuration["OrderAPIUrl"])
             );
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
@@ -70,8 +84,11 @@ namespace DeliCode.Web
             });
             services.AddTransient<ICartRepository, CartRepository>();
             services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IInventoryService, InventoryService>();
 
+            services.AddServerSideBlazor();
             services.AddControllersWithViews();
+          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,6 +117,7 @@ namespace DeliCode.Web
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapBlazorHub();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

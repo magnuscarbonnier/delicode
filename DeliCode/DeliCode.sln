@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliCode.ProductAPI.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliCode.OrderAPI.Tests", "DeliCode.OrderAPI.Tests\DeliCode.OrderAPI.Tests.csproj", "{95E86382-DE42-426A-971E-86C82F919AE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliCode.Web.Tests", "DeliCode.Web.Tests\DeliCode.Web.Tests.csproj", "{5903E854-857D-4057-BD91-B6116B4C9237}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliCode.Web.Tests", "DeliCode.Web.Tests\DeliCode.Web.Tests.csproj", "{5903E854-857D-4057-BD91-B6116B4C9237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

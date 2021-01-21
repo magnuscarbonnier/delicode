@@ -9,10 +9,10 @@ namespace DeliCode.Web.Repository
     public interface IOrderRepository
     {
         Task<Order> PlaceOrder(Order order);
-        Task<Order> GetOrderById(int? id);
+        Task<Order> GetOrderById(int id);
         Task<Order> UpdateOrder(Order order);
         Task<List<Order>> GetAll();
         Task<List<Order>> GetOrdersByUsersId(string userId);
-        Task<Order> DeleteOrder(int? orderId);
+        Task<Order> DeleteOrder(int orderId);
     }
 }

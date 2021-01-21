@@ -11,29 +11,25 @@ using Xunit;
 using Moq;
 using DeliCode.Library.Models;
 using Microsoft.AspNetCore.Http;
+using DeliCode.Web.Repository;
 
 namespace DeliCode.Web.Tests
 {
     public class UnitTestsCartService
     {
-        private readonly Product _product;
         private readonly MockCartRepository _repository;
+        private readonly MockProductRepository _mockProductRepository;
         private readonly ICartService _cartService;
 
         public UnitTestsCartService()
         {
             _repository = new MockCartRepository();
-            _cartService = new CartService(_repository);
-            _product = new Product()
-            {
-                Id = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00"),
-                Name = "Chokladtårta",
-                Price = 12.50m,
-                Description = "En jättegod tårta"
-            };
+            _mockProductRepository = new MockProductRepository();
+            IProductService _productService = new ProductService(_mockProductRepository);
+            _cartService = new CartService(_repository,_productService);
         }
         [Fact]
-        private async Task GetCart_ReturnsCart()
+        public async Task GetCart_ReturnsCart()
         {
             var cart= await _cartService.GetCart();
 
@@ -41,7 +37,7 @@ namespace DeliCode.Web.Tests
             Assert.NotEqual(Guid.Empty, cart.SessionId);
         }
         [Fact]
-        private async Task GetCart_ReturnsSessionId()
+        public async Task GetCart_ReturnsSessionId()
         {
             var result = await _cartService.GetCart();
             var sessionId = result.SessionId;
@@ -50,46 +46,76 @@ namespace DeliCode.Web.Tests
             Assert.NotEqual(Guid.Empty, sessionId);
         }
         [Fact]
-        private async Task GetCart_ReturnsListOfCartItems()
-        {
-            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity=2 } };
-            
+        public async Task GetCart_ReturnsListOfCartItems()
+        {            
             var result = await _cartService.GetCart();
             var cartItemsResult = result.Items;
 
             Assert.IsType<List<CartItem>>(cartItemsResult);
-            Assert.Equal(cartitems.FirstOrDefault().Product.Id, cartItemsResult.FirstOrDefault().Product.Id );
-            Assert.Equal(cartitems.FirstOrDefault().Total, cartItemsResult.FirstOrDefault().Total);
         }
-        [Fact]
-        private async Task AddProductToCart_ProductAlreadyInCart_ReturnsCart()
-        {
-            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 3 } };
 
-            var result = await _cartService.AddProductToCart(_product);
+        [Fact]
+        public async Task GetCart_AddMoreItemsThanInDB_ReturnsCartWithAllDBProducts()
+        {
+            var product = _mockProductRepository.products.FirstOrDefault();
+            product.AmountInStorage = 1;
+            _repository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
+            await _cartService.AddProductToCart(product.Id);
+
+            var cart = await _cartService.GetCart();
+            var amount = cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity;
+
+            Assert.Equal(product.AmountInStorage, amount);
+        }
+
+        [Fact]
+        public async Task GetCart_AddItemsNotAvailableInDB_ReturnsCartWithoutProduct()
+        {
+            var product = _mockProductRepository.products.FirstOrDefault();
+            product.AmountInStorage = 0;
+            _repository._cart.Items.Clear();
+            await _cartService.AddProductToCart(product.Id);
+
+            var cart = await _cartService.GetCart();
+
+            Assert.Empty(cart.Items);
+        }
+
+
+        [Fact]
+        public async Task AddProductToCart_ProductAlreadyInCart_ReturnsCartWithIncreasedQuantity()
+        {
+            var cart = await _repository.GetCart(Guid.NewGuid());
+            var cartItem = cart.Items.FirstOrDefault();
+            var quantity = cartItem.Quantity+1;
+
+            var result = await _cartService.AddProductToCart(cartItem.Product.Id);
             var cartResult = result.Items;
 
             Assert.IsType<Cart>(result);
-            Assert.Equal(_product.Id, cartResult.FirstOrDefault().Product.Id);
-            Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault().Quantity);
+            Assert.Equal(cartItem.Product.Id, cartResult.FirstOrDefault().Product.Id);
+            Assert.Equal(quantity, cartResult.FirstOrDefault().Quantity);
 
         }
         [Fact]
-        private async Task AddProductToCart_ProductNotInCart_ReturnsCart()
+        public async Task AddProductToCart_ProductNotInCart_ReturnsCartWithNewProduct()
         {
-            _product.Id = Guid.NewGuid();
-            var cartitems = new List<CartItem> { new CartItem { Product = _product, Quantity = 1 } };
-
-            var result = await _cartService.AddProductToCart(_product);
+            var cart = await _repository.GetCart(Guid.NewGuid());
+            var cartItem = cart.Items.FirstOrDefault();
+            var product =  new Product { Id = cartItem.Product.Id };
+            cart.Items.Clear();
+            var result = await _cartService.AddProductToCart(product.Id);
             var cartResult = result.Items;
-            var cartresultproduct = cartResult.FirstOrDefault(x => x.Product.Id == _product.Id).Product;
+            var cartresultproduct = cartResult.FirstOrDefault(x => x.Product.Id == product.Id).Product;
 
             Assert.IsType<Cart>(result);
-            Assert.Equal(_product.Id, cartresultproduct.Id);
-            Assert.Equal(cartitems.FirstOrDefault().Quantity, cartResult.FirstOrDefault(x=>x.Product.Id==_product.Id).Quantity);
+            Assert.Equal(product.Id, cartresultproduct.Id);
+            Assert.Equal(1, cartResult.FirstOrDefault(x => x.Product.Id == product.Id).Quantity);
         }
         [Fact]
-        private async Task GetCart_Twice_ReturnsSameCart()
+        public async Task GetCart_Twice_ReturnsSameCart()
         {
             var firstcart = await _cartService.GetCart();
             var secondCart= await _cartService.GetCart();

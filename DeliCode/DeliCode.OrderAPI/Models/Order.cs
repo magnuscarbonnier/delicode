@@ -23,10 +23,11 @@ namespace DeliCode.OrderAPI.Models
         public string Country { get; set; }
         public string Phone { get; set; }
         public string ShippingNotes { get; set; }
-        public bool IsTestOrder { get; set; }
+        public decimal ShippingPrice { get; set; }
         public decimal TotalPrice()
         {
-            return OrderProducts.Sum(x => x.Price * x.Quantity);
+            var sum = ShippingPrice + OrderProducts.Sum(x => x.Price * x.Quantity);
+            return sum;
         }
         public List<OrderProduct> OrderProducts { get; set; }
     }

@@ -1,47 +1,66 @@
 ﻿using DeliCode.Web.Models;
+using DeliCode.Web.Repository;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace DeliCode.Web.Services
 {
     public class ProductService : IProductService
     {
+        private readonly IProductRepository _repository;
 
-        private readonly HttpClient _httpClient;
-
-        public ProductService(HttpClient httpClient)
+        public ProductService(IProductRepository repository)
         {
-            _httpClient = httpClient;
+            _repository = repository;
         }
 
-        public async Task<List<Product>> GetAll()
+        public async Task<Product> Add(Product product)
         {
-            var response = await _httpClient.GetAsync("/api/products");
-            var productResponse = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<List<Product>>(productResponse);
+            return await _repository.Add(product);
         }
 
         public async Task<Product> Get(Guid id)
         {
-            var response = await _httpClient.GetAsync($"/api/products/{id}");
-            var productResponse = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<Product>(productResponse);
+            return await _repository.Get(id);
         }
 
-        public Task<Product> Remove(Guid id)
+        public async Task<List<Product>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAll();
         }
 
-        public Task<Product> Add(Product product)
+        public async Task<Product> Remove(Guid id)
         {
-            throw new NotImplementedException();
+            return await _repository.Remove(id);
+        }
+
+        public async Task<Product> Update(Product product)
+        {
+            return await _repository.Update(product);
+        }
+
+        public async Task<bool> UpdateInventoryAmount(List<OrderProduct> orderProducts)
+        {
+
+            var productsKeyValuePairs = MapOrderProductsToDictionary(orderProducts);
+
+            return await _repository.UpdateInventoryAmount(productsKeyValuePairs);
+        }
+
+        private Dictionary<Guid, int> MapOrderProductsToDictionary(List<OrderProduct> orderProducts)
+        {
+            Dictionary<Guid, int> productQuantityValuePairs = new Dictionary<Guid, int>();
+            foreach (var product in orderProducts)
+            {
+                productQuantityValuePairs.Add(product.ProductId, product.Quantity);
+            }
+
+            return productQuantityValuePairs;
         }
     }
 }

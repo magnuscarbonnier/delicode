@@ -11,10 +11,11 @@ namespace DeliCode.Web.Services
     public class CartService : ICartService
     {
         private readonly ICartRepository _repository;
-        private static string _cookieName = "Delicode.CartCookie";
-        private readonly CookieOptions _cookieOptions; 
+        private readonly IProductService _productService;
+        private static readonly string _cookieName = "Delicode.CartCookie";
+        private readonly CookieOptions _cookieOptions;
 
-        public CartService(ICartRepository repository)
+        public CartService(ICartRepository repository, IProductService productService)
         {
             _repository = repository;
             _cookieOptions = new CookieOptions
@@ -24,20 +25,24 @@ namespace DeliCode.Web.Services
                 SameSite = SameSiteMode.Strict,
                 Secure = true
             };
+            _productService = productService;
         }
-        public async Task<Cart> AddProductToCart(Product product)
+        public async Task<Cart> AddProductToCart(Guid productId)
         {
             var cart = await GetCart();
-            var isProductInCart = await ProductIdExistsInCart(cart, product.Id);
-            if(isProductInCart)
+            var isProductInCart = await ProductIdExistsInCart(cart, productId);
+            var product = await _productService.Get(productId);
+            //TODO fix
+            if (isProductInCart && cart.Items?.SingleOrDefault(x => x.Product.Id == productId).Quantity < product.AmountInStorage)
             {
-                cart.Items.SingleOrDefault(x => x.Product.Id == product.Id).Quantity++;
+                cart.Items.SingleOrDefault(x => x.Product.Id == productId).Quantity++;
             }
-            else
+            else if (!isProductInCart && product != null && product.AmountInStorage > 0)
             {
-                cart.Items.Add(new CartItem { Product = product, Quantity=1 });
+                cart.Items.Add(new CartItem { Product = product, Quantity = 1 });
             }
-            cart=await SaveCart(cart);
+
+            cart = await SaveCart(cart);
             return cart;
         }
 
@@ -46,7 +51,22 @@ namespace DeliCode.Web.Services
             var sessionId = await GetCartSession();
 
             var cart = await _repository.GetCart(sessionId);
+            var cartitems = new List<CartItem>();
+            foreach (var item in cart.Items)
+            {
+                var product = await _productService.Get(item.Product.Id);
+                if (product != null && item.Quantity > 0 && item.Quantity <= product.AmountInStorage)
+                {
+                    cartitems.Add(item);
+                }
+                else if(product != null && item.Quantity > 0 && item.Quantity > product.AmountInStorage)
+                {
+                    item.Quantity = product.AmountInStorage;
+                    cartitems.Add(item);
+                }
 
+            }
+            cart.Items = cartitems;
             return cart;
         }
 
@@ -60,7 +80,7 @@ namespace DeliCode.Web.Services
             return session;
         }
 
-        private Task<bool> ProductIdExistsInCart(Cart cart, Guid productId)
+        private static Task<bool> ProductIdExistsInCart(Cart cart, Guid productId)
         {
             var exists = cart.Items.Exists(x => x.Product.Id == productId);
             return Task.FromResult(exists);
