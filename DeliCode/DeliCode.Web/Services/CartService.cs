@@ -32,12 +32,12 @@ namespace DeliCode.Web.Services
             var cart = await GetCart();
             var isProductInCart = await ProductIdExistsInCart(cart, productId);
             var product = await _productService.Get(productId);
-            //TODO fix
+            //TODO extract to make cleaner
             if (isProductInCart && cart.Items?.SingleOrDefault(x => x.Product.Id == productId).Quantity < product.AmountInStorage)
             {
                 cart.Items.SingleOrDefault(x => x.Product.Id == productId).Quantity++;
             }
-            else if (!isProductInCart && product != null && product.AmountInStorage > 0)
+            else if (!isProductInCart && product?.AmountInStorage > 0)
             {
                 cart.Items.Add(new CartItem { Product = product, Quantity = 1 });
             }
