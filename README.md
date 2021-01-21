@@ -24,8 +24,8 @@ DeliCode.Web
 
 Not neccessary to manually apply migrations or create database. Deli Code automatically do this for you.
 
-Admin:
-username: admin@delicode.se
+Admin:<br>
+username: admin@delicode.se<br>
 password: Admin123#
 
 
