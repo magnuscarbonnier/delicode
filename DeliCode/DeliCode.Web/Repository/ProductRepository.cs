@@ -1,4 +1,5 @@
 ﻿using DeliCode.Web.Models;
+using DeliCode.Web.Services;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -16,23 +17,13 @@ namespace DeliCode.Web.Repository
     public class ProductRepository : IProductRepository
     {
         private readonly HttpClient _httpClient;
-        private readonly ApiToken _token;
-        public ProductRepository(HttpClient httpClient)
+        public ProductRepository(HttpClient httpClient, ITokenService tokenService)
         {
-            _token = GetOrderToken();
+            var token = tokenService.GetProductApiToken();
             _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.TokenType, token.AccessToken);
         }
 
-        private ApiToken GetOrderToken()
-        {
-            var client = new RestClient("https://dev-5fnthzy6.eu.auth0.com/oauth/token");
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("content-type", "application/json");
-            request.AddParameter("application/json", "{\"client_id\":\"2voc9DFGIvDuoriLq4XOMJz6dRoJ2ZlQ\",\"client_secret\":\"_OGxZx6u34VVADFmaAI8YZMtVBtbn9GPfkQL0kNgbtNLuPp3UwFyirY5ca4yC0T4\",\"audience\":\"https://localhost:44333/\",\"grant_type\":\"client_credentials\"}", ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            return JsonConvert.DeserializeObject<ApiToken>(response.Content);
-        }
         public async Task<List<Product>> GetAll()
         {
             var response = await _httpClient.GetAsync("/api/products");

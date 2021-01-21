@@ -34,12 +34,10 @@ namespace DeliCode.Web
             //Get Connectionstring from Built-in user secrets in .NET
             var connectionString = Configuration["SqlConnection:UserDB"];
 
-            //Add context
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            //add Identity framework
             services.AddDefaultIdentity<ApplicationUser>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
@@ -56,7 +54,18 @@ namespace DeliCode.Web
                 //validate logged in user every 5 min
                 options.ValidationInterval = TimeSpan.FromMinutes(5);
             });
-            services.AddTransient<IJwtTokenService, JwtTokenService>();
+
+            var orderApiOptions = new OrderApiTokenOptions();
+            var productApiOptions = new ProductApiTokenOptions();
+            Configuration.Bind("ApiTokenOptions:Order", orderApiOptions);
+            Configuration.Bind("ApiTokenOptions:Product", productApiOptions);
+            services.AddSingleton<ProductApiTokenOptions>(productApiOptions);
+            services.AddSingleton<OrderApiTokenOptions>(orderApiOptions);
+
+            //services.Configure<OrderApiTokenOptions>(Configuration.Bind("ApiTokenOptions:Order",OrderApiTokenOptions));
+            //services.Configure<ProductApiTokenOptions>(Configuration.Bind("ApiTokenOptions:Product"));
+            services.AddSingleton<ITokenService, TokenService>();
+
             services.AddSingleton<IProductService, ProductService>();
             services.AddHttpClient<IProductRepository, ProductRepository>(client =>
                 client.BaseAddress = new Uri(Configuration["ProductAPIUrl"])
