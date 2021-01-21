@@ -38,7 +38,6 @@ namespace DeliCode.ProductAPI
             services.AddDbContext<ProductDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            // 1. Add Authentication Services
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
