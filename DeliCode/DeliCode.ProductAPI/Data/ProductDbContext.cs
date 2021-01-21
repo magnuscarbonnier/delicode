@@ -13,7 +13,7 @@ namespace DeliCode.ProductAPI.Data
 
         public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options)
         {
-
+            base.Database.Migrate();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
