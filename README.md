@@ -1,29 +1,35 @@
-# Foobar
+# Deli Code Mvc
 
-Foobar is a Python library for dealing with word pluralization.
+Deli code is a school project built with ASP.NET MVC CORE 5, Microservices & Razor components.
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Download zip or run this command:
 
 ```bash
-pip install foobar
+git-clone https://github.com/magnuscarbonnier/delicode.git
 ```
 
 ## Usage
 
-```python
-import foobar
+Open solution in Visual studio 2019. 
 
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
-```
+Right click on solution to set multiple startup projects in solution:
+-DeliCode.OrderAPI
+-DeliCode.ProductAPI
+-DeliCode.Web
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Start
 
-Please make sure to update tests as appropriate.
+Not neccessary to manually apply migrations or create database. Deli Code automatically do this for you.
 
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+Admin:
+username: admin@delicode.se
+password: Admin123#
+
+
+
+## Created by
+Magnus Carbonnier Becker, Mikael Tallbo, Tobias Tagesson, Jonatan Tran, Erik Wahlström
+### IT-Högskolan Stockholm
+
