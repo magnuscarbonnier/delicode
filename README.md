@@ -12,15 +12,15 @@ git-clone https://github.com/magnuscarbonnier/delicode.git
 
 ## Usage
 
-Open solution in Visual studio 2019. 
+1. Open solution in Visual studio 2019. 
 
-Right click on solution to set multiple startup projects in solution:
+2. Right click on solution to set multiple startup projects in solution:
 ```python
 DeliCode.OrderAPI
 DeliCode.ProductAPI
 DeliCode.Web
 ```
-Start
+3. Start
 
 Not neccessary to manually apply migrations or create database. Deli Code automatically do this for you.
 
