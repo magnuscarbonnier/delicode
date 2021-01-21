@@ -31,7 +31,6 @@ namespace DeliCode.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //Get Connectionstring from Built-in user secrets in .NET
             var connectionString = Configuration["SqlConnection:UserDB"];
 
             services.AddDbContext<UserDbContext>(options =>
@@ -62,8 +61,6 @@ namespace DeliCode.Web
             services.AddSingleton<ProductApiTokenOptions>(productApiOptions);
             services.AddSingleton<OrderApiTokenOptions>(orderApiOptions);
 
-            //services.Configure<OrderApiTokenOptions>(Configuration.Bind("ApiTokenOptions:Order",OrderApiTokenOptions));
-            //services.Configure<ProductApiTokenOptions>(Configuration.Bind("ApiTokenOptions:Product"));
             services.AddSingleton<ITokenService, TokenService>();
 
             services.AddSingleton<IProductService, ProductService>();
@@ -88,7 +85,6 @@ namespace DeliCode.Web
 
             services.AddServerSideBlazor();
             services.AddControllersWithViews();
-          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
